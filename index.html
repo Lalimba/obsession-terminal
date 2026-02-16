@@ -2,32 +2,59 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Obsession Trading Academy Dashboard</title>
+    <title>Obsession Trading Academy - Home</title>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 10px; overflow: hidden; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 98vh; gap: 10px; }
         
-        /* THE NEW HEADER */
+        /* THE ACADEMY HEADER */
         .academy-header { 
             text-align: center; 
-            font-size: 32px; 
-            font-weight: bold; 
-            padding: 10px 0;
-            background: linear-gradient(90deg, #ff0000, #ffae00, #ffee00, #00ff00, #00fbff, #0011ff, #bd00ff);
+            font-size: 36px; 
+            font-weight: 900; 
+            padding: 5px 0;
+            background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
+        /* NEW: NAVIGATION HUB / INTERESTING LINKS */
+        .nav-hub {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .nav-link {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .nav-link:hover {
+            color: #fff;
+            background: #222;
+            box-shadow: 0 0 10px rgba(0,255,255,0.3);
+        }
+
+        /* MAIN LAYOUT */
         .top-row { display: flex; flex: 1; gap: 10px; overflow: hidden; }
-        .chart-area { flex: 3; border: 1px solid #333; display: flex; flex-direction: column; }
+        .chart-area { flex: 3; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
         .sidebar { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-        .ticker-row { height: 46px; border-bottom: 1px solid #333; margin-bottom: 5px; }
-        .button-group { display: flex; gap: 5px; margin-bottom: 5px; }
-        button { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        button:hover { background: #333; border-color: #666; }
-        .widget-box { flex: 1; border: 1px solid #333; background: #131722; border-radius: 4px; overflow: hidden; }
+        .ticker-row { height: 46px; }
+        .widget-box { flex: 1; border: 1px solid #333; background: #131722; border-radius: 8px; overflow: hidden; }
+        
+        /* ORIGINAL BUTTONS */
+        .button-group { display: flex; gap: 5px; }
+        button { background: #222; color: #fff; border: 1px solid #444; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+        button:hover { background: #00ff00; color: #000; }
     </style>
 </head>
 <body>
@@ -37,30 +64,29 @@
         <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-            {
-            "symbols": [
+            { "symbols": [
                 {"proName": "FX_IDC:USDINR", "title": "USD/INR"},
                 {"description": "FED Rate", "proName": "ECONOMICS:USINTR"},
-                {"description": "Gold", "proName": "OANDA:XAUUSD"},
-                {"description": "DXY", "proName": "CAPITALCOM:DXY"}
-            ],
-            "showSymbolLogo": true,
-            "colorTheme": "dark",
-            "isTransparent": true,
-            "displayMode": "adaptive",
-            "locale": "de"
-            }
+                {"description": "Gold", "proName": "OANDA:XAUUSD"}
+            ], "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "de" }
             </script>
         </div>
     </div>
 
-    <div class="academy-header">
-        Obsession Trading Academy tools
+    <div class="academy-header">Obsession Trading Academy tools</div>
+
+    <div class="nav-hub">
+        <a href="https://www.google.com" target="_blank" class="nav-link">🔍 GOOGLE</a>
+        <a href="https://v2.goldpreis.de/" target="_blank" class="nav-link">🪙 GOLDPRICE LIVE</a>
+        <a href="https://www.forexfactory.com" target="_blank" class="nav-link">📅 FOREX FACTORY</a>
+        <a href="https://www.reuters.com" target="_blank" class="nav-link">📰 REUTERS NEWS</a>
+        <a href="https://www.youtube.com" target="_blank" class="nav-link">📺 YOUTUBE</a>
+        <a href="https://chatgpt.com" target="_blank" class="nav-link">🤖 AI ASSISTANT</a>
     </div>
 
     <div class="top-row">
         <div class="chart-area">
-            <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tradingview_1&symbol=OANDA:XAUUSD&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc/UTC" 
+            <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tradingview_1&symbol=OANDA:XAUUSD&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&theme=dark&style=1" 
                     style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
 
@@ -74,15 +100,7 @@
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                    {
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "de",
-                    "importanceFilter": "-1,0,1",
-                    "currencyFilter": "USD,EUR"
-                    }
+                    { "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "de", "importanceFilter": "-1,0,1", "currencyFilter": "USD,EUR" }
                     </script>
                 </div>
             </div>
@@ -91,15 +109,7 @@
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                    {
-                    "feedMode": "all_symbols",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "displayMode": "regular",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "de"
-                    }
+                    { "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "de" }
                     </script>
                 </div>
             </div>
