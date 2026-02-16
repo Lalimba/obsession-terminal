@@ -2,176 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Obsession Academy | Gold Command Center</title>
+    <title>Obsession Academy Dashboard</title>
     <style>
-        body {
-            background: radial-gradient(circle at top, #1a1a2e 0%, #08080c 100%);
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
+        body { background: #08080c; color: #fff; font-family: sans-serif; padding: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        
+        /* THE CHART BOX */
+        .chart-container { 
+            background: #131722; border: 1px solid #FFD700; border-radius: 12px; 
+            height: 500px; position: relative; overflow: hidden;
+        }
+        
+        /* EXPAND BUTTON */
+        .expand-btn {
+            position: absolute; top: 10px; right: 10px; z-index: 100;
+            background: #FFD700; color: #000; border: none; padding: 8px 12px;
+            border-radius: 4px; font-weight: bold; cursor: pointer;
         }
 
-        /* DASHBOARD LAYOUT */
-        .full-dashboard {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* HEADER */
-        header {
-            text-align: center;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border-bottom: 2px solid #FFD700;
-        }
-
-        /* MAIN CONTENT AREA */
-        .content-area {
-            display: flex;
-            flex: 1;
-            padding: 10px;
-            gap: 15px;
-        }
-
-        /* TRADINGVIEW: FULL MODUS */
-        .chart-section {
-            flex: 3; /* Makes the chart much bigger */
-            background: #131722;
-            border-radius: 12px;
-            border: 1px solid #FFD700;
-            overflow: hidden;
-            height: 85vh; /* Very tall chart */
-        }
-
-        /* SIDEBAR: TOOLS */
-        .sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        h2 { color: #FFD700; font-size: 1.1rem; margin-top: 0; border-bottom: 1px solid rgba(255,215,0,0.2); padding-bottom: 8px; }
-
-        input, select {
-            width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; 
-            border: 1px solid #444; background: #111; color: #fff;
-        }
-
-        /* THE ACTION BUTTONS */
-        .btn-goldpreis {
-            background: linear-gradient(to bottom, #FFD700, #b8860b);
-            color: #000;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        .btn-goldpreis:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
-        @media (max-width: 1000px) {
-            .content-area { flex-direction: column; }
-            .chart-section { height: 500px; }
-        }
+        .card { background: #1a1a2e; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        .btn-link { background: #FFD700; color: #000; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; display: block; text-align: center; }
+        
+        /* FULLSCREEN STYLE */
+        :fullscreen .chart-container { width: 100vw; height: 100vh; border: none; border-radius: 0; }
+        :-webkit-full-screen .chart-container { width: 100vw; height: 100vh; }
     </style>
 </head>
 <body>
 
-    <div class="full-dashboard">
-        <header>
-            <h1 style="color: #FFD700; margin: 0; letter-spacing: 3px;">OBSESSION ACADEMY</h1>
-        </header>
+<div class="dashboard-grid">
+    <div id="mainChartArea" class="chart-container">
+        <button class="expand-btn" onclick="toggleFull()">⛶ Full Screen</button>
+        <div id="tv_chart" style="height: 100%;"></div>
+        <script src="https://s3.tradingview.com/tv.js"></script>
+        <script>
+            new TradingView.widget({
+                "autosize": true, "symbol": "OANDA:XAUUSD", "interval": "D",
+                "theme": "dark", "style": "1", "container_id": "tv_chart"
+            });
 
-        <div class="content-area">
-            
-            <div class="chart-section">
-                <div class="tradingview-widget-container" style="height:100%;width:100%">
-                  <div id="tradingview_full" style="height:100%;width:100%"></div>
-                  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                  <script type="text/javascript">
-                  new TradingView.widget({
-                    "autosize": true,
-                    "symbol": "OANDA:XAUUSD",
-                    "interval": "D",
-                    "timezone": "Etc/UTC",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "withdateranges": true,
-                    "hide_side_toolbar": false,
-                    "allow_symbol_change": true,
-                    "details": true,
-                    "calendar": true,
-                    "container_id": "tradingview_full"
-                  });
-                  </script>
-                </div>
-            </div>
-
-            <div class="sidebar">
-                
-                <div class="card">
-                    <h2>⚖️ Goldpreis.de Rechner</h2>
-                    <p style="font-size: 0.8rem; color: #888;">Open the official German calculator for Karat/Gram values.</p>
-                    <button class="btn-goldpreis" onclick="openGoldpreis('calculator')">Goldrechner Öffnen</button>
-                </div>
-
-                <div class="card">
-                    <h2>📜 Historical Preis (Any Year)</h2>
-                    <p style="font-size: 0.8rem; color: #888;">Select a year to see historical development.</p>
-                    <select id="yearSelector">
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2015">2015</option>
-                        <option value="2010">2010</option>
-                        <option value="2000">2000</option>
-                    </select>
-                    <button class="btn-goldpreis" onclick="openGoldpreis('history')">Historie Suchen</button>
-                </div>
-
-                <div class="card">
-                    <h2>🛠️ Academy Tools</h2>
-                    <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
-                        <li style="margin-bottom: 10px;"><a href="breakeven.html" style="color: #FFD700; text-decoration: none;">📊 Breakeven Tool</a></li>
-                        <li><a href="glossary.html" style="color: #FFD700; text-decoration: none;">📑 Glossary</a></li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
+            function toggleFull() {
+                let elem = document.getElementById("mainChartArea");
+                if (!document.fullscreenElement) {
+                    elem.requestFullscreen().catch(err => {
+                        alert(`Error: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        </script>
     </div>
 
-    <script>
-        function openGoldpreis(mode) {
-            if (mode === 'calculator') {
-                window.open("https://www.goldpreis.de/goldrechner/", "_blank");
-            } else {
-                let year = document.getElementById('yearSelector').value;
-                // Takes you directly to the yearly history page
-                window.open("https://www.goldpreis.de/goldpreisentwicklung/" + year + "/", "_blank");
-            }
-        }
-    </script>
+    <div class="sidebar">
+        <div class="card">
+            <h2 style="color: #FFD700;">⚖️ Goldrechner</h2>
+            <p>Calculate live values on the official site.</p>
+            <a href="https://www.goldpreis.de/goldrechner/" target="_blank" class="btn-link">Open Goldpreis.de</a>
+        </div>
+
+        <div class="card">
+            <h2 style="color: #FFD700;">📜 Price History</h2>
+            <p>Look up historical numerical data.</p>
+            <a href="https://www.goldpreis.de/goldpreisentwicklung/" target="_blank" class="btn-link">Search All Years</a>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
