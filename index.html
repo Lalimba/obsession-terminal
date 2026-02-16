@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Obsession Trading Academy - Crypto Hub</title>
+    <title>Obsession Trading Academy - Pro Terminal</title>
     <style>
         body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 98vh; gap: 10px; }
@@ -51,7 +51,7 @@
         
         .button-group { display: flex; gap: 5px; }
         button { background: #222; color: #fff; border: 1px solid #444; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold;}
-        button:hover { background: #ffae00; color: #000; }
+        button:hover { background: #00ff00; color: #000; }
     </style>
 </head>
 <body>
@@ -65,9 +65,8 @@
                 {"proName": "BINANCE:BTCUSDT", "title": "BTC/USDT"},
                 {"proName": "BINANCE:ETHUSDT", "title": "ETH/USDT"},
                 {"proName": "BINANCE:SOLUSDT", "title": "SOL/USDT"},
-                {"description": "Crypto Total Market Cap", "proName": "CRYPTOCAP:TOTAL"},
-                {"description": "BTC Dominance", "proName": "CRYPTOCAP:BTC.D"},
-                {"description": "Fear & Greed Index", "proName": "INDEX:BTCUSD"}
+                {"description": "Total Cap", "proName": "CRYPTOCAP:TOTAL"},
+                {"description": "BTC Dom", "proName": "CRYPTOCAP:BTC.D"}
             ], "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "de" }
             </script>
         </div>
@@ -85,8 +84,25 @@
 
     <div class="top-row">
         <div class="chart-area">
-            <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tradingview_1&symbol=OANDA:XAUUSD&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&theme=dark&style=1" 
-                    style="width: 100%; height: 100%; border: none;"></iframe>
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div id="tradingview_advanced"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                  "autosize": true,
+                  "symbol": "OANDA:XAUUSD",
+                  "interval": "D",
+                  "timezone": "Etc/UTC",
+                  "theme": "dark",
+                  "style": "1",
+                  "locale": "de",
+                  "toolbar_bg": "#f1f3f6",
+                  "enable_publishing": false,
+                  "allow_symbol_change": true,
+                  "container_id": "tradingview_advanced"
+                });
+                </script>
+            </div>
         </div>
 
         <div class="sidebar">
