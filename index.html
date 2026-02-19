@@ -2,23 +2,24 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obsession Trading Academy - Command Center</title>
     <style>
         html, body { height: 100%; margin: 0; padding: 0; background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        
-        .container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            padding: 10px; 
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
             box-sizing: border-box;
-            gap: 8px; 
+            gap: 8px;
         }
-        
-        .academy-header { 
-            text-align: center; 
-            font-size: 30px; 
-            font-weight: 900; 
+
+        .academy-header {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 900;
             background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -39,14 +40,16 @@
         }
 
         .tigrigna-text {
-            font-size: 13px;
-            font-weight: bold;
-            line-height: 1.3;
-            background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            min-width: 320px;
-        }
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.6;
+    letter-spacing: 0.6px;
+    background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    min-width: 380px;
+}
+
 
         /* GRID FOR LINKS TO FILL SPACE */
         .nav-links-group {
@@ -76,15 +79,34 @@
             background: #222;
         }
 
+        /* LIGHT HIERARCHY (no content removed) */
+        .nav-link.core { border-color: #2b2b2b; }
+        .nav-link.core:hover { border-color: #00ff00; color: #00ff00; }
+
+        .nav-link.research { border-color: #2b2b2b; }
+        .nav-link.research:hover { border-color: #00fbff; color: #00fbff; }
+
+        .nav-link.invite { border-color: #3a2a00; }
+        .nav-link.invite:hover { border-color: #ffae00; color: #ffae00; }
+
+        .nav-sep {
+            display: inline-block;
+            width: 8px;
+            height: 22px;
+            border-left: 1px solid #2a2a2a;
+            margin: 0 2px;
+            opacity: 0.8;
+        }
+
         .main-row { display: flex; flex: 1; gap: 10px; min-height: 0; }
         .chart-area { flex: 4; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #131722; }
         .sidebar { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
         .widget-box { flex: 1; border: 1px solid #333; background: #131722; border-radius: 8px; overflow: hidden; }
-        
+
         .button-group { display: flex; gap: 5px; }
         button { background: #222; color: #fff; border: 1px solid #444; padding: 10px; cursor: pointer; border-radius: 4px; flex: 1; font-weight: bold; }
         button:hover { background: #00ff00; color: #000; }
-        
+
         .ticker-row { height: 40px; }
     </style>
 </head>
@@ -113,36 +135,49 @@
             ኩሉ አብ ኢድና ኢዩ ክመሃር ዝደሊ ንሕግዝ<br>
             ካብ ጉዪ ምውኣል ክሳድ ምሓዝ ፎሎው በል ጥራሕ
         </div>
+
         <div class="nav-links-group">
-            <a href="https://www.tradingview.com/markets/" target="_blank" class="nav-link">📈 Markets</a>
-<a href="https://www.investing.com/economic-calendar/" target="_blank" class="nav-link">🗓️ Calendar</a>
-<a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" class="nav-link">🏦 FedWatch</a>
-<a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" class="nav-link">💵 DXY</a>
-<a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" class="nav-link">⚡ VIX</a>
-<a href="https://www.tradingview.com/markets/stocks-usa/earnings/" target="_blank" class="nav-link">📊 Earnings</a>
-<a href="https://coinank.com/chart/derivatives/liq-map"
-   target="_blank" rel="noopener noreferrer"
-   class="nav-link">🧨 Liquidation</a>
-<a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w"
-   target="_blank" rel="noopener noreferrer"
-   class="nav-link">🧨 LQ Map BTC</a>
+            <!-- CORE (fast pre-trade checks) -->
+            <a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer" class="nav-link core">📈 Markets</a>
+            <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer" class="nav-link core">🗓️ Calendar</a>
+            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🏦 FedWatch</a>
+            <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer" class="nav-link core">💵 DXY</a>
+            <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer" class="nav-link core">📉 US10Y</a>
+            <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer" class="nav-link core">⚡ VIX</a>
+            <a href="https://www.tradingview.com/markets/stocks-usa/earnings/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Earnings</a>
 
- <a href="https://coinank.com/en/invite/register?referral=1311828" target="_blank" class="nav-link">🎁 CoinAnk Invite</a>
-            
-<a href="https://www.glassnode.com/" target="_blank" class="nav-link">🔗 OnChain</a>
-<a href="https://defillama.com/" target="_blank" class="nav-link">💧 DeFiLlama</a>
-<a href="https://www.usdebtclock.org/" target="_blank" class="nav-link">🌎 DebtClock</a>
+            <span class="nav-sep" aria-hidden="true"></span>
 
-            <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" class="nav-link">🔥 Heatmap</a>
-            <a href="https://www.coinglass.com/" target="_blank" class="nav-link">📊 Coinglass</a>
-            <a href="https://whale-alert.io/" target="_blank" class="nav-link">🐳 WhaleAlert</a>
-            <a href="https://coinmarketcap.com/" target="_blank" class="nav-link">💰 MarketCap</a>
-            <a href="https://x.com/" target="_blank" class="nav-link">🐦 X.com</a>
-            <a href="https://www.coingecko.com/" target="_blank" class="nav-link">🦎 Gecko</a>
-            <a href="https://www.cryptocraft.com/" target="_blank" class="nav-link">🛠️ CryptoCraft</a>
-            <a href="https://sosovalue.com/" target="_blank" class="nav-link">📊 SoSoValue</a>
-            <a href="https://chatgpt.com" target="_blank" class="nav-link">🤖 AI</a>
-               </div>
+            <!-- LIQUIDITY / DERIVATIVES -->
+            <a href="https://coinank.com/chart/derivatives/liq-map" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 Liquidation</a>
+            <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 LQ Map BTC</a>
+            <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" rel="noopener noreferrer" class="nav-link core">🔥 Heatmap</a>
+            <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Coinglass</a>
+
+            <span class="nav-sep" aria-hidden="true"></span>
+
+            <!-- RESEARCH -->
+            <a href="https://whale-alert.io/" target="_blank" rel="noopener noreferrer" class="nav-link research">🐳 WhaleAlert</a>
+            <a href="https://www.glassnode.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">🔗 OnChain</a>
+            <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">💧 DeFiLlama</a>
+            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer" class="nav-link research">😱 Fear&Greed</a>
+            <a href="https://www.usdebtclock.org/" target="_blank" rel="noopener noreferrer" class="nav-link research">🌎 DebtClock</a>
+
+            <span class="nav-sep" aria-hidden="true"></span>
+
+            <!-- GENERAL -->
+            <a href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer" class="nav-link">💰 MarketCap</a>
+            <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🦎 Gecko</a>
+            <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🐦 X.com</a>
+            <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🛠️ CryptoCraft</a>
+            <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer" class="nav-link">📊 SoSoValue</a>
+            <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" class="nav-link">🤖 AI</a>
+
+            <span class="nav-sep" aria-hidden="true"></span>
+
+            <!-- INVITE (kept, but visually separated) -->
+            <a href="https://coinank.com/en/invite/register?referral=1311828" target="_blank" rel="noopener noreferrer" class="nav-link invite">🎁 CoinAnk Invite</a>
+        </div>
     </div>
 
     <div class="main-row">
@@ -170,8 +205,8 @@
 
         <div class="sidebar">
             <div class="button-group">
-                <button onclick="window.open('https://www.goldpreis.de')">Open Goldpreis.de</button>
-                <button>Search All Years</button>
+                <button onclick="window.open('https://www.goldpreis.de', '_blank', 'noopener,noreferrer')">Open Goldpreis.de</button>
+                <button onclick="window.open('https://www.goldpreis.de/alle-jahre/', '_blank', 'noopener,noreferrer')">Search All Years</button>
             </div>
 
             <div class="widget-box">
