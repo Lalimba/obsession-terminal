@@ -40,16 +40,15 @@
         }
 
         .tigrigna-text {
-    font-size: 17px;
-    font-weight: 800;
-    line-height: 1.6;
-    letter-spacing: 0.6px;
-    background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    min-width: 380px;
-}
-
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.6;
+            letter-spacing: 0.6px;
+            background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 380px;
+        }
 
         /* GRID FOR LINKS TO FILL SPACE */
         .nav-links-group {
@@ -108,30 +107,31 @@
         button:hover { background: #00ff00; color: #000; }
 
         .ticker-row { height: 40px; }
+
+        /* SMALL LOOP VIDEO */
+        .mini-video-box {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            width: 220px;
+            z-index: 999;
+            text-align: center;
+        }
+
+        .mini-video-box video {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #000;
+        }
+
+        .video-caption {
+            font-size: 14px;
+            margin-top: 6px;
+            font-weight: bold;
+            color: #00ff00;
+        }
     </style>
-    /* SMALL LOOP VIDEO */
-.mini-video-box {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    width: 220px;
-    z-index: 999;
-    text-align: center;
-}
-
-.mini-video-box video {
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #333;
-}
-
-.video-caption {
-    font-size: 14px;
-    margin-top: 6px;
-    font-weight: bold;
-    color: #00ff00;
-}
-
 </head>
 <body>
 
@@ -194,7 +194,7 @@
             <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🐦 X.com</a>
             <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🛠️ CryptoCraft</a>
             <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer" class="nav-link">📊 SoSoValue</a>
-            <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" class="nav-link">🤖 AI</a>
+            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🤖 AI</a>
 
             <span class="nav-sep" aria-hidden="true"></span>
 
@@ -246,9 +246,11 @@
         </div>
     </div>
 </div>
+
+<!-- MINI LOOP VIDEO (overlay, does not change layout) -->
 <div class="mini-video-box">
     <video autoplay loop muted playsinline>
-        <source src=nohasleep.mp4" type="video/mp4">
+        <source src="nohasleep.mp4" type="video/mp4">
     </video>
     <div class="video-caption">
         ቢትኮይን ገዚኤልካ ምሰበልኩዎ ዝደቆሶ ድቃስ፣
