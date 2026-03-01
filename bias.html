@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OTA — Market Bias</title>
+<style>
+  html, body { height: 100%; margin:0; padding:0; background:#000; color:#fff; font-family: "Segoe UI", sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .header {
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding: 12px 14px; border:1px solid #333; border-radius: 12px; background:#111;
+  }
+  .title {
+    font-weight: 900; letter-spacing: 0.6px; text-transform: uppercase;
+    background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size: 18px;
+  }
+  .sub { color:#bdbdbd; font-size: 12px; line-height: 1.35; }
+  .status { display:flex; align-items:center; gap:10px; color:#bdbdbd; font-size: 12px; white-space: nowrap; }
+  .dot { width:10px; height:10px; border-radius:50%; background:#666; display:inline-block; }
+  .dot.ok{ background:#00ff00; } .dot.warn{ background:#ffae00; } .dot.bad{ background:#ff3b3b; }
+
+  .grid { margin-top: 12px; display:grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
+  .card { border:1px solid #333; border-radius: 12px; background:#131722; padding: 14px; }
+  .card h3 { margin:0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color:#00ff00; }
+  .big-bias {
+    border-radius: 14px; padding: 14px; border: 1px solid #2a2a2a;
+    background: rgba(0,0,0,0.25);
+  }
+  .bias-row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap: wrap; }
+  .bias-label { font-size: 12px; color:#bdbdbd; text-transform: uppercase; letter-spacing: 0.4px; }
+  .bias-value { font-size: 22px; font-weight: 1000; letter-spacing: 0.3px; }
+  .pill {
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04); font-size: 12px; color:#bdbdbd;
+  }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+  .metric {
+    flex: 1 1 200px;
+    border:1px solid #2a2a2a; border-radius: 12px; padding: 10px;
+    background: rgba(0,0,0,0.2);
+  }
+  .mlabel { font-size: 11px; color:#bdbdbd; text-transform: uppercase; letter-spacing: 0.35px; margin-bottom: 6px; }
+  .mval { font-size: 18px; font-weight: 900; }
+  .msub { margin-top: 6px; font-size: 12px; color:#bdbdbd; display:flex; gap:10px; flex-wrap: wrap; }
+
+  .up{ color:#00ff00; } .down{ color:#ff3b3b; } .neutral{ color:#bdbdbd; }
+
+  .alert { margin-top: 10px; padding: 10px; border-radius: 12px; border:1px solid #2a2a2a;
+           background: rgba(0,0,0,0.25); color:#ffae00; min-height: 18px; font-size: 12px; line-height: 1.35; }
+  .flash { box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.45) inset, 0 0 18px rgba(255, 174, 0, 0.15); border-color:#ffae00 !important; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align:left; }
+  th { font-size: 11px; color:#bdbdbd; text-transform: uppercase; letter-spacing: 0.35px; }
+  .scroll { max-height: 260px; overflow: auto; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; background: rgba(0,0,0,0.18); }
+  .smallnote { margin-top: 10px; font-size: 12px; color:#bdbdbd; line-height: 1.45; }
+  .btn {
+    cursor:pointer; user-select:none;
+    padding: 6px 10px; border-radius: 10px; border:1px solid #333; background:#1a1a1a; color:#fff;
+    font-size: 12px; font-weight: 800;
+  }
+  .btn:hover { border-color:#ffae00; color:#ffae00; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div>
+      <div class="title">OTA — Market Bias</div>
+      <div class="sub">
+        Decision engine (Binance Futures): Funding + Open Interest + Price + Liquidations<br>
+        Save as <b>bias.html</b> and open from your menu.
+      </div>
+    </div>
+    <div class="status">
+      <span class="dot" id="apiDot"></span>
+      <span id="lastUpdate">Loading…</span>
+      <button class="btn" id="soundBtn">Sound: On</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: BIAS ENGINE -->
+    <div class="card" id="biasCard">
+      <h3>Bias Engine</h3>
+
+      <div class="big-bias" id="biasBox">
+        <div class="bias-row">
+          <div>
+            <div class="bias-label">Market Bias</div>
+            <div class="bias-value" id="biasValue">—</div>
+          </div>
+          <div class="pill"><span class="neutral">Score</span> <span id="biasScore">—</span></div>
+          <div class="pill"><span class="neutral">Crowd</span> <span id="crowdSide">—</span></div>
+          <div class="pill"><span class="neutral">Squeeze</span> <span id="squeezeHint">—</span></div>
+        </div>
+
+        <div class="row">
+          <div class="metric">
+            <div class="mlabel">Funding (last)</div>
+            <div class="mval" id="fundingVal">—</div>
+            <div class="msub">
+              <span class="pill"><span class="neutral">Bias</span> <span id="fundingBias">—</span></span>
+              <span class="pill"><span class="neutral">Next</span> <span id="fundingCountdown">—</span></span>
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="mlabel">Open Interest</div>
+            <div class="mval" id="oiVal">—</div>
+            <div class="msub">
+              <span class="pill"><span class="neutral">Δ</span> <span id="oiDeltaAbs">—</span></span>
+              <span class="pill"><span class="neutral">Δ%</span> <span id="oiDeltaPct">—</span></span>
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="mlabel">Price</div>
+            <div class="mval" id="markVal">—</div>
+            <div class="msub">
+              <span class="pill"><span class="neutral">Index</span> <span id="indexVal">—</span></span>
+              <span class="pill"><span class="neutral">24h</span> <span id="chg24h">—</span></span>
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="mlabel">Long / Short ratio</div>
+            <div class="mval" id="lsVal">—</div>
+            <div class="msub">
+              <span class="pill"><span class="neutral">Long%</span> <span id="longPct">—</span></span>
+              <span class="pill"><span class="neutral">Short%</span> <span id="shortPct">—</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert" id="alertBox"></div>
+      </div>
+
+      <div class="smallnote">
+        Rules (simple but effective):
+        <br>• Funding <span class="up">negative</span> + OI ↑ → <b>shorts leaning</b> (squeeze-up risk).
+        <br>• Funding <span class="down">positive</span> + OI ↑ → <b>longs crowded</b> (dump/flush risk).
+        <br>• Big liquidations confirm direction short-term.
+      </div>
+    </div>
+
+    <!-- RIGHT: LIQUIDATIONS STREAM -->
+    <div class="card" id="liqCard">
+      <h3>Liquidations Stream (Binance live)</h3>
+
+      <div class="row" style="margin-top:0">
+        <div class="pill"><span class="neutral">Big Liq</span> <span id="bigLiqLabel">≥ $2,000,000</span></div>
+        <div class="pill"><span class="neutral">Last 60s</span> <span id="liq60s">—</span></div>
+        <div class="pill"><span class="neutral">Largest</span> <span id="largestLiq">—</span></div>
+      </div>
+
+      <div class="scroll" style="margin-top:10px">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th><th>Side</th><th>Price</th><th>Qty</th><th>Notional</th>
+            </tr>
+          </thead>
+          <tbody id="liqTbody">
+            <tr><td colspan="5" style="color:#bdbdbd;padding:12px;">Waiting for events…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="smallnote">
+        Interpretation:
+        <br>• <span class="up"><b>BUY</b></span> force order = short liquidation (squeeze fuel up).
+        <br>• <span class="down"><b>SELL</b></span> force order = long liquidation (flush fuel down).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========= CONFIG ========= */
+const SYMBOL = "BTCUSDT";
+const REFRESH_MS = 10000;     // OI/Funding/Stats refresh
+const LS_REFRESH_MS = 30000;  // long/short ratio refresh
+const BIG_LIQ_USD = 2_000_000;
+const LIQ_MAX_ROWS = 30;
+
+/* ========= SOUND ========= */
+let soundEnabled = true;
+const beep = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+document.getElementById("soundBtn").onclick = () => {
+  soundEnabled = !soundEnabled;
+  document.getElementById("soundBtn").innerText = "Sound: " + (soundEnabled ? "On" : "Off");
+};
+
+function playBeep() {
+  if (!soundEnabled) return;
+  try { beep.currentTime = 0; beep.play(); } catch (e) {}
+}
+
+/* ========= UI HELPERS ========= */
+function setDot(state) {
+  const el = document.getElementById("apiDot");
+  el.classList.remove("ok","warn","bad");
+  el.classList.add(state);
+}
+function flash(id) {
+  const el = document.getElementById(id);
+  el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"), 650);
+}
+function fmtCompact(x) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const format = (v) => v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
+  if (abs >= 1e12) return sign + format(abs/1e12) + "T";
+  if (abs >= 1e9)  return sign + format(abs/1e9) + "B";
+  if (abs >= 1e6)  return sign + format(abs/1e6) + "M";
+  if (abs >= 1e3)  return sign + format(abs/1e3) + "K";
+  return sign + format(abs);
+}
+function fmtPrice(x) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  return Number(x).toLocaleString("de-DE", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+}
+function hhmmss(ts) {
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+}
+function nowHHMMSS() { return hhmmss(Date.now()); }
+
+/* ========= STATE ========= */
+let lastOI = null;
+let lastFunding = null;
+let nextFundingTime = null;
+let fundingRate = null;
+let oiDeltaPct = null;
+let chg24hPct = null;
+let lsRatio = null;
+
+/* ========= BIAS ENGINE =========
+   Score idea:
+   +1: funding negative (short crowd) => squeeze up potential
+   -1: funding positive (long crowd)  => dump risk
+   +1: OI down (deleveraging)         => healthier / less fragile
+   -1: OI up                          => leverage building (fragile)
+   +1: 24h change positive            => momentum
+   -1: 24h change negative            => downside pressure
+
+   Then map score to bias text.
+*/
+function computeBias() {
+  let score = 0;
+
+  // funding
+  let crowd = "Neutral";
+  let squeeze = "—";
+
+  if (Number.isFinite(fundingRate)) {
+    if (fundingRate < 0) { score += 1; crowd = "Short-crowded"; squeeze = "Squeeze ↑ possible"; }
+    else if (fundingRate > 0) { score -= 1; crowd = "Long-crowded"; squeeze = "Flush ↓ risk"; }
+  }
+
+  // OI delta (leverage)
+  if (Number.isFinite(oiDeltaPct)) {
+    if (oiDeltaPct > 0.25) score -= 1;
+    else if (oiDeltaPct < -0.25) score += 1;
+  }
+
+  // 24h momentum
+  if (Number.isFinite(chg24hPct)) {
+    if (chg24hPct > 0) score += 1;
+    else if (chg24hPct < 0) score -= 1;
+  }
+
+  // long/short ratio (accounts)
+  if (Number.isFinite(lsRatio)) {
+    if (lsRatio > 1.10) score -= 1;     // long crowded
+    else if (lsRatio < 0.90) score += 1; // short crowded
+  }
+
+  let bias = "Neutral";
+  if (score >= 2) bias = "Bullish";
+  if (score <= -2) bias = "Defensive";
+  // special “squeeze watch” condition:
+  if (Number.isFinite(fundingRate) && Number.isFinite(oiDeltaPct) && fundingRate < 0 && oiDeltaPct > 0.25) {
+    bias = "Squeeze Watch";
+  }
+
+  document.getElementById("biasValue").innerText = bias;
+  document.getElementById("biasScore").innerText = String(score);
+  document.getElementById("crowdSide").innerText = crowd;
+  document.getElementById("squeezeHint").innerText = squeeze;
+
+  // colorize bias
+  const b = document.getElementById("biasValue");
+  b.classList.remove("up","down","neutral");
+  if (bias === "Bullish" || bias === "Squeeze Watch") b.classList.add("up");
+  else if (bias === "Defensive") b.classList.add("down");
+  else b.classList.add("neutral");
+}
+
+/* ========= REST FETCH: OI + Funding + Mark/Index + 24h stats ========= */
+async function fetchCore() {
+  try {
+    setDot("warn");
+    document.getElementById("lastUpdate").innerText = "Updating…";
+
+    // OI
+    const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
+    const oiJson = await oiRes.json();
+    const oi = Number(oiJson.openInterest);
+
+    // PremiumIndex (funding + mark + index + next funding)
+    const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
+    const prem = await premRes.json();
+
+    fundingRate = Number(prem.lastFundingRate);
+    nextFundingTime = Number(prem.nextFundingTime);
+
+    const mark = Number(prem.markPrice);
+    const index = Number(prem.indexPrice);
+
+    document.getElementById("markVal").innerText = fmtPrice(mark) + " USDT";
+    document.getElementById("indexVal").innerText = fmtPrice(index);
+
+    // 24h stats
+    const statsRes = await fetch(`https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=${SYMBOL}`);
+    const stats = await statsRes.json();
+    chg24hPct = Number(stats.priceChangePercent);
+
+    const chgEl = document.getElementById("chg24h");
+    chgEl.innerText = chg24hPct.toFixed(2) + "%";
+    chgEl.className = (chg24hPct >= 0) ? "up" : "down";
+
+    // funding UI
+    const fEl = document.getElementById("fundingVal");
+    fEl.innerText = (fundingRate * 100).toFixed(4) + "%";
+    fEl.classList.remove("up","down","neutral");
+
+    const fb = document.getElementById("fundingBias");
+    fb.classList.remove("up","down","neutral");
+
+    if (fundingRate < 0) { fEl.classList.add("up"); fb.innerText = "Short-crowded"; fb.classList.add("up"); }
+    else if (fundingRate > 0) { fEl.classList.add("down"); fb.innerText = "Long-crowded"; fb.classList.add("down"); }
+    else { fEl.classList.add("neutral"); fb.innerText = "Neutral"; fb.classList.add("neutral"); }
+
+    // OI UI + delta
+    document.getElementById("oiVal").innerText = fmtCompact(oi);
+
+    if (lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)) {
+      const deltaAbs = oi - lastOI;
+      oiDeltaPct = (deltaAbs / lastOI) * 100;
+
+      document.getElementById("oiDeltaAbs").innerText = fmtCompact(deltaAbs);
+      document.getElementById("oiDeltaPct").innerText = oiDeltaPct.toFixed(3) + "%";
+
+      const absEl = document.getElementById("oiDeltaAbs");
+      const pctEl = document.getElementById("oiDeltaPct");
+      absEl.className = deltaAbs > 0 ? "down" : (deltaAbs < 0 ? "up" : "neutral"); // leverage up = fragile -> show as down
+      pctEl.className = deltaAbs > 0 ? "down" : (deltaAbs < 0 ? "up" : "neutral");
+
+      // Alert: OI spike
+      if (Math.abs(oiDeltaPct) >= 0.8) {
+        document.getElementById("alertBox").innerText = `⚡ OI spike detected: ${oiDeltaPct.toFixed(2)}%`;
+        flash("biasBox"); flash("biasCard");
+        playBeep();
+      }
+    } else {
+      document.getElementById("oiDeltaAbs").innerText = "—";
+      document.getElementById("oiDeltaPct").innerText = "—";
+      oiDeltaPct = null;
+    }
+
+    // Alert: funding flip
+    if (lastFunding !== null && Number.isFinite(lastFunding)) {
+      if (fundingRate > 0 && lastFunding < 0) {
+        document.getElementById("alertBox").innerText = "🔥 Funding flipped POSITIVE (longs crowding)";
+        flash("biasBox"); flash("biasCard"); playBeep();
+      }
+      if (fundingRate < 0 && lastFunding > 0) {
+        document.getElementById("alertBox").innerText = "🔥 Funding flipped NEGATIVE (shorts crowding)";
+        flash("biasBox"); flash("biasCard"); playBeep();
+      }
+    }
+
+    lastOI = oi;
+    lastFunding = fundingRate;
+
+    computeBias();
+
+    setDot("ok");
+    document.getElementById("lastUpdate").innerText = "Updated " + nowHHMMSS();
+  } catch (e) {
+    console.error(e);
+    setDot("bad");
+    document.getElementById("lastUpdate").innerText = "API error";
+  }
+}
+
+/* ========= REST FETCH: Long/Short ratio ========= */
+async function fetchLongShort() {
+  try {
+    const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYMBOL}&period=5m&limit=1`;
+    const res = await fetch(url);
+    const arr = await res.json();
+    const row = Array.isArray(arr) && arr.length ? arr[0] : null;
+    if (!row) return;
+
+    lsRatio = Number(row.longShortRatio);
+    const longAcc = Number(row.longAccount);
+    const shortAcc = Number(row.shortAccount);
+
+    document.getElementById("lsVal").innerText = Number.isFinite(lsRatio) ? lsRatio.toFixed(3) : "—";
+    document.getElementById("longPct").innerText = Number.isFinite(longAcc) ? (longAcc*100).toFixed(1) + "%" : "—";
+    document.getElementById("shortPct").innerText = Number.isFinite(shortAcc) ? (shortAcc*100).toFixed(1) + "%" : "—";
+
+    // color hint (contrarian)
+    const lsEl = document.getElementById("lsVal");
+    lsEl.classList.remove("up","down","neutral");
+    if (lsRatio > 1.10) lsEl.classList.add("down");       // long crowded risk
+    else if (lsRatio < 0.90) lsEl.classList.add("up");    // short crowded squeeze
+    else lsEl.classList.add("neutral");
+
+    computeBias();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/* ========= Funding countdown ========= */
+setInterval(() => {
+  if (!nextFundingTime) return;
+  const diff = nextFundingTime - Date.now();
+  if (!Number.isFinite(diff) || diff <= 0) return;
+
+  const h = Math.floor(diff/1000/60/60);
+  const m = Math.floor((diff/1000/60)%60);
+  const s = Math.floor((diff/1000)%60);
+  document.getElementById("fundingCountdown").innerText = `${h}h ${m}m ${s}s`;
+}, 1000);
+
+/* ========= Liquidations WS ========= */
+document.getElementById("bigLiqLabel").innerText = `≥ $${BIG_LIQ_USD.toLocaleString("de-DE")}`;
+
+let liqEvents = []; // for last-60s count
+let largest = 0;
+
+function addLiqRow(ts, side, price, qty, notional) {
+  const tbody = document.getElementById("liqTbody");
+
+  if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+    tbody.innerHTML = "";
+  }
+
+  const tr = document.createElement("tr");
+
+  const tdT = document.createElement("td"); tdT.innerText = hhmmss(ts);
+  const tdS = document.createElement("td"); tdS.innerText = side;
+  tdS.className = side === "BUY" ? "up" : "down";
+
+  const tdP = document.createElement("td"); tdP.innerText = fmtPrice(price);
+  const tdQ = document.createElement("td"); tdQ.innerText = fmtCompact(qty);
+  const tdN = document.createElement("td"); tdN.innerText = "$" + fmtCompact(notional);
+
+  tr.appendChild(tdT); tr.appendChild(tdS); tr.appendChild(tdP); tr.appendChild(tdQ); tr.appendChild(tdN);
+
+  tbody.insertBefore(tr, tbody.firstChild);
+  while (tbody.children.length > LIQ_MAX_ROWS) tbody.removeChild(tbody.lastChild);
+}
+
+function connectLiqWS() {
+  const ws = new WebSocket("wss://fstream.binance.com/ws/!forceOrder@arr");
+
+  ws.onopen = () => { /* ok */ };
+  ws.onmessage = (ev) => {
+    try {
+      const data = JSON.parse(ev.data);
+      const items = Array.isArray(data) ? data : [data];
+
+      for (const it of items) {
+        if (!it || !it.o) continue;
+        const o = it.o;
+        if (o.s !== SYMBOL) continue;
+
+        const side = String(o.S || "").toUpperCase(); // BUY or SELL
+        const price = Number(o.p);
+        const qty = Number(o.q);
+        const ts = Number(o.T || it.E || Date.now());
+        const notional = price * qty;
+
+        addLiqRow(ts, side, price, qty, notional);
+
+        // 60s tracking
+        liqEvents.push({ ts, notional });
+        const cutoff = Date.now() - 60_000;
+        liqEvents = liqEvents.filter(e => e.ts >= cutoff);
+        document.getElementById("liq60s").innerText = String(liqEvents.length);
+
+        // largest tracker
+        if (Number.isFinite(notional) && notional > largest) {
+          largest = notional;
+          document.getElementById("largestLiq").innerText = "$" + fmtCompact(largest);
+        }
+
+        // Big liquidation alert
+        if (Number.isFinite(notional) && notional >= BIG_LIQ_USD) {
+          document.getElementById("alertBox").innerText =
+            `🧨 BIG liquidation: ${side} $${fmtCompact(notional)} (price ${fmtPrice(price)})`;
+          flash("liqCard"); flash("biasBox");
+          playBeep();
+        }
+      }
+    } catch (e) {}
+  };
+
+  ws.onclose = () => setTimeout(connectLiqWS, 1500);
+  ws.onerror = () => {};
+}
+connectLiqWS();
+
+/* ========= Init ========= */
+fetchCore();
+setInterval(fetchCore, REFRESH_MS);
+
+fetchLongShort();
+setInterval(fetchLongShort, LS_REFRESH_MS);
+</script>
+</body>
+</html>
