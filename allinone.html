@@ -1,195 +1,771 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obsession Trading Akademie - Finance Suite</title>
-    <style>
-        :root {
-            --bg: #0b061a;
-            --card: #150f2d;
-            --accent: #7b4dff;
-            --btc-gold: #f7931a;
-            --text: #ffffff;
-            --highlight: #00f2ff;
-            --label-video: #d1b3ff; /* Markierte Farbe für Video */
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsession Trading Academy — PRO Desk+</title>
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 10% 20%, rgba(247, 147, 26, 0.1) 0%, transparent 20%),
-                              radial-gradient(circle at 90% 80%, rgba(123, 77, 255, 0.1) 0%, transparent 20%);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            margin: 0;
-        }
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
 
-        .main-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            width: 100%;
-            max-width: 1500px;
-        }
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 8px;
+  }
 
-        .container {
-            background-color: var(--card);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-        }
+  .academy-header {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.1;
+  }
 
-        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .header h1 { color: var(--accent); margin: 0; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 2px; }
-        .header h2 { color: var(--btc-gold); font-size: 1.1rem; margin-top: 5px; }
+  .main-row {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    min-height: 0;
+  }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; }
-        
-        /* VIDEO OPTIMIERUNG: Labels groß und hell-violett markiert */
-        label { 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            margin-bottom: 6px; 
-            color: var(--label-video); 
-            text-shadow: 0 0 5px rgba(123, 77, 255, 0.4);
-        }
+  .chart-area {
+    flex: 4;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #131722;
+    min-height: 0;
+  }
 
-        input { 
-            padding: 12px; border-radius: 8px; border: 1px solid #332a5a; 
-            background: #ffffff; color: #000; font-size: 1.1rem; font-weight: bold;
-        }
+  .sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 320px;
+    min-height: 0;
+    overflow: auto; /* allow scrolling inside sidebar */
+  }
 
-        button {
-            grid-column: span 2;
-            background: linear-gradient(45deg, var(--accent), #5a2ed1);
-            color: white; padding: 15px; border: none; border-radius: 10px;
-            cursor: pointer; font-weight: bold; font-size: 1.1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-transform: uppercase;
-        }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(123, 77, 255, 0.4); }
+  .widget-box {
+    border: 1px solid #333;
+    background: #131722;
+    border-radius: 8px;
+    padding: 14px;
+  }
 
-        .results {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px; border-radius: 15px;
-            border-left: 5px solid var(--btc-gold);
-        }
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 
-        .res-row { 
-            display: flex; justify-content: space-between; 
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 1.1rem;
-        }
+  .box-title {
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #00ff00;
+  }
 
-        .val { color: var(--highlight); font-weight: bold; }
-        .val-total { color: #2ecc71; font-weight: 900; }
-        .val-red { color: #ff4d4d; font-weight: bold; }
-        .btc-deco { color: var(--btc-gold); font-weight: bold; margin-right: 5px; }
+  .status {
+    font-size: 11px;
+    color: #bdbdbd;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
 
-        .inflation-warning {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(255, 77, 77, 0.1);
-            border: 1px dashed #ff4d4d;
-            border-radius: 10px;
-        }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #666;
+    display: inline-block;
+  }
+  .dot.ok { background: #00ff00; }
+  .dot.warn { background: #ffae00; }
+  .dot.bad { background: #ff3b3b; }
 
-        @media (max-width: 1000px) { .main-wrapper { grid-template-columns: 1fr; } }
-    </style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .metric {
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    min-height: 70px;
+  }
+
+  .label {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+
+  .value {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .sub {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #bdbdbd;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid #2a2a2a;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .up { color: #00ff00; }
+  .down { color: #ff3b3b; }
+  .neutral { color: #bdbdbd; }
+
+  .flash {
+    box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.45) inset, 0 0 18px rgba(255, 174, 0, 0.15);
+    border-color: #ffae00 !important;
+  }
+
+  .alert {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    background: rgba(0,0,0,0.25);
+    font-size: 12px;
+    color: #ffae00;
+    line-height: 1.35;
+    min-height: 18px;
+  }
+
+  /* liquidation table */
+  .liq-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .liq-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .liq-table th, .liq-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-align: left;
+  }
+
+  .liq-table th {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+  }
+
+  .liq-scroll {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.18);
+  }
+
+  .liq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .macro-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #bdbdbd;
+    line-height: 1.4;
+  }
+</style>
 </head>
+
 <body>
+  <div class="container">
+    <div class="academy-header">Obsession Trading Academy — PRO Desk+</div>
 
-<div class="main-wrapper">
-    
-    <div class="container">
-        <div class="header">
-            <h1>OTA Mortgage</h1>
-            <h2>Hypothekenrechner</h2>
-        </div>
-        <div class="grid">
-            <div class="input-group"><label>Kaufpreis (€)</label><input type="number" id="price" value="500000"></div>
-            <div class="input-group"><label>Eigenkapital (€)</label><input type="number" id="equity" value="80000"></div>
-            <div class="input-group"><label>Zins (% p.a.)</label><input type="number" id="interest" step="0.01" value="3.5"></div>
-            <div class="input-group"><label>Laufzeit (Jahre)</label><input type="number" id="years" value="30"></div>
-            <div class="input-group"><label>Nebenkosten (%)</label><input type="number" id="costs" value="10"></div>
-            <div class="input-group"><label>Sondertilgung (%)</label><input type="number" id="extra" value="2"></div>
-            <button onclick="calc()">Berechnen / Calculate</button>
-        </div>
-        <div class="results">
-            <div class="res-row"><span><span class="btc-deco">₿</span> Kreditsumme:</span><span class="val" id="outLoan">0 €</span></div>
-            <div class="res-row"><span>Monatliche Rate:</span><span class="val" id="outRate">0 €</span></div>
-            <div class="res-row"><span>Gesamte Zinsen:</span><span class="val" id="outInt">0 €</span></div>
-            <div class="res-row"><span>Restbetrag:</span><span id="outRest" style="color: #ff4d4d; font-weight: bold;">0 €</span></div>
-        </div>
-    </div>
+    <div class="main-row">
+      <!-- MAIN CHART -->
+      <div class="chart-area">
+        <div id="tradingview_advanced" style="height:100%;width:100%"></div>
+        <script src="https://s3.tradingview.com/tv.js"></script>
+        <script>
+          new TradingView.widget({
+            autosize: true,
+            symbol: "BINANCE:BTCUSDT",
+            interval: "15",
+            theme: "dark",
+            style: "1",
+            locale: "de",
+            enable_publishing: false,
+            allow_symbol_change: true,
+            container_id: "tradingview_advanced"
+          });
+        </script>
+      </div>
 
-    <div class="container">
-        <div class="header">
-            <h1>Compound & Inflation</h1>
-            <h2>Zinseszins & Kaufkraft</h2>
-        </div>
-        <div class="grid">
-            <div class="input-group"><label>Startkapital (€)</label><input type="number" id="invStart" value="10000"></div>
-            <div class="input-group"><label>Monatl. Sparrate (€)</label><input type="number" id="invMonthly" value="500"></div>
-            <div class="input-group"><label>Rendite (% p.a.)</label><input type="number" id="invReturn" step="0.1" value="7.0"></div>
-            <div class="input-group"><label>Zeitraum (Jahre)</label><input type="number" id="invYears" value="30"></div>
-            <div class="input-group"><label>Inflation (% p.a.)</label><input type="number" id="invInf" step="0.1" value="2.5"></div>
-            <div class="input-group"><label>Steuersatz (%)</label><input type="number" id="invTax" value="25"></div>
-            <button onclick="calcInvestment()" style="background: linear-gradient(45deg, var(--btc-gold), #b36b00);">Investment Check</button>
-        </div>
-        <div class="results">
-            <div class="res-row"><span>Endbetrag (Nominal):</span><span class="val-total" id="outInvTotal">0 €</span></div>
-            <div class="res-row"><span>Eingezahlt gesamt:</span><span class="val" id="outInvPaid">0 €</span></div>
-            <div class="inflation-warning">
-                <div class="res-row" style="border:none; padding:0;">
-                    <span style="color:#ff4d4d; font-weight:bold;">Kaufkraft (Realwert):</span>
-                    <span class="val-red" id="outRealValue" style="font-size:1.4rem;">0 €</span>
-                </div>
-                <small style="color:#aaa;">*Wert nach Inflation (in heutiger Kaufkraft)</small>
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+
+        <!-- DERIVATIVES BOX -->
+        <div class="widget-box" id="derivativesBox">
+          <div class="title-row">
+            <div class="box-title">Binance Futures — BTCUSDT</div>
+            <div class="status">
+              <span class="dot" id="apiDot"></span>
+              <span id="lastUpdate">Loading…</span>
             </div>
-        </div>
-    </div>
+          </div>
 
-</div>
+          <div class="grid">
+            <div class="metric" id="markCard">
+              <div class="label">Mark Price (WS)</div>
+              <div class="value" id="markPrice">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Index</span><span id="indexPrice">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="oiCard">
+              <div class="label">Open Interest</div>
+              <div class="value" id="openInterest">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Δ</span><span id="oiDeltaAbs">—</span></span>
+                <span class="pill"><span class="neutral">Δ%</span><span id="oiDeltaPct">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="fundingCard">
+              <div class="label">Funding (Last)</div>
+              <div class="value" id="fundingRate">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Bias</span><span id="fundingBias">—</span></span>
+                <span class="pill"><span class="neutral">Next</span><span id="fundingCountdown">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="lsCard">
+              <div class="label">Long / Short Ratio</div>
+              <div class="value" id="lsRatio">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Long%</span><span id="longPct">—</span></span>
+                <span class="pill"><span class="neutral">Short%</span><span id="shortPct">—</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert" id="alertBox"></div>
+        </div>
+
+        <!-- LIQUIDATION STREAM BOX -->
+        <div class="widget-box" id="liqBox">
+          <div class="title-row">
+            <div class="box-title">Liquidations — Live Stream</div>
+            <div class="status">
+              <span class="dot" id="liqDot"></span>
+              <span id="liqStatus">Connecting…</span>
+            </div>
+          </div>
+
+          <div class="liq-wrap">
+            <div class="sub" style="margin-top:0">
+              <span class="liq-badge"><span class="neutral">Sound</span> <span id="soundState">On</span></span>
+              <span class="liq-badge"><span class="neutral">Big Liq</span> <span id="liqThresholdLabel">≥ $2,000,000</span></span>
+            </div>
+
+            <div class="liq-scroll">
+              <table class="liq-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Side</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Notional</th>
+                  </tr>
+                </thead>
+                <tbody id="liqTbody">
+                  <tr><td colspan="5" style="color:#bdbdbd;padding:12px;">Waiting for events…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="macro-note">
+              Interpretation: <span class="up">BUY</span> force-order = short liquidation (squeeze up).
+              <span class="down">SELL</span> force-order = long liquidation (flush down).
+            </div>
+          </div>
+        </div>
+
+        <!-- MACRO BOX -->
+        <div class="widget-box" id="macroBox">
+          <div class="title-row">
+            <div class="box-title">Macro Signals</div>
+            <div class="status">
+              <span class="dot ok"></span>
+              <span>Visual panel</span>
+            </div>
+          </div>
+
+          <!-- TradingView Market Quotes widget -->
+          <div class="tradingview-widget-container" style="height: 290px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+            {
+              "width": "100%",
+              "height": "290",
+              "symbolsGroups": [
+                {
+                  "name": "Risk",
+                  "symbols": [
+                    { "name": "SP:SPX", "displayName": "S&P 500" },
+                    { "name": "TVC:VIX", "displayName": "VIX" }
+                  ]
+                },
+                {
+                  "name": "USD / Rates",
+                  "symbols": [
+                    { "name": "TVC:DXY", "displayName": "DXY" },
+                    { "name": "TVC:US10Y", "displayName": "US10Y" }
+                  ]
+                },
+                {
+                  "name": "Hedge",
+                  "symbols": [
+                    { "name": "OANDA:XAUUSD", "displayName": "Gold" }
+                  ]
+                }
+              ],
+              "showSymbolLogo": true,
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "locale": "de"
+            }
+            </script>
+          </div>
+
+          <div class="macro-note">
+            Quick read:<br>
+            • <b>Risk-Off</b> often = VIX ↑, DXY ↑, US10Y ↓, Gold ↑ → crypto can get pressure.<br>
+            • <b>Risk-On</b> often = VIX ↓, DXY ↓, SPX ↑ → crypto supports grind up.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 <script>
-// ORIGINAL LOGIK (UNVERÄNDERT)
-function calc() {
-    const price = parseFloat(document.getElementById('price').value);
-    const equity = parseFloat(document.getElementById('equity').value);
-    const intRate = parseFloat(document.getElementById('interest').value) / 100 / 12;
-    const years = parseInt(document.getElementById('years').value);
-    const costs = price * (parseFloat(document.getElementById('costs').value) / 100);
-    const extraP = parseFloat(document.getElementById('extra').value) / 100;
+/* =========================
+   CONFIG
+========================= */
+const SYMBOL = "BTCUSDT";
+const REFRESH_MS = 10000;       // REST refresh for OI/Funding/Index
+const LS_REFRESH_MS = 30000;    // Long/Short ratio refresh
+const LIQ_MAX_ROWS = 25;        // rows shown
+const BIG_LIQ_USD = 2_000_000;  // big liquidation alert threshold
+const ENABLE_SOUND = true;
 
-    const loan = (price + costs) - equity;
-    const months = years * 12;
+/* =========================
+   AUDIO (beep)
+   NOTE: browsers may require a user click to allow sound.
+========================= */
+const beep = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
 
-    const rate = loan * (intRate * Math.pow(1 + intRate, months)) / (Math.pow(1 + intRate, months) - 1);        
-    let balance = loan;
-    let totalInt = 0;
-    for(let i = 1; i <= months; i++) {
-        let mInt = balance * intRate;
-        totalInt += mInt;
-        balance -= (rate - mInt);
-        if(i % 12 === 0) balance -= (balance * extraP); 
-        if(balance < 0) balance = 0;
-    }
+/* =========================
+   STATE
+========================= */
+let lastOI = null;
+let lastFunding = null;
+let nextFundingTime = null;
+let latestIndexPrice = null;
+let soundEnabled = ENABLE_SOUND;
 
-    document.getElementById('outLoan').innerText = Math.round(loan).toLocaleString() + " €";
-    document.getElementById('outRate').innerText = rate.toFixed(2).toLocaleString() + " €";
-    document.getElementById('outInt').innerText = Math.round(totalInt).toLocaleString() + " €";
-    document.getElementById('outRest').innerText = Math.round(balance).toLocaleString() + " €";
+/* =========================
+   HELPERS
+========================= */
+function setDot(id, state) {
+  const el = document.getElementById(id);
+  el.classList.remove("ok", "warn", "bad");
+  if (state === "ok") el.classList.add("ok");
+  else if (state === "warn") el.classList.add("warn");
+  else el.classList.add("bad");
 }
 
-// INVESTMENT LOGIK (NEU)
-function calcInvestment() {
-    const start = parseFloat(document.getElementById('invStart').value) || 0;
-    const monthly = parseFloat(document.getElementById('invMonthly').value) || 0;
-    const returnYear = parseFloat(
+function flash(elId) {
+  const el = document.getElementById(elId);
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 650);
+}
+
+function fmtCompact(x) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const format = (v) => v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
+  if (abs >= 1e12) return sign + format(abs / 1e12) + "T";
+  if (abs >= 1e9)  return sign + format(abs / 1e9) + "B";
+  if (abs >= 1e6)  return sign + format(abs / 1e6) + "M";
+  if (abs >= 1e3)  return sign + format(abs / 1e3) + "K";
+  return sign + format(abs);
+}
+
+function fmtPrice(x) {
+  if (x === null || x === undefined || Number.isNaN(x)) return "—";
+  return Number(x).toLocaleString("de-DE", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+}
+
+function setText(id, text) {
+  document.getElementById(id).innerText = text;
+}
+
+function nowHHMMSS() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+}
+
+function playBeep() {
+  if (!soundEnabled) return;
+  try { beep.currentTime = 0; beep.play(); } catch (e) {}
+}
+
+/* =========================
+   REST: Open Interest + Funding + Index
+========================= */
+async function fetchDerivatives() {
+  try {
+    setDot("apiDot", "warn");
+    setText("lastUpdate", "Updating…");
+
+    // Open Interest
+    const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
+    const oiJson = await oiRes.json();
+    const oi = Number(oiJson.openInterest);
+
+    // Funding + mark/index + next funding time
+    const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
+    const premJson = await premRes.json();
+    const funding = Number(premJson.lastFundingRate);
+    latestIndexPrice = Number(premJson.indexPrice);
+    nextFundingTime = Number(premJson.nextFundingTime);
+
+    // UI updates
+    setText("openInterest", fmtCompact(oi));
+    setText("fundingRate", (funding * 100).toFixed(4) + "%");
+    setText("indexPrice", fmtPrice(latestIndexPrice));
+
+    // Funding styling + bias
+    const fundingBiasEl = document.getElementById("fundingBias");
+    const fundingRateEl = document.getElementById("fundingRate");
+    const fundingCard = document.getElementById("fundingCard");
+
+    fundingRateEl.classList.remove("up", "down", "neutral");
+    if (funding > 0) {
+      fundingRateEl.classList.add("down");
+      fundingBiasEl.innerText = "Long-crowded";
+      fundingBiasEl.className = "down";
+      fundingCard.style.borderColor = "#ff3b3b";
+    } else if (funding < 0) {
+      fundingRateEl.classList.add("up");
+      fundingBiasEl.innerText = "Short-crowded";
+      fundingBiasEl.className = "up";
+      fundingCard.style.borderColor = "#00ff00";
+    } else {
+      fundingRateEl.classList.add("neutral");
+      fundingBiasEl.innerText = "Neutral";
+      fundingBiasEl.className = "neutral";
+      fundingCard.style.borderColor = "#2a2a2a";
+    }
+
+    // OI delta + alerts
+    let alertMsg = "";
+    if (lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)) {
+      const deltaAbs = oi - lastOI;
+      const deltaPct = (deltaAbs / lastOI) * 100;
+
+      const absEl = document.getElementById("oiDeltaAbs");
+      const pctEl = document.getElementById("oiDeltaPct");
+
+      absEl.innerText = fmtCompact(deltaAbs);
+      pctEl.innerText = deltaPct.toFixed(3) + "%";
+
+      absEl.className = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
+      pctEl.className = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
+
+      // OI spike threshold (tune as you like)
+      if (Math.abs(deltaPct) >= 0.60) {
+        alertMsg = `⚡ OI spike: ${deltaPct.toFixed(2)}%`;
+        flash("oiCard");
+        flash("derivativesBox");
+        playBeep();
+      }
+    } else {
+      setText("oiDeltaAbs", "—");
+      setText("oiDeltaPct", "—");
+      document.getElementById("oiDeltaAbs").className = "neutral";
+      document.getElementById("oiDeltaPct").className = "neutral";
+    }
+
+    // Funding flip alerts
+    if (lastFunding !== null && Number.isFinite(lastFunding)) {
+      if (funding > 0 && lastFunding < 0) {
+        alertMsg = "🔥 Funding flipped POSITIVE (Long-crowded)";
+        flash("fundingCard");
+        flash("derivativesBox");
+        playBeep();
+      }
+      if (funding < 0 && lastFunding > 0) {
+        alertMsg = "🔥 Funding flipped NEGATIVE (Short-crowded)";
+        flash("fundingCard");
+        flash("derivativesBox");
+        playBeep();
+      }
+    }
+
+    setText("alertBox", alertMsg);
+
+    lastOI = oi;
+    lastFunding = funding;
+
+    setDot("apiDot", "ok");
+    setText("lastUpdate", `Updated ${nowHHMMSS()}`);
+  } catch (e) {
+    console.error("Derivatives fetch error:", e);
+    setDot("apiDot", "bad");
+    setText("lastUpdate", "API error");
+  }
+}
+
+/* =========================
+   REST: Long/Short ratio (global)
+   Endpoint returns array with:
+   longShortRatio, longAccount, shortAccount
+========================= */
+async function fetchLongShortRatio() {
+  try {
+    // 5m period is a good default; you can change to 15m/1h etc.
+    const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYMBOL}&period=5m&limit=1`;
+    const res = await fetch(url);
+    const arr = await res.json();
+    const row = Array.isArray(arr) && arr.length ? arr[0] : null;
+
+    if (!row) return;
+
+    const ratio = Number(row.longShortRatio);
+    const longAcc = Number(row.longAccount);   // fraction (0..1)
+    const shortAcc = Number(row.shortAccount); // fraction (0..1)
+
+    setText("lsRatio", Number.isFinite(ratio) ? ratio.toFixed(3) : "—");
+    setText("longPct", Number.isFinite(longAcc) ? (longAcc * 100).toFixed(1) + "%" : "—");
+    setText("shortPct", Number.isFinite(shortAcc) ? (shortAcc * 100).toFixed(1) + "%" : "—");
+
+    // Color hint: ratio > 1 means more long accounts (not contracts)
+    const lsVal = document.getElementById("lsRatio");
+    lsVal.classList.remove("up","down","neutral");
+    if (ratio > 1.05) lsVal.classList.add("down");       // long-crowded -> contrarian risk
+    else if (ratio < 0.95) lsVal.classList.add("up");    // short-crowded -> squeeze watch
+    else lsVal.classList.add("neutral");
+  } catch (e) {
+    console.error("Long/Short ratio error:", e);
+  }
+}
+
+/* =========================
+   WS: Mark Price (fast) + Liquidations stream
+========================= */
+function connectMarkWS() {
+  const ws = new WebSocket("wss://fstream.binance.com/ws/btcusdt@markPrice");
+
+  ws.onopen = () => { /* ok */ };
+  ws.onmessage = (ev) => {
+    try {
+      const data = JSON.parse(ev.data);
+      const mark = Number(data.p);
+      if (Number.isFinite(mark)) setText("markPrice", fmtPrice(mark));
+    } catch (e) {}
+  };
+  ws.onerror = () => {};
+  ws.onclose = () => {
+    // reconnect
+    setTimeout(connectMarkWS, 1500);
+  };
+}
+
+function connectLiquidationWS() {
+  setDot("liqDot", "warn");
+  setText("liqStatus", "Connecting…");
+
+  const ws = new WebSocket("wss://fstream.binance.com/ws/!forceOrder@arr");
+
+  ws.onopen = () => {
+    setDot("liqDot", "ok");
+    setText("liqStatus", "Live");
+  };
+
+  ws.onmessage = (ev) => {
+    try {
+      const data = JSON.parse(ev.data);
+      // format can be { e: "forceOrder", E: ..., o: {...} } or array wrapper depending on stream
+      // On !forceOrder@arr it's usually {e, E, o:{...}} per message, but sometimes sends batches.
+      const events = Array.isArray(data) ? data : [data];
+
+      for (const item of events) {
+        if (!item || !item.o) continue;
+
+        const o = item.o;
+        if (o.s !== SYMBOL) continue;
+
+        const side = String(o.S || "").toUpperCase(); // BUY or SELL
+        const price = Number(o.p);
+        const qty = Number(o.q);
+        const ts = Number(o.T || item.E || Date.now());
+        const notional = price * qty;
+
+        addLiqRow(ts, side, price, qty, notional);
+
+        // big liquidation alert
+        if (Number.isFinite(notional) && notional >= BIG_LIQ_USD) {
+          flash("liqBox");
+          playBeep();
+        }
+      }
+    } catch (e) {}
+  };
+
+  ws.onerror = () => {
+    setDot("liqDot", "bad");
+    setText("liqStatus", "Error");
+  };
+
+  ws.onclose = () => {
+    setDot("liqDot", "warn");
+    setText("liqStatus", "Reconnecting…");
+    setTimeout(connectLiquidationWS, 1500);
+  };
+}
+
+function addLiqRow(ts, side, price, qty, notional) {
+  const tbody = document.getElementById("liqTbody");
+
+  // remove placeholder row
+  if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+    tbody.innerHTML = "";
+  }
+
+  const d = new Date(ts);
+  const time = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+
+  const tr = document.createElement("tr");
+
+  const tdTime = document.createElement("td");
+  tdTime.innerText = time;
+
+  const tdSide = document.createElement("td");
+  // SELL = long liquidation; BUY = short liquidation
+  tdSide.innerText = side;
+  tdSide.className = (side === "BUY") ? "up" : (side === "SELL") ? "down" : "neutral";
+
+  const tdPrice = document.createElement("td");
+  tdPrice.innerText = fmtPrice(price);
+
+  const tdQty = document.createElement("td");
+  tdQty.innerText = fmtCompact(qty);
+
+  const tdNotional = document.createElement("td");
+  tdNotional.innerText = "$" + fmtCompact(notional);
+
+  tr.appendChild(tdTime);
+  tr.appendChild(tdSide);
+  tr.appendChild(tdPrice);
+  tr.appendChild(tdQty);
+  tr.appendChild(tdNotional);
+
+  // insert on top
+  tbody.insertBefore(tr, tbody.firstChild);
+
+  // keep max rows
+  while (tbody.children.length > LIQ_MAX_ROWS) {
+    tbody.removeChild(tbody.lastChild);
+  }
+}
+
+/* =========================
+   Funding countdown timer
+========================= */
+setInterval(() => {
+  if (!nextFundingTime) return;
+  const now = Date.now();
+  const diff = nextFundingTime - now;
+  if (!Number.isFinite(diff) || diff <= 0) return;
+
+  const h = Math.floor(diff / 1000 / 60 / 60);
+  const m = Math.floor((diff / 1000 / 60) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  setText("fundingCountdown", `${h}h ${m}m ${s}s`);
+}, 1000);
+
+/* =========================
+   Init
+========================= */
+setText("soundState", soundEnabled ? "On" : "Off");
+setText("liqThresholdLabel", `≥ $${BIG_LIQ_USD.toLocaleString("de-DE")}`);
+
+connectMarkWS();
+connectLiquidationWS();
+
+fetchDerivatives();
+setInterval(fetchDerivatives, REFRESH_MS);
+
+fetchLongShortRatio();
+setInterval(fetchLongShortRatio, LS_REFRESH_MS);
+</script>
+</body>
+</html>
