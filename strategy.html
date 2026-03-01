@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OTA — Strategy Lab</title>
+<style>
+  html, body { height:100%; margin:0; padding:0; background:#000; color:#fff; font-family:"Segoe UI",sans-serif; overflow:auto; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  .header {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding: 12px 14px; border:1px solid #333; border-radius: 12px; background:#111;
+    position: sticky; top: 10px; z-index: 10;
+  }
+
+  .title {
+    font-weight:1000; letter-spacing:.6px; text-transform:uppercase; font-size:18px;
+    background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .sub { color:#bdbdbd; font-size:12px; line-height:1.35; }
+  .links { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .btn {
+    text-decoration:none; color:#fff; font-weight:900; font-size:12px;
+    padding:6px 10px; border:1px solid #333; border-radius:10px; background:#1a1a1a;
+  }
+  .btn:hover { border-color:#ffae00; color:#ffae00; }
+
+  .grid { margin-top: 12px; display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .card { border:1px solid #333; border-radius:12px; background:#131722; padding:14px; }
+  .card h3 { margin:0 0 10px 0; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:#00ff00; }
+  .note { color:#bdbdbd; font-size:12px; line-height:1.45; }
+
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .field { flex: 1 1 220px; }
+  label { display:block; font-size:11px; color:#bdbdbd; text-transform:uppercase; letter-spacing:.35px; margin-bottom:6px; }
+  input, select, textarea {
+    width:100%;
+    box-sizing:border-box;
+    background: rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    color:#fff;
+    padding:10px;
+    font-size: 13px;
+    outline: none;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: rgba(0,255,0,0.6); }
+
+  .checklist { display:flex; flex-direction:column; gap:8px; margin-top: 10px; }
+  .chk {
+    display:flex; align-items:flex-start; gap:10px;
+    border:1px solid rgba(255,255,255,0.10);
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(0,0,0,0.18);
+  }
+  .chk input { width:auto; margin-top: 3px; }
+  .chk .t { font-weight:900; }
+  .chk .d { color:#bdbdbd; font-size:12px; line-height:1.35; margin-top: 2px; }
+
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; }
+  .action-btn {
+    cursor:pointer;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border:1px solid #333;
+    background:#1a1a1a;
+    color:#fff;
+    font-weight:1000;
+    font-size:12px;
+    letter-spacing:.3px;
+    text-transform:uppercase;
+  }
+  .action-btn:hover { border-color:#ffae00; color:#ffae00; }
+  .action-btn.primary { background: linear-gradient(90deg, #00ff88, #00ccff); color:#000; border:none; }
+  .action-btn.primary:hover { filter: brightness(1.05); color:#000; }
+
+  .pill {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04); font-size:12px; color:#bdbdbd;
+    white-space:nowrap;
+  }
+
+  .score { font-size: 22px; font-weight: 1000; }
+  .up{ color:#00ff00; } .down{ color:#ff3b3b; } .neutral{ color:#bdbdbd; }
+
+  @media (max-width: 980px){
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div>
+      <div class="title">OTA — Strategy Lab</div>
+      <div class="sub">Pre-trade checklist • Position plan • Journal (auto-saves in your browser)</div>
+    </div>
+    <div class="links">
+      <a class="btn" href="index.html">🏠 Home</a>
+      <a class="btn" href="macro.html" target="_blank" rel="noopener noreferrer">🌍 Macro</a>
+      <a class="btn" href="bias.html" target="_blank" rel="noopener noreferrer">📡 Market Bias</a>
+      <a class="btn" href="allinone.html" target="_blank" rel="noopener noreferrer">🚀 PRO Desk</a>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT: PLAN -->
+    <div class="card">
+      <h3>Trade Plan</h3>
+
+      <div class="row">
+        <div class="field">
+          <label for="symbol">Symbol</label>
+          <input id="symbol" placeholder="BTCUSDT / ETHUSDT / XAUUSD ..." />
+        </div>
+        <div class="field">
+          <label for="session">Session</label>
+          <select id="session">
+            <option value="London">London</option>
+            <option value="NewYork">New York</option>
+            <option value="Asia">Asia</option>
+            <option value="Weekend">Weekend</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bias">Bias</label>
+          <select id="bias">
+            <option value="Bullish">Bullish</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Defensive">Defensive</option>
+            <option value="SqueezeWatch">Squeeze Watch</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="setup">Setup</label>
+          <input id="setup" placeholder="Breakout / Retest / Mean Reversion / Sweep ..." />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="field">
+          <label for="entry">Entry</label>
+          <input id="entry" placeholder="e.g. 67050" />
+        </div>
+        <div class="field">
+          <label for="stop">Stop</label>
+          <input id="stop" placeholder="e.g. 66380" />
+        </div>
+        <div class="field">
+          <label for="tp">Target (TP)</label>
+          <input id="tp" placeholder="e.g. 68900" />
+        </div>
+        <div class="field">
+          <label for="risk">Risk %</label>
+          <input id="risk" placeholder="e.g. 0.5" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="flex: 1 1 100%">
+          <label for="notes">Plan Notes</label>
+          <textarea id="notes" placeholder="Context, liquidity levels, invalidation, reasons..."></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="action-btn primary" id="saveBtn">Save</button>
+        <button class="action-btn" id="exportBtn">Export JSON</button>
+        <button class="action-btn" id="clearBtn">Clear</button>
+        <span class="pill">Readiness: <span class="score neutral" id="scoreVal">0/8</span></span>
+      </div>
+
+      <div class="note" style="margin-top:10px">
+        Tip: Keep risk small when funding is extreme + OI rising (fragile market).
+      </div>
+    </div>
+
+    <!-- RIGHT: CHECKLIST + JOURNAL -->
+    <div class="card">
+      <h3>Pre-Trade Checklist</h3>
+
+      <div class="checklist" id="checklist">
+        <div class="chk"><input type="checkbox" data-key="macro" />
+          <div><div class="t">Macro checked</div><div class="d">DXY / US10Y / VIX aligned with your bias.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="news" />
+          <div><div class="t">News risk checked</div><div class="d">Calendar events, geopolitics, scheduled data releases.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="levels" />
+          <div><div class="t">Key levels marked</div><div class="d">HTF levels, liquidity pools, invalidation line.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="rr" />
+          <div><div class="t">R:R ≥ 2.0</div><div class="d">Do not trade low R:R unless special scalp rules.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="size" />
+          <div><div class="t">Position sizing correct</div><div class="d">Risk based on stop distance, not feelings.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="exit" />
+          <div><div class="t">Exit plan written</div><div class="d">Partial take-profit + trailing or hard exit.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="mind" />
+          <div><div class="t">Mindset stable</div><div class="d">No revenge trading, no FOMO, no fatigue.</div></div>
+        </div>
+        <div class="chk"><input type="checkbox" data-key="rules" />
+          <div><div class="t">Rules respected</div><div class="d">If any rule breaks → no trade.</div></div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">Journal (after trade)</h3>
+      <div class="row">
+        <div class="field">
+          <label for="result">Result</label>
+          <select id="result">
+            <option value="NotTaken">Not taken</option>
+            <option value="Win">Win</option>
+            <option value="Loss">Loss</option>
+            <option value="BE">Break-even</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="grade">Grade</label>
+          <select id="grade">
+            <option value="A">A (perfect)</option>
+            <option value="B">B (minor mistakes)</option>
+            <option value="C">C (rules broken)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="flex: 1 1 100%">
+          <label for="journal">Journal Notes</label>
+          <textarea id="journal" placeholder="What worked? What failed? What to improve next time?"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="action-btn primary" id="saveBtn2">Save</button>
+        <button class="action-btn" id="exportBtn2">Export JSON</button>
+      </div>
+
+      <div class="note" style="margin-top:10px">
+        This page auto-saves to your browser (localStorage). If you open on another device, data won’t sync (unless we add a backend later).
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ===== localStorage keys ===== */
+const KEY = "ota_strategy_lab_v1";
+
+/* ===== elements ===== */
+const el = (id) => document.getElementById(id);
+
+const fields = [
+  "symbol","session","bias","setup","entry","stop","tp","risk","notes",
+  "result","grade","journal"
+];
+
+/* ===== helpers ===== */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveState(state) {
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+function computeRR(entry, stop, tp) {
+  const e = Number(entry), s = Number(stop), t = Number(tp);
+  if (![e,s,t].every(Number.isFinite)) return null;
+  const risk = Math.abs(e - s);
+  const reward = Math.abs(t - e);
+  if (risk <= 0) return null;
+  return reward / risk;
+}
+
+function updateScore() {
+  const checks = Array.from(document.querySelectorAll('#checklist input[type="checkbox"]'));
+  const done = checks.filter(c => c.checked).length;
+  el("scoreVal").innerText = `${done}/${checks.length}`;
+  el("scoreVal").classList.remove("up","down","neutral");
+  if (done >= 7) el("scoreVal").classList.add("up");
+  else if (done <= 3) el("scoreVal").classList.add("down");
+  else el("scoreVal").classList.add("neutral");
+}
+
+function gather() {
+  const state = { fields:{}, checklist:{} };
+  fields.forEach(id => state.fields[id] = el(id).value);
+
+  document.querySelectorAll('#checklist input[type="checkbox"]').forEach(c => {
+    state.checklist[c.dataset.key] = !!c.checked;
+  });
+
+  // derived
+  const rr = computeRR(state.fields.entry, state.fields.stop, state.fields.tp);
+  state.derived = { rr: rr ? Number(rr.toFixed(2)) : null, savedAt: new Date().toISOString() };
+  return state;
+}
+
+function apply(state) {
+  if (!state) return;
+  fields.forEach(id => {
+    if (state.fields && id in state.fields) el(id).value = state.fields[id] ?? "";
+  });
+
+  document.querySelectorAll('#checklist input[type="checkbox"]').forEach(c => {
+    const k = c.dataset.key;
+    c.checked = !!(state.checklist && state.checklist[k]);
+  });
+
+  updateScore();
+}
+
+function exportJSON() {
+  const state = gather();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ota_strategy.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  localStorage.removeItem(KEY);
+  location.reload();
+}
+
+/* ===== wire events ===== */
+document.querySelectorAll('#checklist input[type="checkbox"]').forEach(c => {
+  c.addEventListener("change", () => { updateScore(); saveState(gather()); });
+});
+
+fields.forEach(id => el(id).addEventListener("input", () => saveState(gather())));
+fields.forEach(id => el(id).addEventListener("change", () => saveState(gather())));
+
+el("saveBtn").onclick = () => saveState(gather());
+el("saveBtn2").onclick = () => saveState(gather());
+
+el("exportBtn").onclick = exportJSON;
+el("exportBtn2").onclick = exportJSON;
+
+el("clearBtn").onclick = clearAll;
+
+/* ===== init ===== */
+apply(loadState());
+updateScore();
+</script>
+</body>
+</html>
