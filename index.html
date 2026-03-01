@@ -1,762 +1,170 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obsession Trading Academy - Command Center</title>
-    <style>
-        html, body { height: 100%; margin: 0; padding: 0; background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obsession Trading Academy - Command Center PRO</title>
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding: 10px;
-            box-sizing: border-box;
-            gap: 8px;
-        }
+<style>
+html, body { height: 100%; margin: 0; padding: 0; background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+.container { display: flex; flex-direction: column; height: 100vh; padding: 10px; box-sizing: border-box; gap: 8px; }
+.academy-header { text-align: center; font-size: 30px; font-weight: 900; background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; margin: 0; }
+.main-row { display: flex; flex: 1; gap: 10px; min-height: 0; }
+.chart-area { flex: 4; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #131722; }
+.sidebar { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 280px; }
 
-        .academy-header {
-            text-align: center;
-            font-size: 30px;
-            font-weight: 900;
-            background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            margin: 0;
-        }
+.widget-box { border: 1px solid #333; background: #131722; border-radius: 8px; padding: 15px; }
 
-        /* EXPANDED NAV HUB */
-        .nav-hub {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 15px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
-            gap: 15px;
-        }
+.metric { margin-bottom: 10px; font-size: 15px; }
+.metric span { font-weight: bold; }
 
-        .tigrigna-text {
-            font-size: 17px;
-            font-weight: 800;
-            line-height: 1.6;
-            letter-spacing: 0.6px;
-            background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            min-width: 380px;
-        }
+.up { color: #00ff00; }
+.down { color: #ff3b3b; }
+.flash { box-shadow: 0 0 15px #ffae00; border-color: #ffae00; }
 
-        /* GRID FOR LINKS TO FILL SPACE */
-        .nav-links-group {
-            display: flex;
-            flex-wrap: wrap; /* Allows links to wrap if screen is small */
-            gap: 6px;
-            justify-content: flex-end;
-            flex: 1;
-        }
+.alert-box { margin-top: 10px; font-size: 13px; color: #ffae00; }
 
-        .nav-link {
-            color: #fff;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 5px 8px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background: #1a1a1a;
-            transition: 0.2s;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .nav-link:hover {
-            border-color: #ffae00;
-            color: #ffae00;
-            background: #222;
-        }
-
-        /* LIGHT HIERARCHY (no content removed) */
-        .nav-link.core { border-color: #2b2b2b; }
-        .nav-link.core:hover { border-color: #00ff00; color: #00ff00; }
-
-        .nav-link.research { border-color: #2b2b2b; }
-        .nav-link.research:hover { border-color: #00fbff; color: #00fbff; }
-
-        .nav-link.invite { border-color: #3a2a00; }
-        .nav-link.invite:hover { border-color: #ffae00; color: #ffae00; }
-
-        .nav-sep {
-            display: inline-block;
-            width: 8px;
-            height: 22px;
-            border-left: 1px solid #2a2a2a;
-            margin: 0 2px;
-            opacity: 0.8;
-        }
-
-        .main-row { display: flex; flex: 1; gap: 10px; min-height: 0; }
-        .chart-area { flex: 4; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #131722; }
-        .sidebar { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
-        .widget-box { flex: 1; border: 1px solid #333; background: #131722; border-radius: 8px; overflow: hidden; }
-
-        .button-group { display: flex; gap: 5px; }
-        button { background: #222; color: #fff; border: 1px solid #444; padding: 10px; cursor: pointer; border-radius: 4px; flex: 1; font-weight: bold; }
-        button:hover { background: #00ff00; color: #000; }
-
-        .ticker-row { height: 40px; }
-
-        /* SMALL LOOP VIDEO */
-        .mini-video-box {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            width: 220px;
-            z-index: 999;
-            text-align: center;
-        }
-
-        .mini-video-box video {
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #000;
-        }
-
-        .video-caption {
-            font-size: 14px;
-            margin-top: 6px;
-            font-weight: bold;
-            color: #00ff00;
-        }
-
-        /* ===== BINANCE DERIVATIVES (NEXT LEVEL) ===== */
-        .binance-deriv {
-            padding: 12px 14px;
-            box-sizing: border-box;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .binance-deriv-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .binance-deriv-title {
-            font-weight: 900;
-            letter-spacing: 0.6px;
-            color: #00ff00;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .binance-deriv-status {
-            font-size: 11px;
-            color: #bdbdbd;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #666;
-            display: inline-block;
-        }
-        .dot.ok { background: #00ff00; }
-        .dot.warn { background: #ffae00; }
-        .dot.bad { background: #ff3b3b; }
-
-        .binance-deriv-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .metric {
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            min-height: 68px;
-        }
-
-        .metric-label {
-            font-size: 11px;
-            color: #bdbdbd;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 6px;
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: 900;
-            line-height: 1.1;
-        }
-
-        .metric-sub {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #bdbdbd;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            border: 1px solid #2a2a2a;
-            background: rgba(255,255,255,0.04);
-        }
-
-        .up { color: #00ff00; }
-        .down { color: #ff3b3b; }
-        .neutral { color: #bdbdbd; }
-
-        .spark-wrap {
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-        }
-
-        .spark-title {
-            font-size: 11px;
-            color: #bdbdbd;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        canvas#oiSpark {
-            width: 100%;
-            height: 60px;
-            display: block;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.25);
-        }
-
-        .hint {
-            font-size: 11px;
-            color: #bdbdbd;
-            line-height: 1.35;
-            opacity: 0.95;
-        }
-
-        .flash {
-            box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.4) inset, 0 0 18px rgba(255, 174, 0, 0.15);
-            border-color: #ffae00 !important;
-        }
-        /* ===== END BINANCE DERIVATIVES ===== */
-    </style>
+.countdown { font-size: 12px; color: #aaa; margin-top: 4px; }
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <div class="ticker-row">
-        <div class="tradingview-widget-container">
-            <div class="tradingview-widget-container__widget"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-            { "symbols": [
-                {"proName": "BINANCE:BTCUSDT", "title": "BTC/USDT"},
-                {"proName": "BINANCE:ETHUSDT", "title": "ETH/USDT"},
-                {"proName": "BINANCE:SOLUSDT", "title": "SOL/USDT"},
-                {"proName": "CRYPTOCAP:TOTAL", "title": "Total Cap"},
-                {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dom"}
-            ], "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "de" }
-            </script>
-        </div>
-    </div>
 
-    <div class="academy-header">Obsession Trading Academy tools</div>
+<div class="academy-header">Obsession Trading Academy - PRO Desk</div>
 
-    <div class="nav-hub">
-        <div class="tigrigna-text">
-            ኩሉ አብ ኢድና ኢዩ ክመሃር ዝደሊ ንሕግዝ<br>
-            ናተይ ናይ Trading command ሓያል መሳርሒ
-        </div>
+<div class="main-row">
 
-        <div class="nav-links-group">
-            <!-- CORE (fast pre-trade checks) -->
-            <a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer" class="nav-link core">📈 Markets</a>
-            <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer" class="nav-link core">🗓️ Calendar</a>
-            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🏦 FedWatch</a>
-            <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer" class="nav-link core">💵 DXY</a>
-            <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer" class="nav-link core">📉 US10Y</a>
-            <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer" class="nav-link core">⚡ VIX</a>
-            <a href="https://www.tradingview.com/markets/stocks-usa/earnings/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Earnings</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <!-- LIQUIDITY / DERIVATIVES -->
-            <a href="https://coinank.com/chart/derivatives/liq-map" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 Liquidation</a>
-            <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 LQ Map BTC</a>
-            <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" rel="noopener noreferrer" class="nav-link core">🔥 Heatmap</a>
-            <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Coinglass</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <!-- RESEARCH -->
-            <a href="https://whale-alert.io/" target="_blank" rel="noopener noreferrer" class="nav-link research">🐳 WhaleAlert</a>
-            <a href="https://www.glassnode.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">🔗 OnChain</a>
-            <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">💧 DeFiLlama</a>
-            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer" class="nav-link research">😱 Fear&Greed</a>
-            <a href="https://www.usdebtclock.org/" target="_blank" rel="noopener noreferrer" class="nav-link research">🌎 DebtClock</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <!-- GENERAL -->
-            <a href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer" class="nav-link">💰 MarketCap</a>
-            <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🦎 Gecko</a>
-            <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🐦 X.com</a>
-            <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🛠️ CryptoCraft</a>
-            <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer" class="nav-link">📊 SoSoValue</a>
-            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🤖 AI</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <!-- INVITE (kept, but visually separated) -->
-            <a href="https://coinank.com/en/invite/register?referral=1311828" target="_blank" rel="noopener noreferrer" class="nav-link invite">🎁 CoinAnk Invite</a>
-        </div>
-    </div>
-
-    <div class="main-row">
-        <div class="chart-area">
-            <div class="tradingview-widget-container" style="height:100%;width:100%">
-                <div id="tradingview_advanced" style="height:100%;width:100%"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true,
-                  "symbol": "OANDA:XAUUSD",
-                  "interval": "D",
-                  "timezone": "Etc/UTC",
-                  "theme": "dark",
-                  "style": "1",
-                  "locale": "de",
-                  "toolbar_bg": "#f1f3f6",
-                  "enable_publishing": false,
-                  "allow_symbol_change": true,
-                  "container_id": "tradingview_advanced"
-                });
-                </script>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="button-group">
-                <button onclick="window.open('https://www.goldpreis.de', '_blank', 'noopener,noreferrer')">Open Goldpreis.de</button>
-                <button onclick="window.open('https://www.goldpreis.de/alle-jahre/', '_blank', 'noopener,noreferrer')">Search All Years</button>
-            </div>
-
-            <div class="widget-box">
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                { "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "de", "importanceFilter": "-1,0,1", "currencyFilter": "USD,EUR" }
-                </script>
-            </div>
-
-            <div class="widget-box">
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                { "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "de" }
-                </script>
-            </div>
-
-            <!-- ===== BINANCE BTCUSDT DERIVATIVES (NEXT LEVEL) ===== -->
-            <div class="widget-box" id="binanceBox">
-                <div class="binance-deriv">
-                    <div class="binance-deriv-header">
-                        <div class="binance-deriv-title">📊 Binance BTCUSDT Derivatives</div>
-                        <div class="binance-deriv-status">
-                            <span class="dot" id="apiDot"></span>
-                            <span id="lastUpdate">Loading…</span>
-                        </div>
-                    </div>
-
-                    <div class="binance-deriv-grid">
-                        <div class="metric" id="oiCard">
-                            <div class="metric-label">Open Interest (Contracts)</div>
-                            <div class="metric-value" id="oiVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Δ</span>
-                                    <span id="oiDeltaAbs">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Δ%</span>
-                                    <span id="oiDeltaPct">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric" id="fundingCard">
-                            <div class="metric-label">Funding Rate (Last)</div>
-                            <div class="metric-value" id="fundingVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Bias</span>
-                                    <span id="fundingBias">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Next</span>
-                                    <span id="nextFundingTime">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric">
-                            <div class="metric-label">Mark Price</div>
-                            <div class="metric-value" id="markVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Index</span>
-                                    <span id="indexVal">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric">
-                            <div class="metric-label">24h Stats</div>
-                            <div class="metric-value" id="highLowVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Volume</span>
-                                    <span id="volVal">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Change</span>
-                                    <span id="chgVal">—</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="spark-wrap">
-                        <div class="spark-title">
-                            <span>OI Sparkline (last ~30)</span>
-                            <span class="neutral" id="signalText">Signal: —</span>
-                        </div>
-                        <canvas id="oiSpark" width="600" height="120"></canvas>
-                    </div>
-
-                    <div class="hint" id="hintText">
-                        • Funding <span class="up">negativ</span> = Markt eher short (Shorts zahlen).<br>
-                        • OI steigt stark + Funding positiv = Long crowded → Dump-Risiko.<br>
-                        • OI stabil/↓ + Funding neutral/negativ = gesünderer Move.
-                    </div>
-                </div>
-            </div>
-            <!-- ===== END BINANCE ===== -->
-        </div>
-    </div>
+<div class="chart-area">
+<div id="tradingview_advanced" style="height:100%;width:100%"></div>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+new TradingView.widget({
+autosize: true,
+symbol: "BINANCE:BTCUSDT",
+interval: "15",
+theme: "dark",
+style: "1",
+container_id: "tradingview_advanced"
+});
+</script>
 </div>
 
-<!-- MINI LOOP VIDEO (overlay, does not change layout) -->
-<div class="mini-video-box">
-    <video autoplay loop muted playsinline>
-        <source src="nohasleep.mp4" type="video/mp4">
-    </video>
-    <div class="video-caption">
-        ቢትኮይን ገዚኤልካ ምሰበልኩዎ ዝደቆሶ ድቃስ፣
-    </div>
+<div class="sidebar">
+
+<div class="widget-box" id="derivativesBox">
+
+<h3>🚀 Binance Futures Live Desk</h3>
+
+<div class="metric">Mark Price: <span id="markPrice">-</span></div>
+<div class="metric">Open Interest: <span id="openInterest">-</span></div>
+<div class="metric">Funding Rate: <span id="fundingRate">-</span></div>
+<div class="countdown">Next Funding In: <span id="fundingCountdown">-</span></div>
+
+<div class="alert-box" id="alertBox"></div>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
-/**
- * NEXT LEVEL BINANCE DASHBOARD (NO CHANGES TO YOUR OLD CONTENTS)
- * - Pulls directly from Binance Futures REST
- * - Shows: OI, Funding, Mark/Index, 24h stats
- * - Adds: Δ OI, Δ% OI, color logic, simple signal, sparkline
- * - Refresh: 10s
- */
+// ===== AUDIO ALERT =====
+const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
 
-const REFRESH_MS = 10000;
-const SYMBOL = "BTCUSDT";
-
+// ===== VARIABLES =====
 let lastOI = null;
-let oiHistory = [];
-const OI_HISTORY_MAX = 30;
+let lastFunding = null;
+let nextFundingTime = null;
 
-function fmtNumber(x, decimals = 2) {
-    if (x === null || x === undefined || Number.isNaN(x)) return "—";
-    return Number(x).toLocaleString("de-DE", { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+// ===== REST FETCH FOR OI + FUNDING =====
+async function fetchData() {
+try {
+const oiRes = await fetch("https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT");
+const oiData = await oiRes.json();
+const oi = parseFloat(oiData.openInterest);
+
+const fundingRes = await fetch("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT");
+const fundingData = await fundingRes.json();
+const funding = parseFloat(fundingData.lastFundingRate);
+nextFundingTime = fundingData.nextFundingTime;
+
+document.getElementById("openInterest").innerText = oi.toLocaleString();
+document.getElementById("fundingRate").innerText = (funding * 100).toFixed(4) + "%";
+
+checkAlerts(oi, funding);
+
+lastOI = oi;
+lastFunding = funding;
+
+} catch (err) {
+console.log(err);
+}
 }
 
-function fmtCompact(x) {
-    if (x === null || x === undefined || Number.isNaN(x)) return "—";
-    const n = Number(x);
-    const abs = Math.abs(n);
-    const sign = n < 0 ? "-" : "";
-    const format = (v) => v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
-    if (abs >= 1e12) return sign + format(abs / 1e12) + "T";
-    if (abs >= 1e9)  return sign + format(abs / 1e9) + "B";
-    if (abs >= 1e6)  return sign + format(abs / 1e6) + "M";
-    if (abs >= 1e3)  return sign + format(abs / 1e3) + "K";
-    return sign + format(abs);
+setInterval(fetchData, 10000);
+fetchData();
+
+// ===== WEBSOCKET FOR LIVE MARK PRICE =====
+const ws = new WebSocket("wss://fstream.binance.com/ws/btcusdt@markPrice");
+
+ws.onmessage = function(event) {
+const data = JSON.parse(event.data);
+const price = parseFloat(data.p);
+document.getElementById("markPrice").innerText = price.toFixed(2);
+};
+
+// ===== FUNDING COUNTDOWN =====
+setInterval(() => {
+if (!nextFundingTime) return;
+const now = Date.now();
+const diff = nextFundingTime - now;
+if (diff <= 0) return;
+
+const hours = Math.floor(diff / 1000 / 60 / 60);
+const minutes = Math.floor((diff / 1000 / 60) % 60);
+const seconds = Math.floor((diff / 1000) % 60);
+
+document.getElementById("fundingCountdown").innerText =
+hours + "h " + minutes + "m " + seconds + "s";
+
+}, 1000);
+
+// ===== ALERT LOGIC =====
+function checkAlerts(oi, funding) {
+
+const alertBox = document.getElementById("alertBox");
+const box = document.getElementById("derivativesBox");
+
+alertBox.innerText = "";
+box.classList.remove("flash");
+
+if (lastOI) {
+const delta = ((oi - lastOI) / lastOI) * 100;
+
+if (Math.abs(delta) > 1) {
+alertBox.innerText = "⚡ OI Spike Detected (" + delta.toFixed(2) + "%)";
+box.classList.add("flash");
+audio.play();
+}
 }
 
-function setDot(state) {
-    const dot = document.getElementById("apiDot");
-    dot.classList.remove("ok", "warn", "bad");
-    if (state === "ok") dot.classList.add("ok");
-    else if (state === "warn") dot.classList.add("warn");
-    else dot.classList.add("bad");
+if (lastFunding !== null) {
+if (funding > 0 && lastFunding < 0) {
+alertBox.innerText = "🔥 Funding flipped POSITIVE (Long crowded)";
+audio.play();
+}
+if (funding < 0 && lastFunding > 0) {
+alertBox.innerText = "🔥 Funding flipped NEGATIVE (Short crowded)";
+audio.play();
+}
 }
 
-function setUpdateText(text) {
-    document.getElementById("lastUpdate").innerText = text;
 }
-
-function msToHHMM(ms) {
-    const d = new Date(ms);
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    return `${hh}:${mm}`;
-}
-
-function flashCard(el) {
-    el.classList.add("flash");
-    setTimeout(() => el.classList.remove("flash"), 600);
-}
-
-function drawSparkline(values) {
-    const canvas = document.getElementById("oiSpark");
-    const ctx = canvas.getContext("2d");
-
-    const w = canvas.width;
-    const h = canvas.height;
-
-    ctx.clearRect(0, 0, w, h);
-
-    if (!values || values.length < 2) {
-        // faint baseline
-        ctx.globalAlpha = 0.35;
-        ctx.strokeStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.moveTo(0, h * 0.7);
-        ctx.lineTo(w, h * 0.7);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        return;
-    }
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const range = (max - min) || 1;
-
-    // grid line
-    ctx.globalAlpha = 0.25;
-    ctx.strokeStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.moveTo(0, h * 0.5);
-    ctx.lineTo(w, h * 0.5);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // line
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-
-    values.forEach((v, i) => {
-        const x = (i / (values.length - 1)) * w;
-        const y = h - ((v - min) / range) * (h - 10) - 5;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
-
-    ctx.stroke();
-
-    // last point
-    const last = values[values.length - 1];
-    const x = w;
-    const y = h - ((last - min) / range) * (h - 10) - 5;
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-function setFundingStyles(rate) {
-    const fundingCard = document.getElementById("fundingCard");
-    const fundingVal = document.getElementById("fundingVal");
-    const bias = document.getElementById("fundingBias");
-
-    // rate is decimal, like -0.000058
-    if (rate === null || rate === undefined || Number.isNaN(rate)) {
-        fundingVal.className = "metric-value";
-        bias.innerText = "—";
-        return;
-    }
-
-    // color logic:
-    // negative funding => shorts pay => often "short-biased" crowd; we display as green-ish (up)
-    // positive funding => longs pay => often "long crowded"; display as red-ish (down)
-    if (rate < 0) {
-        fundingVal.className = "metric-value up";
-        bias.innerText = "Short-crowded";
-        bias.className = "up";
-        fundingCard.style.borderColor = "#1f3";
-    } else if (rate > 0) {
-        fundingVal.className = "metric-value down";
-        bias.innerText = "Long-crowded";
-        bias.className = "down";
-        fundingCard.style.borderColor = "#f33";
-    } else {
-        fundingVal.className = "metric-value neutral";
-        bias.innerText = "Neutral";
-        bias.className = "neutral";
-        fundingCard.style.borderColor = "#2a2a2a";
-    }
-}
-
-function setOISignal(oiDeltaPct, fundingRate) {
-    const signalEl = document.getElementById("signalText");
-
-    if (oiDeltaPct === null || fundingRate === null || Number.isNaN(oiDeltaPct) || Number.isNaN(fundingRate)) {
-        signalEl.innerText = "Signal: —";
-        return;
-    }
-
-    // simple desk-style heuristic
-    // thresholds are intentionally small for 10s refresh; you can tune later
-    const oiUp = oiDeltaPct > 0.25;   // +0.25% per refresh window
-    const oiDown = oiDeltaPct < -0.25;
-
-    let signal = "Neutral";
-
-    if (oiUp && fundingRate > 0) signal = "Risk: Long crowded";
-    else if (oiUp && fundingRate < 0) signal = "Squeeze watch: Shorts lean";
-    else if (oiDown && fundingRate < 0) signal = "Flush / de-leveraging";
-    else if (oiDown && fundingRate > 0) signal = "Cooling longs";
-
-    signalEl.innerText = "Signal: " + signal;
-}
-
-async function fetchBinance() {
-    const box = document.getElementById("binanceBox");
-    const oiCard = document.getElementById("oiCard");
-
-    try {
-        setDot("warn");
-        setUpdateText("Updating…");
-
-        // 1) Open Interest (contracts)
-        const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
-        const oiJson = await oiRes.json();
-        const oi = Number(oiJson.openInterest);
-
-        // 2) Funding + Mark + Index + Next Funding Time
-        const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
-        const premJson = await premRes.json();
-
-        const fundingRate = Number(premJson.lastFundingRate); // decimal
-        const markPrice = Number(premJson.markPrice);
-        const indexPrice = Number(premJson.indexPrice);
-        const nextFundingTime = Number(premJson.nextFundingTime);
-
-        // 3) 24h stats (volume/high/low/change)
-        const statsRes = await fetch(`https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=${SYMBOL}`);
-        const statsJson = await statsRes.json();
-
-        const high = Number(statsJson.highPrice);
-        const low = Number(statsJson.lowPrice);
-        const vol = Number(statsJson.volume);
-        const priceChangePct = Number(statsJson.priceChangePercent);
-
-        // Update UI
-        document.getElementById("oiVal").innerText = fmtCompact(oi);
-        document.getElementById("fundingVal").innerText = (fundingRate * 100).toFixed(4) + " %";
-        document.getElementById("markVal").innerText = fmtNumber(markPrice, 2) + " USDT";
-        document.getElementById("indexVal").innerText = fmtNumber(indexPrice, 2);
-
-        document.getElementById("highLowVal").innerText = `${fmtNumber(low, 2)} / ${fmtNumber(high, 2)}`;
-        document.getElementById("volVal").innerText = fmtCompact(vol);
-        const chgEl = document.getElementById("chgVal");
-        chgEl.innerText = priceChangePct.toFixed(2) + " %";
-        chgEl.className = priceChangePct >= 0 ? "up" : "down";
-
-        document.getElementById("nextFundingTime").innerText =
-            Number.isFinite(nextFundingTime) ? msToHHMM(nextFundingTime) : "—";
-
-        // OI deltas
-        let deltaAbs = null;
-        let deltaPct = null;
-
-        if (lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)) {
-            deltaAbs = oi - lastOI;
-            deltaPct = (deltaAbs / lastOI) * 100;
-
-            const deltaAbsEl = document.getElementById("oiDeltaAbs");
-            const deltaPctEl = document.getElementById("oiDeltaPct");
-
-            deltaAbsEl.innerText = fmtCompact(deltaAbs);
-            deltaPctEl.innerText = deltaPct.toFixed(3) + " %";
-
-            const cls = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
-            deltaAbsEl.className = cls;
-            deltaPctEl.className = cls;
-
-            // Flash on bigger moves
-            if (Math.abs(deltaPct) >= 0.6) { // tune threshold
-                flashCard(oiCard);
-            }
-        } else {
-            document.getElementById("oiDeltaAbs").innerText = "—";
-            document.getElementById("oiDeltaPct").innerText = "—";
-            document.getElementById("oiDeltaAbs").className = "neutral";
-            document.getElementById("oiDeltaPct").className = "neutral";
-        }
-
-        // Save & sparkline
-        lastOI = oi;
-        if (Number.isFinite(oi)) {
-            oiHistory.push(oi);
-            if (oiHistory.length > OI_HISTORY_MAX) oiHistory.shift();
-            drawSparkline(oiHistory);
-        }
-
-        // Funding styling & signal
-        setFundingStyles(fundingRate);
-        setOISignal(deltaPct, fundingRate);
-
-        // Status
-        const now = new Date();
-        setDot("ok");
-        setUpdateText(`Updated ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`);
-
-        // Remove any "blocked" look
-        box.style.opacity = "1";
-    } catch (e) {
-        console.error("Binance fetch error:", e);
-        setDot("bad");
-        setUpdateText("API error");
-        // soften UI if blocked
-        const box = document.getElementById("binanceBox");
-        box.style.opacity = "0.9";
-    }
-}
-
-// Run now + repeat
-fetchBinance();
-setInterval(fetchBinance, REFRESH_MS);
 </script>
 
 </body>
