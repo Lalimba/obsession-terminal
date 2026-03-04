@@ -4,12 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>OTA — Market Bias</title>
+
 <style>
   html, body { height: 100%; margin:0; padding:0; background:#000; color:#fff; font-family: "Segoe UI", sans-serif; }
   .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
   .header {
     display:flex; justify-content:space-between; align-items:center; gap:12px;
     padding: 12px 14px; border:1px solid #333; border-radius: 12px; background:#111;
+    flex-wrap: wrap;
   }
   .title {
     font-weight: 900; letter-spacing: 0.6px; text-transform: uppercase;
@@ -18,13 +21,23 @@
     font-size: 18px;
   }
   .sub { color:#bdbdbd; font-size: 12px; line-height: 1.35; }
-  .status { display:flex; align-items:center; gap:10px; color:#bdbdbd; font-size: 12px; white-space: nowrap; }
+
+  .status { display:flex; align-items:center; gap:10px; color:#bdbdbd; font-size: 12px; white-space: nowrap; flex-wrap: wrap; justify-content:flex-end; }
   .dot { width:10px; height:10px; border-radius:50%; background:#666; display:inline-block; }
   .dot.ok{ background:#00ff00; } .dot.warn{ background:#ffae00; } .dot.bad{ background:#ff3b3b; }
+
+  .btn {
+    cursor:pointer; user-select:none;
+    padding: 6px 10px; border-radius: 10px; border:1px solid #333; background:#1a1a1a; color:#fff;
+    font-size: 12px; font-weight: 800;
+    text-decoration:none;
+  }
+  .btn:hover { border-color:#ffae00; color:#ffae00; }
 
   .grid { margin-top: 12px; display:grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
   .card { border:1px solid #333; border-radius: 12px; background:#131722; padding: 14px; }
   .card h3 { margin:0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color:#00ff00; }
+
   .big-bias {
     border-radius: 14px; padding: 14px; border: 1px solid #2a2a2a;
     background: rgba(0,0,0,0.25);
@@ -32,14 +45,16 @@
   .bias-row { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap: wrap; }
   .bias-label { font-size: 12px; color:#bdbdbd; text-transform: uppercase; letter-spacing: 0.4px; }
   .bias-value { font-size: 22px; font-weight: 1000; letter-spacing: 0.3px; }
+
   .pill {
     display:inline-flex; align-items:center; gap:8px;
     padding: 4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.12);
     background: rgba(255,255,255,0.04); font-size: 12px; color:#bdbdbd;
   }
+
   .row { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
   .metric {
-    flex: 1 1 200px;
+    flex: 1 1 230px;
     border:1px solid #2a2a2a; border-radius: 12px; padding: 10px;
     background: rgba(0,0,0,0.2);
   }
@@ -51,21 +66,23 @@
 
   .alert { margin-top: 10px; padding: 10px; border-radius: 12px; border:1px solid #2a2a2a;
            background: rgba(0,0,0,0.25); color:#ffae00; min-height: 18px; font-size: 12px; line-height: 1.35; }
+
   .flash { box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.45) inset, 0 0 18px rgba(255, 174, 0, 0.15); border-color:#ffae00 !important; }
 
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th, td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align:left; }
   th { font-size: 11px; color:#bdbdbd; text-transform: uppercase; letter-spacing: 0.35px; }
   .scroll { max-height: 260px; overflow: auto; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; background: rgba(0,0,0,0.18); }
+
   .smallnote { margin-top: 10px; font-size: 12px; color:#bdbdbd; line-height: 1.45; }
-  .btn {
-    cursor:pointer; user-select:none;
-    padding: 6px 10px; border-radius: 10px; border:1px solid #333; background:#1a1a1a; color:#fff;
-    font-size: 12px; font-weight: 800;
+  .linkrow { margin-top: 8px; display:flex; gap:8px; flex-wrap:wrap; }
+
+  @media (max-width: 980px){
+    .grid { grid-template-columns: 1fr; }
   }
-  .btn:hover { border-color:#ffae00; color:#ffae00; }
 </style>
 </head>
+
 <body>
 <div class="wrap">
 
@@ -73,8 +90,11 @@
     <div>
       <div class="title">OTA — Market Bias</div>
       <div class="sub">
-        Decision engine (Binance Futures): Funding + Open Interest + Price + Liquidations<br>
-        Save as <b>bias.html</b> and open from your menu.
+        Futures positioning + Spot demand: Funding + OI + Liquidations + Coinbase Premium
+        <div class="linkrow">
+          <a class="btn" href="https://farside.co.uk/btc/" target="_blank" rel="noopener noreferrer">📌 BTC ETF Flows (Farside)</a>
+          <a class="btn" href="https://www.coinglass.com/etf/bitcoin" target="_blank" rel="noopener noreferrer">📌 BTC ETF Flows (CoinGlass)</a>
+        </div>
       </div>
     </div>
     <div class="status">
@@ -136,16 +156,29 @@
               <span class="pill"><span class="neutral">Short%</span> <span id="shortPct">—</span></span>
             </div>
           </div>
+
+          <!-- NEW: Coinbase Premium -->
+          <div class="metric" id="premiumCard">
+            <div class="mlabel">Coinbase Premium</div>
+            <div class="mval" id="premiumVal">—</div>
+            <div class="msub">
+              <span class="pill"><span class="neutral">Binance</span> <span id="binanceSpot">—</span></span>
+              <span class="pill"><span class="neutral">Coinbase</span> <span id="coinbaseSpot">—</span></span>
+              <span class="pill"><span class="neutral">Diff</span> <span id="premiumAbs">—</span></span>
+              <span class="pill"><span class="neutral">%</span> <span id="premiumPct">—</span></span>
+              <span class="pill"><span class="neutral">Flow</span> <span id="premiumFlow">—</span></span>
+            </div>
+          </div>
         </div>
 
         <div class="alert" id="alertBox"></div>
       </div>
 
       <div class="smallnote">
-        Rules (simple but effective):
-        <br>• Funding <span class="up">negative</span> + OI ↑ → <b>shorts leaning</b> (squeeze-up risk).
-        <br>• Funding <span class="down">positive</span> + OI ↑ → <b>longs crowded</b> (dump/flush risk).
-        <br>• Big liquidations confirm direction short-term.
+        <b>Core pro idea:</b><br>
+        • Funding shows <i>leverage crowding</i> (who is paying).<br>
+        • Coinbase Premium shows <i>spot demand</i> (who is paying more on Coinbase).<br>
+        • <b>Premium + Funding opposite</b> is powerful: spot buyers push up while shorts lean → squeeze risk.
       </div>
     </div>
 
@@ -173,9 +206,9 @@
       </div>
 
       <div class="smallnote">
-        Interpretation:
-        <br>• <span class="up"><b>BUY</b></span> force order = short liquidation (squeeze fuel up).
-        <br>• <span class="down"><b>SELL</b></span> force order = long liquidation (flush fuel down).
+        Interpretation:<br>
+        • <span class="up"><b>BUY</b></span> = short liquidation (squeeze fuel up).<br>
+        • <span class="down"><b>SELL</b></span> = long liquidation (flush fuel down).
       </div>
     </div>
   </div>
@@ -184,8 +217,9 @@
 <script>
 /* ========= CONFIG ========= */
 const SYMBOL = "BTCUSDT";
-const REFRESH_MS = 10000;     // OI/Funding/Stats refresh
-const LS_REFRESH_MS = 30000;  // long/short ratio refresh
+const REFRESH_MS = 10000;
+const LS_REFRESH_MS = 30000;
+const PREMIUM_REFRESH_MS = 15000;
 const BIG_LIQ_USD = 2_000_000;
 const LIQ_MAX_ROWS = 30;
 
@@ -196,13 +230,12 @@ document.getElementById("soundBtn").onclick = () => {
   soundEnabled = !soundEnabled;
   document.getElementById("soundBtn").innerText = "Sound: " + (soundEnabled ? "On" : "Off");
 };
-
 function playBeep() {
   if (!soundEnabled) return;
   try { beep.currentTime = 0; beep.play(); } catch (e) {}
 }
 
-/* ========= UI HELPERS ========= */
+/* ========= HELPERS ========= */
 function setDot(state) {
   const el = document.getElementById("apiDot");
   el.classList.remove("ok","warn","bad");
@@ -239,10 +272,16 @@ function nowHHMMSS() { return hhmmss(Date.now()); }
 let lastOI = null;
 let lastFunding = null;
 let nextFundingTime = null;
+
 let fundingRate = null;
 let oiDeltaPct = null;
 let chg24hPct = null;
 let lsRatio = null;
+
+// premium state
+let premiumAbs = null;     // Coinbase - Binance ($)
+let premiumPct = null;     // %
+let lastPremiumSign = null;
 
 /* ========= BIAS ENGINE =========
    Score idea:
@@ -252,13 +291,15 @@ let lsRatio = null;
    -1: OI up                          => leverage building (fragile)
    +1: 24h change positive            => momentum
    -1: 24h change negative            => downside pressure
+   +1/-1: long/short ratio extremes (accounts crowd)
 
-   Then map score to bias text.
+   SPECIAL SETUP (your request):
+   Premium positive + Funding negative = spot buying + shorts leaning => STRONG SQUEEZE SETUP
 */
 function computeBias() {
   let score = 0;
 
-  // funding
+  // funding crowd
   let crowd = "Neutral";
   let squeeze = "—";
 
@@ -267,10 +308,10 @@ function computeBias() {
     else if (fundingRate > 0) { score -= 1; crowd = "Long-crowded"; squeeze = "Flush ↓ risk"; }
   }
 
-  // OI delta (leverage)
+  // OI delta
   if (Number.isFinite(oiDeltaPct)) {
-    if (oiDeltaPct > 0.25) score -= 1;
-    else if (oiDeltaPct < -0.25) score += 1;
+    if (oiDeltaPct > 0.25) score -= 1;         // leverage building = fragile
+    else if (oiDeltaPct < -0.25) score += 1;   // deleveraging = healthier
   }
 
   // 24h momentum
@@ -281,17 +322,28 @@ function computeBias() {
 
   // long/short ratio (accounts)
   if (Number.isFinite(lsRatio)) {
-    if (lsRatio > 1.10) score -= 1;     // long crowded
-    else if (lsRatio < 0.90) score += 1; // short crowded
+    if (lsRatio > 1.10) score -= 1;       // long crowded risk
+    else if (lsRatio < 0.90) score += 1;  // short crowded squeeze
   }
 
+  // ===== SPECIAL "STRONG SQUEEZE SETUP" RULE =====
+  // Premium > 0 means Coinbase spot demand > Binance spot.
+  // Funding < 0 means shorts paying (short pressure / short-leaning).
+  const strongSqueeze = Number.isFinite(premiumAbs) && premiumAbs > 0 &&
+                        Number.isFinite(fundingRate) && fundingRate < 0;
+
+  if (strongSqueeze) {
+    score += 2; // big boost
+    squeeze = "STRONG: Spot buy + Shorts lean";
+  }
+
+  // map score
   let bias = "Neutral";
   if (score >= 2) bias = "Bullish";
   if (score <= -2) bias = "Defensive";
-  // special “squeeze watch” condition:
-  if (Number.isFinite(fundingRate) && Number.isFinite(oiDeltaPct) && fundingRate < 0 && oiDeltaPct > 0.25) {
-    bias = "Squeeze Watch";
-  }
+
+  // override label for strong squeeze
+  if (strongSqueeze) bias = "STRONG SQUEEZE SETUP";
 
   document.getElementById("biasValue").innerText = bias;
   document.getElementById("biasScore").innerText = String(score);
@@ -301,12 +353,12 @@ function computeBias() {
   // colorize bias
   const b = document.getElementById("biasValue");
   b.classList.remove("up","down","neutral");
-  if (bias === "Bullish" || bias === "Squeeze Watch") b.classList.add("up");
+  if (bias === "Bullish" || bias.includes("SQUEEZE")) b.classList.add("up");
   else if (bias === "Defensive") b.classList.add("down");
   else b.classList.add("neutral");
 }
 
-/* ========= REST FETCH: OI + Funding + Mark/Index + 24h stats ========= */
+/* ========= REST: OI + Funding + Mark/Index + 24h stats ========= */
 async function fetchCore() {
   try {
     setDot("warn");
@@ -317,7 +369,7 @@ async function fetchCore() {
     const oiJson = await oiRes.json();
     const oi = Number(oiJson.openInterest);
 
-    // PremiumIndex (funding + mark + index + next funding)
+    // premiumIndex
     const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
     const prem = await premRes.json();
 
@@ -363,12 +415,13 @@ async function fetchCore() {
 
       const absEl = document.getElementById("oiDeltaAbs");
       const pctEl = document.getElementById("oiDeltaPct");
-      absEl.className = deltaAbs > 0 ? "down" : (deltaAbs < 0 ? "up" : "neutral"); // leverage up = fragile -> show as down
+      // leverage up = fragile -> color "down"
+      absEl.className = deltaAbs > 0 ? "down" : (deltaAbs < 0 ? "up" : "neutral");
       pctEl.className = deltaAbs > 0 ? "down" : (deltaAbs < 0 ? "up" : "neutral");
 
-      // Alert: OI spike
+      // alert: OI spike
       if (Math.abs(oiDeltaPct) >= 0.8) {
-        document.getElementById("alertBox").innerText = `⚡ OI spike detected: ${oiDeltaPct.toFixed(2)}%`;
+        document.getElementById("alertBox").innerText = `⚡ OI spike: ${oiDeltaPct.toFixed(2)}%`;
         flash("biasBox"); flash("biasCard");
         playBeep();
       }
@@ -378,7 +431,7 @@ async function fetchCore() {
       oiDeltaPct = null;
     }
 
-    // Alert: funding flip
+    // funding flip alert
     if (lastFunding !== null && Number.isFinite(lastFunding)) {
       if (fundingRate > 0 && lastFunding < 0) {
         document.getElementById("alertBox").innerText = "🔥 Funding flipped POSITIVE (longs crowding)";
@@ -393,6 +446,7 @@ async function fetchCore() {
     lastOI = oi;
     lastFunding = fundingRate;
 
+    // compute bias (uses premium too)
     computeBias();
 
     setDot("ok");
@@ -404,7 +458,7 @@ async function fetchCore() {
   }
 }
 
-/* ========= REST FETCH: Long/Short ratio ========= */
+/* ========= REST: Long/Short ratio ========= */
 async function fetchLongShort() {
   try {
     const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYMBOL}&period=5m&limit=1`;
@@ -421,11 +475,11 @@ async function fetchLongShort() {
     document.getElementById("longPct").innerText = Number.isFinite(longAcc) ? (longAcc*100).toFixed(1) + "%" : "—";
     document.getElementById("shortPct").innerText = Number.isFinite(shortAcc) ? (shortAcc*100).toFixed(1) + "%" : "—";
 
-    // color hint (contrarian)
+    // color hint
     const lsEl = document.getElementById("lsVal");
     lsEl.classList.remove("up","down","neutral");
-    if (lsRatio > 1.10) lsEl.classList.add("down");       // long crowded risk
-    else if (lsRatio < 0.90) lsEl.classList.add("up");    // short crowded squeeze
+    if (lsRatio > 1.10) lsEl.classList.add("down");
+    else if (lsRatio < 0.90) lsEl.classList.add("up");
     else lsEl.classList.add("neutral");
 
     computeBias();
@@ -446,25 +500,91 @@ setInterval(() => {
   document.getElementById("fundingCountdown").innerText = `${h}h ${m}m ${s}s`;
 }, 1000);
 
+/* ========= Coinbase Premium =========
+   NOTE: Coinbase endpoints can sometimes hit browser CORS limits.
+   If it ever shows only "—", tell me and I’ll switch to a CORS-safe endpoint.
+*/
+async function fetchCoinbasePremium() {
+  try {
+    const binanceUrl = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT";
+    const coinbaseUrl = "https://api.exchange.coinbase.com/products/BTC-USD/ticker";
+
+    const [bRes, cRes] = await Promise.all([fetch(binanceUrl), fetch(coinbaseUrl)]);
+    const bJson = await bRes.json();
+    const cJson = await cRes.json();
+
+    const binance = Number(bJson.price);
+    const coinbase = Number(cJson.price);
+
+    if (!Number.isFinite(binance) || !Number.isFinite(coinbase)) return;
+
+    premiumAbs = coinbase - binance;
+    premiumPct = (premiumAbs / binance) * 100;
+
+    document.getElementById("binanceSpot").innerText = fmtPrice(binance);
+    document.getElementById("coinbaseSpot").innerText = fmtPrice(coinbase);
+
+    const premiumValEl = document.getElementById("premiumVal");
+    const premiumAbsEl = document.getElementById("premiumAbs");
+    const premiumPctEl = document.getElementById("premiumPct");
+    const flowEl = document.getElementById("premiumFlow");
+
+    premiumValEl.classList.remove("up","down","neutral");
+    premiumAbsEl.classList.remove("up","down","neutral");
+    premiumPctEl.classList.remove("up","down","neutral");
+
+    const signClass = premiumAbs > 0 ? "up" : premiumAbs < 0 ? "down" : "neutral";
+    premiumValEl.classList.add(signClass);
+    premiumAbsEl.classList.add(signClass);
+    premiumPctEl.classList.add(signClass);
+
+    premiumValEl.innerText = (premiumAbs >= 0 ? "+" : "") + "$" + fmtCompact(premiumAbs);
+    premiumAbsEl.innerText = (premiumAbs >= 0 ? "+" : "") + "$" + fmtCompact(premiumAbs);
+    premiumPctEl.innerText = (premiumPct >= 0 ? "+" : "") + premiumPct.toFixed(3) + "%";
+
+    if (premiumAbs > 0) { flowEl.innerText = "Spot demand (US)"; flowEl.className = "up"; }
+    else if (premiumAbs < 0) { flowEl.innerText = "Spot selling (US)"; flowEl.className = "down"; }
+    else { flowEl.innerText = "Neutral"; flowEl.className = "neutral"; }
+
+    // premium flip alert
+    const sign = premiumAbs > 0 ? 1 : premiumAbs < 0 ? -1 : 0;
+    if (lastPremiumSign !== null && sign !== 0 && sign !== lastPremiumSign) {
+      document.getElementById("alertBox").innerText =
+        sign > 0 ? "💎 Coinbase Premium flipped POSITIVE (spot demand)" :
+                   "⚠️ Coinbase Premium flipped NEGATIVE (spot selling)";
+      flash("premiumCard"); flash("biasBox");
+      playBeep();
+    }
+    lastPremiumSign = sign;
+
+    // strong squeeze setup alert (your rule)
+    if (premiumAbs > 0 && Number.isFinite(fundingRate) && fundingRate < 0) {
+      document.getElementById("alertBox").innerText =
+        "🚀 STRONG SQUEEZE SETUP: Coinbase Premium + & Funding − (spot buying + shorts leaning)";
+      flash("premiumCard"); flash("biasBox"); flash("biasCard");
+      playBeep();
+    }
+
+    computeBias();
+  } catch (e) {
+    // silent fail if blocked
+    console.log("Coinbase Premium fetch error:", e);
+  }
+}
+
 /* ========= Liquidations WS ========= */
 document.getElementById("bigLiqLabel").innerText = `≥ $${BIG_LIQ_USD.toLocaleString("de-DE")}`;
-
-let liqEvents = []; // for last-60s count
+let liqEvents = [];
 let largest = 0;
 
 function addLiqRow(ts, side, price, qty, notional) {
   const tbody = document.getElementById("liqTbody");
-
-  if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
-    tbody.innerHTML = "";
-  }
+  if (tbody.children.length === 1 && tbody.children[0].children.length === 1) tbody.innerHTML = "";
 
   const tr = document.createElement("tr");
 
   const tdT = document.createElement("td"); tdT.innerText = hhmmss(ts);
-  const tdS = document.createElement("td"); tdS.innerText = side;
-  tdS.className = side === "BUY" ? "up" : "down";
-
+  const tdS = document.createElement("td"); tdS.innerText = side; tdS.className = side === "BUY" ? "up" : "down";
   const tdP = document.createElement("td"); tdP.innerText = fmtPrice(price);
   const tdQ = document.createElement("td"); tdQ.innerText = fmtCompact(qty);
   const tdN = document.createElement("td"); tdN.innerText = "$" + fmtCompact(notional);
@@ -478,7 +598,6 @@ function addLiqRow(ts, side, price, qty, notional) {
 function connectLiqWS() {
   const ws = new WebSocket("wss://fstream.binance.com/ws/!forceOrder@arr");
 
-  ws.onopen = () => { /* ok */ };
   ws.onmessage = (ev) => {
     try {
       const data = JSON.parse(ev.data);
@@ -489,7 +608,7 @@ function connectLiqWS() {
         const o = it.o;
         if (o.s !== SYMBOL) continue;
 
-        const side = String(o.S || "").toUpperCase(); // BUY or SELL
+        const side = String(o.S || "").toUpperCase();
         const price = Number(o.p);
         const qty = Number(o.q);
         const ts = Number(o.T || it.E || Date.now());
@@ -497,22 +616,19 @@ function connectLiqWS() {
 
         addLiqRow(ts, side, price, qty, notional);
 
-        // 60s tracking
         liqEvents.push({ ts, notional });
         const cutoff = Date.now() - 60_000;
         liqEvents = liqEvents.filter(e => e.ts >= cutoff);
         document.getElementById("liq60s").innerText = String(liqEvents.length);
 
-        // largest tracker
         if (Number.isFinite(notional) && notional > largest) {
           largest = notional;
           document.getElementById("largestLiq").innerText = "$" + fmtCompact(largest);
         }
 
-        // Big liquidation alert
         if (Number.isFinite(notional) && notional >= BIG_LIQ_USD) {
           document.getElementById("alertBox").innerText =
-            `🧨 BIG liquidation: ${side} $${fmtCompact(notional)} (price ${fmtPrice(price)})`;
+            `🧨 BIG liquidation: ${side} $${fmtCompact(notional)} @ ${fmtPrice(price)}`;
           flash("liqCard"); flash("biasBox");
           playBeep();
         }
@@ -525,12 +641,15 @@ function connectLiqWS() {
 }
 connectLiqWS();
 
-/* ========= Init ========= */
+/* ========= INIT ========= */
 fetchCore();
 setInterval(fetchCore, REFRESH_MS);
 
 fetchLongShort();
 setInterval(fetchLongShort, LS_REFRESH_MS);
+
+fetchCoinbasePremium();
+setInterval(fetchCoinbasePremium, PREMIUM_REFRESH_MS);
 </script>
 </body>
 </html>
