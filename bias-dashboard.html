@@ -152,6 +152,15 @@
       line-height: 1.6;
       color: var(--muted);
     }
+    .clickable-card {
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .clickable-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(86,166,255,0.18);
+    }
     @media (max-width: 1100px) {
       .grid { grid-template-columns: 1fr; }
       .cards { grid-template-columns: repeat(2, 1fr); }
@@ -180,10 +189,10 @@
             <div class="value" id="btcPrice">-----</div>
             <div class="tiny" id="btcPriceTime">Waiting for live feed</div>
           </div>
-          <div class="card">
+          <div class="card clickable-card" id="etfFlowCard">
             <div class="label">ETF Daily Flow</div>
             <div class="value" id="etfFlowValue">-----</div>
-            <div class="tiny" id="etfFlowNote">If no fresh file, keep empty</div>
+            <div class="tiny" id="etfFlowNote">Click to open CoinGlass ETF below</div>
           </div>
           <div class="card">
             <div class="label">Funding</div>
@@ -355,13 +364,13 @@
           <div class="tiny">Add more rows daily. This becomes your own market memory.</div>
         </div>
 
-        <div class="panel">
+        <div class="panel" id="embeddedSourcesPanel">
           <h2 class="section-title">Embedded Sources</h2>
           <div class="iframe-grid">
-            <iframe src="https://www.coinglass.com/etf/bitcoin" title="CoinGlass ETF"></iframe>
+            <iframe id="etfFrame" src="https://www.coinglass.com/etf/bitcoin" title="CoinGlass ETF"></iframe>
             <iframe src="https://www.tradingview.com/chart/" title="TradingView"></iframe>
           </div>
-          <div class="tiny">Some sites block embedding. If they do, open them in a new tab and use APIs instead.</div>
+          <div class="tiny">Some sites block embedding. If they do, the ETF click will open CoinGlass in a new tab automatically.</div>
         </div>
       </div>
 
@@ -372,22 +381,22 @@
             <div class="source card">
               <strong>CoinGlass</strong>
               <small>ETF flows, OI, funding, liquidations</small>
-              <a href="https://www.coinglass.com/">Open source</a>
+              <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer">Open source</a>
             </div>
             <div class="source card">
               <strong>CryptoQuant</strong>
               <small>Exchange inflows/outflows, whales, Coinbase premium</small>
-              <a href="https://cryptoquant.com/">Open source</a>
+              <a href="https://cryptoquant.com/" target="_blank" rel="noopener noreferrer">Open source</a>
             </div>
             <div class="source card">
               <strong>TradingView</strong>
               <small>Price chart, structure, watchlists</small>
-              <a href="https://www.tradingview.com/">Open source</a>
+              <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">Open source</a>
             </div>
             <div class="source card">
               <strong>Deribit / Binance / Coinbase</strong>
               <small>Direct APIs for spot and derivatives</small>
-              <a href="https://developers.binance.com/docs/binance-spot-api-docs/rest-api">Binance API docs</a>
+              <a href="https://developers.binance.com/docs/binance-spot-api-docs/rest-api" target="_blank" rel="noopener noreferrer">Binance API docs</a>
             </div>
           </div>
         </div>
@@ -422,6 +431,7 @@
       </div>
     </div>
   </div>
+
   <script>
     const weeklyRows = [
       { date: '2026-03-05', price: '71,114', etf: '-3.14K BTC', funding: '0.0021%', oi: '83.43K', premium: '+4.67', bias: 'Defensive' },
@@ -439,35 +449,142 @@
       el.textContent = value && String(value).trim() !== '' ? value : fallback;
     }
 
+    function formatPercentFromDecimal(decimalValue, digits = 4) {
+      const num = Number(decimalValue);
+      if (!Number.isFinite(num)) return '-----';
+      return (num * 100).toFixed(digits) + '%';
+    }
+
+    function formatOpenInterest(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return '-----';
+
+      if (Math.abs(num) >= 1000) {
+        return (num / 1000).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) + 'K';
+      }
+
+      return num.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
     function loadTopBarFromSavedData() {
       const latest = weeklyRows && weeklyRows.length ? weeklyRows[0] : null;
       setText('etfFlowValue', latest?.etf);
       setText('fundingValue', latest?.funding);
       setText('oiValue', latest?.oi);
-      setText('etfFlowNote', latest ? `Latest saved row: ${latest.date}` : 'If no fresh file, keep empty');
+      setText('etfFlowNote', latest ? `Latest saved row: ${latest.date} · Click to open CoinGlass ETF below` : 'Click to open CoinGlass ETF below');
       setText('fundingNote', latest ? `Latest saved row: ${latest.date}` : 'Shows latest saved value or empty');
       setText('oiNote', latest ? `Latest saved row: ${latest.date}` : 'Shows latest saved value or empty');
     }
 
+    async function fetchJson(url, options = {}) {
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
     async function loadRealtimeBTC() {
       try {
-        const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
-        if (!res.ok) throw new Error('price fetch failed');
-        const data = await res.json();
+        const data = await fetchJson('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
         const price = Number(data.price);
         if (!Number.isFinite(price)) throw new Error('bad price');
-        setText('btcPrice', price.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+
+        setText('btcPrice', price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }));
+
         const now = new Date();
         setText('btcPriceTime', `Live from Binance · ${now.toLocaleTimeString()}`);
       } catch (err) {
         setText('btcPrice', '-----');
         setText('btcPriceTime', 'Live price unavailable');
+        console.error('BTC realtime error:', err);
       }
     }
 
-    loadTopBarFromSavedData();
-    loadRealtimeBTC();
-    setInterval(loadRealtimeBTC, 15000);
+    async function loadRealtimeFunding() {
+      try {
+        const data = await fetchJson('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT');
+        const funding = Number(data.lastFundingRate);
+        if (!Number.isFinite(funding)) throw new Error('bad funding');
+
+        setText('fundingValue', formatPercentFromDecimal(funding, 4));
+
+        const nextFundingTime = data.nextFundingTime ? new Date(Number(data.nextFundingTime)) : null;
+        const note = nextFundingTime && !Number.isNaN(nextFundingTime.getTime())
+          ? `Live from Binance Futures · Next funding ${nextFundingTime.toLocaleTimeString()}`
+          : 'Live from Binance Futures';
+
+        setText('fundingNote', note);
+      } catch (err) {
+        const latest = weeklyRows && weeklyRows.length ? weeklyRows[0] : null;
+        setText('fundingValue', latest?.funding);
+        setText('fundingNote', latest ? `Latest saved row: ${latest.date}` : 'Shows latest saved value or empty');
+        console.error('Funding realtime error:', err);
+      }
+    }
+
+    async function loadRealtimeOI() {
+      try {
+        const data = await fetchJson('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT');
+        const oi = Number(data.openInterest);
+        if (!Number.isFinite(oi)) throw new Error('bad open interest');
+
+        setText('oiValue', formatOpenInterest(oi));
+
+        const updated = data.time ? new Date(Number(data.time)) : new Date();
+        setText('oiNote', `Live from Binance Futures · ${updated.toLocaleTimeString()}`);
+      } catch (err) {
+        const latest = weeklyRows && weeklyRows.length ? weeklyRows[0] : null;
+        setText('oiValue', latest?.oi);
+        setText('oiNote', latest ? `Latest saved row: ${latest.date}` : 'Shows latest saved value or empty');
+        console.error('OI realtime error:', err);
+      }
+    }
+
+    function setupETFCardClick() {
+      const etfCard = document.getElementById('etfFlowCard');
+      const etfFrame = document.getElementById('etfFrame');
+      const embeddedPanel = document.getElementById('embeddedSourcesPanel');
+
+      if (!etfCard || !etfFrame || !embeddedPanel) return;
+
+      etfCard.addEventListener('click', () => {
+        etfFrame.src = 'https://www.coinglass.com/etf/bitcoin';
+        embeddedPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        setTimeout(() => {
+          try {
+            const currentSrc = etfFrame.src;
+            if (!currentSrc || currentSrc.includes('about:blank')) {
+              window.open('https://www.coinglass.com/etf/bitcoin', '_blank');
+            }
+          } catch (e) {
+            console.error('ETF frame check error:', e);
+          }
+        }, 1500);
+      });
+    }
+
+    function startRealtimeLoops() {
+      loadTopBarFromSavedData();
+      loadRealtimeBTC();
+      loadRealtimeFunding();
+      loadRealtimeOI();
+
+      setInterval(loadRealtimeBTC, 15000);
+      setInterval(loadRealtimeFunding, 15000);
+      setInterval(loadRealtimeOI, 15000);
+    }
+
+    setupETFCardClick();
+    startRealtimeLoops();
   </script>
 </body>
 </html>
