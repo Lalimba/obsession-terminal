@@ -1,357 +1,1538 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BTC Bias Dashboard</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #121a2b;
-      --panel-2: #182338;
-      --text: #e8eefc;
-      --muted: #93a4c7;
-      --green: #29d17d;
-      --red: #ff5d73;
-      --yellow: #f6c445;
-      --blue: #56a6ff;
-      --border: #24314d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    .wrap {
-      max-width: 1450px;
-      margin: 0 auto;
-      padding: 18px;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #121827, #0f1625);
-      border-radius: 18px;
-    }
-    h1 { margin: 0; font-size: 32px; }
-    .sub { color: var(--muted); margin-top: 6px; }
-    .badge {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(246,196,69,0.12);
-      color: var(--yellow);
-      border: 1px solid rgba(246,196,69,0.28);
-      font-weight: 700;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsession Trading Academy — PRO Desk+</title>
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 8px;
+  }
+
+  .academy-header {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .main-row {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .chart-area {
+    flex: 4;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #131722;
+    min-height: 0;
+  }
+
+  .sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 340px;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .widget-box {
+    border: 1px solid #333;
+    background: #131722;
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .box-title {
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #00ff00;
+  }
+
+  .status {
+    font-size: 11px;
+    color: #bdbdbd;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #666;
+    display: inline-block;
+  }
+
+  .dot.ok { background: #00ff00; }
+  .dot.warn { background: #ffae00; }
+  .dot.bad { background: #ff3b3b; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .metric {
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    min-height: 70px;
+  }
+
+  .metric.big {
+    min-height: 92px;
+  }
+
+  .label {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+
+  .value {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .value-xl {
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .sub {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #bdbdbd;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid #2a2a2a;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .up { color: #00ff00; }
+  .down { color: #ff3b3b; }
+  .neutral { color: #bdbdbd; }
+  .warn { color: #ffae00; }
+
+  .flash {
+    box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.45) inset, 0 0 18px rgba(255, 174, 0, 0.15);
+    border-color: #ffae00 !important;
+  }
+
+  .alert {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    background: rgba(0,0,0,0.25);
+    font-size: 12px;
+    color: #ffae00;
+    line-height: 1.35;
+    min-height: 18px;
+  }
+
+  .decision-card {
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid #2a2a2a;
+    background: rgba(0,0,0,0.22);
+  }
+
+  .decision-go {
+    border-color: rgba(255, 174, 0, 0.65);
+    box-shadow: 0 0 14px rgba(255, 174, 0, 0.12);
+  }
+
+  .decision-attack {
+    border-color: rgba(0, 255, 0, 0.65);
+    box-shadow: 0 0 16px rgba(0, 255, 0, 0.14);
+  }
+
+  .decision-wait {
+    border-color: rgba(180, 180, 180, 0.35);
+  }
+
+  .decision-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 98px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .badge-attack { background: rgba(0,255,0,0.12); color: #00ff66; }
+  .badge-go { background: rgba(255,174,0,0.14); color: #ffcc4d; }
+  .badge-wait { background: rgba(255,255,255,0.08); color: #d0d0d0; }
+
+  .reason-box {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    background: rgba(0,0,0,0.18);
+    font-size: 12px;
+    line-height: 1.45;
+    color: #d9d9d9;
+  }
+
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .input-wrap label {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+  }
+
+  .input-wrap input,
+  .input-wrap select,
+  .input-wrap textarea {
+    background: #0d1117;
+    color: #fff;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px 10px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .input-wrap textarea {
+    min-height: 74px;
+    resize: vertical;
+  }
+
+  .input-wrap input:focus,
+  .input-wrap select:focus,
+  .input-wrap textarea:focus {
+    border-color: #00ff66;
+    box-shadow: 0 0 0 2px rgba(0,255,102,0.1);
+  }
+
+  .small-note {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #9d9d9d;
+    line-height: 1.35;
+  }
+
+  .funding-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .funding-mini {
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.18);
+  }
+
+  .mini-title {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .mini-value {
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .mini-sub {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #bdbdbd;
+  }
+
+  .liq-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .liq-table,
+  .journal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .liq-table th, .liq-table td,
+  .journal-table th, .journal-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .liq-table th,
+  .journal-table th {
+    font-size: 11px;
+    color: #bdbdbd;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+    position: sticky;
+    top: 0;
+    background: #11161f;
+  }
+
+  .liq-scroll,
+  .journal-table-wrap {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.18);
+  }
+
+  .journal-table-wrap {
+    margin-top: 10px;
+    max-height: 260px;
+  }
+
+  .liq-badge,
+  .small-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .macro-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #bdbdbd;
+    line-height: 1.4;
+  }
+
+  .journal-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .journal-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .btn {
+    background: #0d1117;
+    color: #fff;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .btn:hover {
+    border-color: #00ff66;
+  }
+
+  .btn.danger:hover {
+    border-color: #ff3b3b;
+  }
+
+  .journal-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 1200px) {
+    .sidebar { min-width: 300px; }
+    .funding-strip,
+    .journal-summary,
+    .journal-form,
+    .flow-grid,
     .grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 18px;
+      grid-template-columns: 1fr;
     }
-    .left, .right {
-      display: grid;
-      gap: 18px;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-    .card, .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-    }
-    .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
-    .value { font-size: 31px; font-weight: 800; }
-    .tiny { color: var(--muted); font-size: 12px; margin-top: 8px; }
-    .green { color: var(--green); }
-    .red { color: var(--red); }
-    .yellow { color: var(--yellow); }
-    .blue { color: var(--blue); }
-    .section-title {
-      margin: 0 0 12px;
-      font-size: 20px;
-    }
-    .source-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .source a {
-      color: var(--blue);
-      text-decoration: none;
-    }
-    .source small { color: var(--muted); display: block; margin-top: 6px; }
-    .iframe-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      align-items: stretch;
-    }
-    iframe {
-      width: 100%;
-      min-height: 360px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #0a0f18;
-    }
-    .macro-box {
-      min-height: 360px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #0a0f18;
-      overflow: hidden;
-    }
-    .macro-fallback {
-      padding: 16px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-    .notes {
-      line-height: 1.6;
-      color: var(--muted);
-    }
-    .checklist-line {
-      margin-bottom: 8px;
-    }
-    @media (max-width: 1100px) {
-      .grid { grid-template-columns: 1fr; }
-      .cards { grid-template-columns: repeat(2, 1fr); }
-      .iframe-grid, .source-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 700px) {
-      .cards { grid-template-columns: 1fr; }
-    }
-  </style>
+  }
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div>
-        <h1>BTC MARKET BIAS</h1>
-        <div class="sub">Spot demand + ETFs + derivatives + macro + trade plan in one screen</div>
+  <div class="container">
+    <div class="academy-header">Obsession Trading Academy — PRO Desk+</div>
+
+    <div class="main-row">
+      <div class="chart-area">
+        <div id="tradingview_advanced" style="height:100%;width:100%"></div>
       </div>
-      <div class="badge">Manual / semi-auto version</div>
-    </div>
 
-    <div class="grid">
-      <div class="left">
-        <div class="cards">
-          <div class="card">
-            <div class="label">BTC Price (Realtime)</div>
-            <div class="value" id="btcPrice">-----</div>
-            <div class="tiny" id="btcPriceTime">Waiting for live feed</div>
-          </div>
-          <div class="card">
-            <div class="label">Funding</div>
-            <div class="value" id="fundingValue">-----</div>
-            <div class="tiny" id="fundingNote">Waiting for live feed</div>
-          </div>
-          <div class="card">
-            <div class="label">Open Interest</div>
-            <div class="value" id="oiValue">-----</div>
-            <div class="tiny" id="oiNote">Waiting for live feed</div>
-          </div>
-        </div>
+      <div class="sidebar">
 
-        <div class="panel" id="embeddedSourcesPanel">
-          <h2 class="section-title">Embedded Sources</h2>
-          <div class="iframe-grid">
-            <iframe id="etfFrame" src="https://www.coinglass.com/etf/bitcoin" title="CoinGlass ETF"></iframe>
+        <!-- DECISION ENGINE -->
+        <div class="widget-box" id="decisionBox">
+          <div class="title-row">
+            <div class="box-title">Decision Engine</div>
+            <div class="status">
+              <span class="dot ok"></span>
+              <span id="decisionStatus">Flow + derivatives model</span>
+            </div>
+          </div>
 
-            <div class="macro-box">
-              <div class="tradingview-widget-container" style="height:100%;width:100%">
-                <div class="tradingview-widget-container__widget"></div>
-                <div class="macro-fallback">
-                  Important Macro US Appointments
-                </div>
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                {
-                  "colorTheme": "dark",
-                  "isTransparent": true,
-                  "width": "100%",
-                  "height": "360",
-                  "locale": "en",
-                  "importanceFilter": "1",
-                  "currencyFilter": "USD"
-                }
-                </script>
+          <div class="grid">
+            <div class="decision-card big" id="biasCard">
+              <div class="label">HTF Bias</div>
+              <div class="value-xl" id="htfBias">WAIT</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Flow Score</span><span id="flowScore">0</span></span>
+              </div>
+            </div>
+
+            <div class="decision-card big" id="actionCard">
+              <div class="label">Execution State</div>
+              <div class="value-xl">
+                <span class="decision-badge badge-wait" id="decisionBadge">WAIT</span>
+              </div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Crowding</span><span id="crowdingText">—</span></span>
               </div>
             </div>
           </div>
-          <div class="tiny">If CoinGlass blocks embedding, open it in a new tab and keep the macro panel here for US events.</div>
-        </div>
-      </div>
 
-      <div class="right">
-        <div class="panel">
-          <h2 class="section-title">Data Sources to Combine</h2>
-          <div class="source-grid">
-            <div class="source card">
-              <strong>CoinGlass</strong>
-              <small>ETF flows, OI, funding, liquidations</small>
-              <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer">Open source</a>
+          <div class="funding-strip">
+            <div class="funding-mini" id="fund1hCard">
+              <div class="mini-title">Funding 1H</div>
+              <div class="mini-value" id="fund1h">—</div>
+              <div class="mini-sub" id="fund1hBias">—</div>
             </div>
-            <div class="source card">
-              <strong>CryptoQuant</strong>
-              <small>Exchange inflows/outflows, whales, Coinbase premium</small>
-              <a href="https://cryptoquant.com/" target="_blank" rel="noopener noreferrer">Open source</a>
+            <div class="funding-mini" id="fund4hCard">
+              <div class="mini-title">Funding 4H</div>
+              <div class="mini-value" id="fund4h">—</div>
+              <div class="mini-sub" id="fund4hBias">—</div>
             </div>
-            <div class="source card">
-              <strong>TradingView</strong>
-              <small>Price chart, structure, watchlists</small>
-              <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">Open source</a>
+            <div class="funding-mini" id="fund12hCard">
+              <div class="mini-title">Funding 12H</div>
+              <div class="mini-value" id="fund12h">—</div>
+              <div class="mini-sub" id="fund12hBias">—</div>
             </div>
-            <div class="source card">
-              <strong>Deribit / Binance / Coinbase</strong>
-              <small>Direct APIs for spot and derivatives</small>
-              <a href="https://developers.binance.com/docs/binance-spot-api-docs/rest-api" target="_blank" rel="noopener noreferrer">Binance API docs</a>
+          </div>
+
+          <div class="reason-box" id="decisionReason">
+            Waiting for derivatives + flow inputs…
+          </div>
+
+          <div class="flow-grid">
+            <div class="input-wrap">
+              <label for="etfFlowInput">ETF Flow Today (US$m)</label>
+              <input id="etfFlowInput" type="number" step="0.01" placeholder="e.g. 142.5" />
+            </div>
+            <div class="input-wrap">
+              <label for="coinbasePremiumInput">Coinbase Premium ($)</label>
+              <input id="coinbasePremiumInput" type="number" step="0.01" placeholder="e.g. 23.04" />
+            </div>
+          </div>
+
+          <div class="small-note">
+            Manual flow inputs are saved locally in the browser.
+          </div>
+        </div>
+
+        <!-- DERIVATIVES -->
+        <div class="widget-box" id="derivativesBox">
+          <div class="title-row">
+            <div class="box-title">Binance Futures — BTCUSDT</div>
+            <div class="status">
+              <span class="dot" id="apiDot"></span>
+              <span id="lastUpdate">Loading…</span>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="metric" id="markCard">
+              <div class="label">Mark Price (WS)</div>
+              <div class="value" id="markPrice">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Index</span><span id="indexPrice">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="oiCard">
+              <div class="label">Open Interest</div>
+              <div class="value" id="openInterest">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Δ</span><span id="oiDeltaAbs">—</span></span>
+                <span class="pill"><span class="neutral">Δ%</span><span id="oiDeltaPct">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="fundingCard">
+              <div class="label">Funding (Live Estimate)</div>
+              <div class="value" id="fundingRate">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Bias</span><span id="fundingBias">—</span></span>
+                <span class="pill"><span class="neutral">Next</span><span id="fundingCountdown">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="lsCard">
+              <div class="label">Long / Short Ratio</div>
+              <div class="value" id="lsRatio">—</div>
+              <div class="sub">
+                <span class="pill"><span class="neutral">Long%</span><span id="longPct">—</span></span>
+                <span class="pill"><span class="neutral">Short%</span><span id="shortPct">—</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert" id="alertBox"></div>
+        </div>
+
+        <!-- LIQUIDATIONS -->
+        <div class="widget-box" id="liqBox">
+          <div class="title-row">
+            <div class="box-title">Liquidations — Live Stream</div>
+            <div class="status">
+              <span class="dot" id="liqDot"></span>
+              <span id="liqStatus">Connecting…</span>
+            </div>
+          </div>
+
+          <div class="liq-wrap">
+            <div class="sub" style="margin-top:0">
+              <span class="liq-badge"><span class="neutral">Sound</span> <span id="soundState">On</span></span>
+              <span class="liq-badge"><span class="neutral">Big Liq</span> <span id="liqThresholdLabel">≥ $2,000,000</span></span>
+            </div>
+
+            <div class="liq-scroll">
+              <table class="liq-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Side</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Notional</th>
+                  </tr>
+                </thead>
+                <tbody id="liqTbody">
+                  <tr><td colspan="5" style="color:#bdbdbd;padding:12px;">Waiting for events…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="macro-note">
+              Interpretation: <span class="up">BUY</span> force-order = short liquidation (squeeze up).
+              <span class="down">SELL</span> force-order = long liquidation (flush down).
             </div>
           </div>
         </div>
 
-        <div class="panel">
-          <h2 class="section-title">Daily Checklist</h2>
-          <div class="notes">
-            <div class="checklist-line">1. ETF flow positive or negative?</div>
-            <div class="checklist-line">2. Coinbase premium rising or falling?</div>
-            <div class="checklist-line">3. Funding neutral, overheated, or negative?</div>
-            <div class="checklist-line">4. OI rising with price or falling with price?</div>
-            <div class="checklist-line">5. Macro risk-on or risk-off?</div>
-            <div class="checklist-line">6. Important US appointments today?</div>
+        <!-- JOURNAL -->
+        <div class="widget-box" id="journalBox">
+          <div class="title-row">
+            <div class="box-title">Journal / Score Tracker</div>
+            <div class="status">
+              <span class="dot ok"></span>
+              <span>Saved locally</span>
+            </div>
+          </div>
+
+          <div class="journal-form">
+            <div class="input-wrap">
+              <label for="journalDate">Date</label>
+              <input id="journalDate" type="date" />
+            </div>
+
+            <div class="input-wrap">
+              <label for="journalBias">Flow Bias</label>
+              <select id="journalBias">
+                <option value="Bullish">Bullish</option>
+                <option value="Neutral">Neutral</option>
+                <option value="Bearish">Bearish</option>
+              </select>
+            </div>
+
+            <div class="input-wrap">
+              <label for="journalDecision">Decision</label>
+              <select id="journalDecision">
+                <option value="WAIT">WAIT</option>
+                <option value="GO">GO</option>
+                <option value="ATTACK">ATTACK</option>
+              </select>
+            </div>
+
+            <div class="input-wrap">
+              <label for="journalResult">Result</label>
+              <select id="journalResult">
+                <option value="Pending">Pending</option>
+                <option value="Win">Win</option>
+                <option value="Mixed">Mixed</option>
+                <option value="Loss">Loss</option>
+              </select>
+            </div>
+
+            <div class="input-wrap">
+              <label for="journalEtf">ETF Flow (US$m)</label>
+              <input id="journalEtf" type="number" step="0.01" placeholder="auto or manual" />
+            </div>
+
+            <div class="input-wrap">
+              <label for="journalPremium">Coinbase Premium ($)</label>
+              <input id="journalPremium" type="number" step="0.01" placeholder="auto or manual" />
+            </div>
+
+            <div class="input-wrap" style="grid-column: 1 / -1;">
+              <label for="journalNotes">Notes</label>
+              <textarea id="journalNotes" placeholder="HTF bullish, shorts crowded, expected pullback first, then squeeze..."></textarea>
+            </div>
+          </div>
+
+          <div class="journal-actions">
+            <button class="btn" id="saveJournalBtn">Save Entry</button>
+            <button class="btn" id="prefillJournalBtn">Prefill Current State</button>
+            <button class="btn" id="exportJournalBtn">Export CSV</button>
+            <button class="btn danger" id="clearJournalBtn">Clear All</button>
+          </div>
+
+          <div class="journal-summary">
+            <div class="metric">
+              <div class="label">Total Entries</div>
+              <div class="value" id="journalTotal">0</div>
+            </div>
+            <div class="metric">
+              <div class="label">Wins</div>
+              <div class="value up" id="journalWins">0</div>
+            </div>
+            <div class="metric">
+              <div class="label">Losses</div>
+              <div class="value down" id="journalLosses">0</div>
+            </div>
+            <div class="metric">
+              <div class="label">Win Rate</div>
+              <div class="value" id="journalWinRate">0%</div>
+            </div>
+          </div>
+
+          <div class="journal-table-wrap">
+            <table class="journal-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bias</th>
+                  <th>Decision</th>
+                  <th>ETF</th>
+                  <th>Premium</th>
+                  <th>Result</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="journalTbody">
+                <tr><td colspan="7" style="color:#bdbdbd;padding:12px;">No journal entries yet.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div class="panel">
-          <h2 class="section-title">How to Improve This</h2>
-          <div class="notes">
-            Start manual first. Once the layout works, connect APIs one by one.<br><br>
-            Best build order:<br>
-            1. Static HTML layout<br>
-            2. Realtime BTC / Funding / OI<br>
-            3. Macro calendar and market context<br>
-            4. Manual analysis notes<br>
-            5. Alerts only when really needed
+        <!-- MACRO -->
+        <div class="widget-box" id="macroBox">
+          <div class="title-row">
+            <div class="box-title">Macro Signals</div>
+            <div class="status">
+              <span class="dot ok"></span>
+              <span>Visual panel</span>
+            </div>
+          </div>
+
+          <div class="tradingview-widget-container" style="height: 290px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+            {
+              "width": "100%",
+              "height": "290",
+              "symbolsGroups": [
+                {
+                  "name": "Risk",
+                  "symbols": [
+                    { "name": "SP:SPX", "displayName": "S&P 500" },
+                    { "name": "TVC:VIX", "displayName": "VIX" }
+                  ]
+                },
+                {
+                  "name": "USD / Rates",
+                  "symbols": [
+                    { "name": "TVC:DXY", "displayName": "DXY" },
+                    { "name": "TVC:US10Y", "displayName": "US10Y" }
+                  ]
+                },
+                {
+                  "name": "Hedge",
+                  "symbols": [
+                    { "name": "OANDA:XAUUSD", "displayName": "Gold" }
+                  ]
+                }
+              ],
+              "showSymbolLogo": true,
+              "colorTheme": "dark",
+              "isTransparent": true,
+              "locale": "de"
+            }
+            </script>
+          </div>
+
+          <div class="macro-note">
+            Quick read:<br>
+            • <b>Risk-Off</b> often = VIX ↑, DXY ↑, US10Y ↓, Gold ↑ → crypto can get pressure.<br>
+            • <b>Risk-On</b> often = VIX ↓, DXY ↓, SPX ↑ → crypto supports grind up.
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    function setText(id, value, fallback = '-----') {
+    new TradingView.widget({
+      autosize: true,
+      symbol: "BINANCE:BTCUSDT",
+      interval: "15",
+      theme: "dark",
+      style: "1",
+      locale: "de",
+      enable_publishing: false,
+      allow_symbol_change: true,
+      container_id: "tradingview_advanced"
+    });
+
+    const SYMBOL = "BTCUSDT";
+    const REFRESH_MS = 10000;
+    const LS_REFRESH_MS = 30000;
+    const FUNDING_HISTORY_REFRESH_MS = 60000;
+    const LIQ_MAX_ROWS = 25;
+    const BIG_LIQ_USD = 2_000_000;
+    const ENABLE_SOUND = true;
+    const FLOW_STORAGE_KEY = "obsession_flow_inputs_v1";
+    const JOURNAL_STORAGE_KEY = "obsession_journal_v1";
+
+    const beep = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+
+    let lastOI = null;
+    let lastFunding = null;
+    let nextFundingTime = null;
+    let latestIndexPrice = null;
+    let soundEnabled = ENABLE_SOUND;
+    let lastLsRatio = null;
+    let lastOIDeltaPct = null;
+    let fundingHistory = [];
+    let flowInputs = { etfFlow: 0, coinbasePremium: 0 };
+    let journalEntries = [];
+
+    function setDot(id, state) {
       const el = document.getElementById(id);
       if (!el) return;
-      el.textContent = value && String(value).trim() !== '' ? value : fallback;
+      el.classList.remove("ok", "warn", "bad");
+      if (state === "ok") el.classList.add("ok");
+      else if (state === "warn") el.classList.add("warn");
+      else el.classList.add("bad");
     }
 
-    function formatPercentFromDecimal(decimalValue, digits = 4) {
-      const num = Number(decimalValue);
-      if (!Number.isFinite(num)) return '-----';
-      return (num * 100).toFixed(digits) + '%';
+    function flash(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 650);
     }
 
-    function formatOpenInterest(value) {
-      const num = Number(value);
-      if (!Number.isFinite(num)) return '-----';
+    function fmtCompact(x) {
+      if (x === null || x === undefined || Number.isNaN(x)) return "—";
+      const n = Number(x);
+      const abs = Math.abs(n);
+      const sign = n < 0 ? "-" : "";
+      const format = (v) => v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
+      if (abs >= 1e12) return sign + format(abs / 1e12) + "T";
+      if (abs >= 1e9) return sign + format(abs / 1e9) + "B";
+      if (abs >= 1e6) return sign + format(abs / 1e6) + "M";
+      if (abs >= 1e3) return sign + format(abs / 1e3) + "K";
+      return sign + format(abs);
+    }
 
-      if (Math.abs(num) >= 1000) {
-        return (num / 1000).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }) + 'K';
-      }
+    function fmtPrice(x) {
+      if (x === null || x === undefined || Number.isNaN(x)) return "—";
+      return Number(x).toLocaleString("de-DE", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    }
 
-      return num.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+    function fmtPctFromRate(rate) {
+      if (rate === null || rate === undefined || Number.isNaN(rate)) return "—";
+      return (Number(rate) * 100).toFixed(4) + "%";
+    }
+
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function nowHHMMSS() {
+      const d = new Date();
+      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+    }
+
+    function playBeep() {
+      if (!soundEnabled) return;
+      try {
+        beep.currentTime = 0;
+        beep.play();
+      } catch (e) {}
+    }
+
+    function asNum(v, fallback = 0) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function todayISO() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function loadFlowInputs() {
+      try {
+        const raw = localStorage.getItem(FLOW_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        flowInputs.etfFlow = asNum(parsed.etfFlow, 0);
+        flowInputs.coinbasePremium = asNum(parsed.coinbasePremium, 0);
+      } catch (e) {}
+    }
+
+    function saveFlowInputs() {
+      try {
+        localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(flowInputs));
+      } catch (e) {}
+    }
+
+    function bindFlowInputs() {
+      const etfEl = document.getElementById("etfFlowInput");
+      const premEl = document.getElementById("coinbasePremiumInput");
+
+      etfEl.value = flowInputs.etfFlow || "";
+      premEl.value = flowInputs.coinbasePremium || "";
+
+      etfEl.addEventListener("input", (e) => {
+        flowInputs.etfFlow = asNum(e.target.value, 0);
+        saveFlowInputs();
+        updateDecisionEngine();
+      });
+
+      premEl.addEventListener("input", (e) => {
+        flowInputs.coinbasePremium = asNum(e.target.value, 0);
+        saveFlowInputs();
+        updateDecisionEngine();
       });
     }
 
-    async function fetchJson(url, options = {}) {
-      const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
+    function avgFundingInWindow(hours) {
+      if (!fundingHistory.length) return lastFunding;
+      const cutoff = Date.now() - (hours * 60 * 60 * 1000);
+      const rows = fundingHistory.filter(x => x.time >= cutoff);
+      if (!rows.length) return lastFunding;
+      const sum = rows.reduce((acc, row) => acc + row.rate, 0);
+      return sum / rows.length;
     }
 
-    async function loadRealtimeBTC() {
-      try {
-        const data = await fetchJson('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
-        const price = Number(data.price);
-        if (!Number.isFinite(price)) throw new Error('bad price');
+    function classifyFunding(rate) {
+      if (!Number.isFinite(rate)) return { label: "No data", cls: "neutral" };
+      const pct = rate * 100;
 
-        setText('btcPrice', price.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }));
+      if (pct <= -0.0100) return { label: "Bullish squeeze fuel", cls: "up" };
+      if (pct < 0) return { label: "Bullish", cls: "up" };
+      if (pct >= 0.0300) return { label: "Overheated longs", cls: "down" };
+      if (pct > 0) return { label: "Long-crowded / caution", cls: "warn" };
+      return { label: "Neutral", cls: "neutral" };
+    }
 
-        const now = new Date();
-        setText('btcPriceTime', `Live from Binance · ${now.toLocaleTimeString()}`);
-      } catch (err) {
-        setText('btcPrice', '-----');
-        setText('btcPriceTime', 'Live price unavailable');
-        console.error('BTC realtime error:', err);
+    function paintFundingMini(cardId, valueId, biasId, rate) {
+      const card = document.getElementById(cardId);
+      const val = document.getElementById(valueId);
+      const bias = document.getElementById(biasId);
+      const info = classifyFunding(rate);
+
+      setText(valueId, fmtPctFromRate(rate));
+      setText(biasId, info.label);
+
+      val.className = "mini-value " + info.cls;
+      bias.className = "mini-sub " + info.cls;
+
+      if (card) {
+        card.style.borderColor =
+          info.cls === "up" ? "rgba(0,255,0,0.40)" :
+          info.cls === "down" ? "rgba(255,59,59,0.45)" :
+          info.cls === "warn" ? "rgba(255,174,0,0.45)" :
+          "#2a2a2a";
       }
     }
 
-    async function loadRealtimeFunding() {
+    function updateFundingWindows() {
+      const f1h = Number.isFinite(lastFunding) ? lastFunding : null;
+      const f4h = avgFundingInWindow(4);
+      const f12h = avgFundingInWindow(12);
+
+      paintFundingMini("fund1hCard", "fund1h", "fund1hBias", f1h);
+      paintFundingMini("fund4hCard", "fund4h", "fund4hBias", f4h);
+      paintFundingMini("fund12hCard", "fund12h", "fund12hBias", f12h);
+    }
+
+    function updateDecisionEngine() {
+      let score = 0;
+      let reasons = [];
+      let crowding = "Neutral";
+
+      if (flowInputs.etfFlow > 0) {
+        score += flowInputs.etfFlow >= 100 ? 3 : 2;
+        reasons.push(`ETF flows positive (${flowInputs.etfFlow.toFixed(2)}m)`);
+      } else if (flowInputs.etfFlow < 0) {
+        score -= Math.abs(flowInputs.etfFlow) >= 100 ? 3 : 2;
+        reasons.push(`ETF flows negative (${flowInputs.etfFlow.toFixed(2)}m)`);
+      } else {
+        reasons.push("ETF flow not entered / neutral");
+      }
+
+      if (flowInputs.coinbasePremium > 0) {
+        score += flowInputs.coinbasePremium >= 20 ? 3 : 2;
+        reasons.push(`Coinbase Premium positive ($${flowInputs.coinbasePremium.toFixed(2)})`);
+      } else if (flowInputs.coinbasePremium < 0) {
+        score -= Math.abs(flowInputs.coinbasePremium) >= 20 ? 3 : 2;
+        reasons.push(`Coinbase Premium negative ($${flowInputs.coinbasePremium.toFixed(2)})`);
+      } else {
+        reasons.push("Coinbase Premium not entered / neutral");
+      }
+
+      if (Number.isFinite(lastFunding)) {
+        const fundingPct = lastFunding * 100;
+        if (fundingPct < 0) {
+          score += 1;
+          reasons.push("Negative live funding = short-crowded fuel");
+        } else if (fundingPct >= 0.03) {
+          score -= 2;
+          reasons.push("Funding too hot = long crowding risk");
+        } else if (fundingPct > 0) {
+          score -= 1;
+          reasons.push("Positive funding = mild long crowding");
+        }
+      }
+
+      if (Number.isFinite(lastLsRatio)) {
+        if (lastLsRatio < 0.95) {
+          score += 1;
+          crowding = "Shorts crowded";
+          reasons.push("Long/Short ratio < 0.95");
+        } else if (lastLsRatio > 1.05) {
+          score -= 1;
+          crowding = "Longs crowded";
+          reasons.push("Long/Short ratio > 1.05");
+        } else {
+          crowding = "Balanced";
+          reasons.push("Long/Short ratio balanced");
+        }
+      }
+
+      if (Number.isFinite(lastOIDeltaPct)) {
+        if (lastOIDeltaPct > 0 && Number.isFinite(lastFunding) && lastFunding <= 0) {
+          score += 1;
+          reasons.push("OI rising while funding ≤ 0");
+        } else if (lastOIDeltaPct > 0 && Number.isFinite(lastFunding) && lastFunding > 0) {
+          score -= 1;
+          reasons.push("OI rising while funding > 0");
+        } else if (lastOIDeltaPct < 0) {
+          reasons.push("OI cooling / leverage reduced");
+        }
+      }
+
+      const f4h = avgFundingInWindow(4);
+      const f12h = avgFundingInWindow(12);
+      if (Number.isFinite(f4h) && Number.isFinite(f12h)) {
+        if (f4h < 0 && f12h < 0) {
+          score += 1;
+          reasons.push("4H + 12H funding supportive");
+        } else if (f4h > 0 && f12h > 0) {
+          score -= 1;
+          reasons.push("4H + 12H funding crowded long");
+        }
+      }
+
+      let htfBias = "Neutral";
+      if (score >= 4) htfBias = "Bullish";
+      else if (score <= -3) htfBias = "Bearish";
+
+      let decision = "WAIT";
+      if (score >= 6) decision = "ATTACK";
+      else if (score >= 3) decision = "GO";
+
+      setText("flowScore", score);
+      setText("htfBias", htfBias);
+      setText("crowdingText", crowding);
+
+      const biasCard = document.getElementById("biasCard");
+      const actionCard = document.getElementById("actionCard");
+      const badge = document.getElementById("decisionBadge");
+
+      biasCard.className = "decision-card big";
+      actionCard.className = "decision-card big";
+      badge.className = "decision-badge";
+
+      if (decision === "ATTACK") {
+        biasCard.classList.add("decision-attack");
+        actionCard.classList.add("decision-attack");
+        badge.classList.add("badge-attack");
+      } else if (decision === "GO") {
+        biasCard.classList.add("decision-go");
+        actionCard.classList.add("decision-go");
+        badge.classList.add("badge-go");
+      } else {
+        biasCard.classList.add("decision-wait");
+        actionCard.classList.add("decision-wait");
+        badge.classList.add("badge-wait");
+      }
+
+      setText("decisionBadge", decision);
+
+      const htfEl = document.getElementById("htfBias");
+      htfEl.className = "value-xl " + (htfBias === "Bullish" ? "up" : htfBias === "Bearish" ? "down" : "neutral");
+
+      const reason =
+        decision === "ATTACK"
+          ? `ATTACK: HTF flows and derivatives align. ${reasons.slice(0, 4).join(" • ")}`
+          : decision === "GO"
+          ? `GO: Bullish bias exists, but timing still matters. ${reasons.slice(0, 4).join(" • ")}`
+          : `WAIT: Mixed or incomplete confirmation. ${reasons.slice(0, 4).join(" • ")}`;
+
+      setText("decisionReason", reason);
+    }
+
+    async function fetchDerivatives() {
       try {
-        const data = await fetchJson('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT');
-        const funding = Number(data.lastFundingRate);
-        if (!Number.isFinite(funding)) throw new Error('bad funding');
+        setDot("apiDot", "warn");
+        setText("lastUpdate", "Updating…");
 
-        setText('fundingValue', formatPercentFromDecimal(funding, 4));
+        const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
+        const oiJson = await oiRes.json();
+        const oi = Number(oiJson.openInterest);
 
-        const nextFundingTime = data.nextFundingTime ? new Date(Number(data.nextFundingTime)) : null;
-        const note = nextFundingTime && !Number.isNaN(nextFundingTime.getTime())
-          ? `Live from Binance Futures · Next funding ${nextFundingTime.toLocaleTimeString()}`
-          : 'Live from Binance Futures';
+        const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
+        const premJson = await premRes.json();
+        const funding = Number(premJson.lastFundingRate);
+        latestIndexPrice = Number(premJson.indexPrice);
+        nextFundingTime = Number(premJson.nextFundingTime);
 
-        setText('fundingNote', note);
-      } catch (err) {
-        setText('fundingValue', '-----');
-        setText('fundingNote', 'Live funding unavailable');
-        console.error('Funding realtime error:', err);
+        setText("openInterest", fmtCompact(oi));
+        setText("fundingRate", fmtPctFromRate(funding));
+        setText("indexPrice", fmtPrice(latestIndexPrice));
+
+        const fundingBiasEl = document.getElementById("fundingBias");
+        const fundingRateEl = document.getElementById("fundingRate");
+        const fundingCard = document.getElementById("fundingCard");
+
+        fundingRateEl.classList.remove("up", "down", "neutral", "warn");
+
+        if (funding > 0) {
+          fundingRateEl.classList.add("down");
+          fundingBiasEl.innerText = funding * 100 >= 0.03 ? "Overheated longs" : "Long-crowded";
+          fundingBiasEl.className = funding * 100 >= 0.03 ? "warn" : "down";
+          fundingCard.style.borderColor = funding * 100 >= 0.03 ? "#ffae00" : "#ff3b3b";
+        } else if (funding < 0) {
+          fundingRateEl.classList.add("up");
+          fundingBiasEl.innerText = "Short-crowded";
+          fundingBiasEl.className = "up";
+          fundingCard.style.borderColor = "#00ff00";
+        } else {
+          fundingRateEl.classList.add("neutral");
+          fundingBiasEl.innerText = "Neutral";
+          fundingBiasEl.className = "neutral";
+          fundingCard.style.borderColor = "#2a2a2a";
+        }
+
+        let alertMsg = "";
+        if (lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)) {
+          const deltaAbs = oi - lastOI;
+          const deltaPct = (deltaAbs / lastOI) * 100;
+          lastOIDeltaPct = deltaPct;
+
+          const absEl = document.getElementById("oiDeltaAbs");
+          const pctEl = document.getElementById("oiDeltaPct");
+
+          absEl.innerText = fmtCompact(deltaAbs);
+          pctEl.innerText = deltaPct.toFixed(3) + "%";
+
+          absEl.className = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
+          pctEl.className = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
+
+          if (Math.abs(deltaPct) >= 0.60) {
+            alertMsg = `⚡ OI spike: ${deltaPct.toFixed(2)}%`;
+            flash("oiCard");
+            flash("derivativesBox");
+            playBeep();
+          }
+        } else {
+          setText("oiDeltaAbs", "—");
+          setText("oiDeltaPct", "—");
+          document.getElementById("oiDeltaAbs").className = "neutral";
+          document.getElementById("oiDeltaPct").className = "neutral";
+        }
+
+        if (lastFunding !== null && Number.isFinite(lastFunding)) {
+          if (funding > 0 && lastFunding < 0) {
+            alertMsg = "🔥 Funding flipped POSITIVE (Long-crowded)";
+            flash("fundingCard");
+            flash("derivativesBox");
+            playBeep();
+          }
+          if (funding < 0 && lastFunding > 0) {
+            alertMsg = "🔥 Funding flipped NEGATIVE (Short-crowded)";
+            flash("fundingCard");
+            flash("derivativesBox");
+            playBeep();
+          }
+        }
+
+        setText("alertBox", alertMsg);
+
+        lastOI = oi;
+        lastFunding = funding;
+
+        updateFundingWindows();
+        updateDecisionEngine();
+
+        setDot("apiDot", "ok");
+        setText("lastUpdate", `Updated ${nowHHMMSS()}`);
+      } catch (e) {
+        console.error("Derivatives fetch error:", e);
+        setDot("apiDot", "bad");
+        setText("lastUpdate", "API error");
       }
     }
 
-    async function loadRealtimeOI() {
+    async function fetchFundingHistory() {
       try {
-        const data = await fetchJson('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT');
-        const oi = Number(data.openInterest);
-        if (!Number.isFinite(oi)) throw new Error('bad open interest');
+        const res = await fetch(`https://fapi.binance.com/fapi/v1/fundingRate?symbol=${SYMBOL}&limit=100`);
+        const arr = await res.json();
+        if (!Array.isArray(arr)) return;
 
-        setText('oiValue', formatOpenInterest(oi));
+        fundingHistory = arr
+          .map(row => ({
+            rate: Number(row.fundingRate),
+            time: Number(row.fundingTime)
+          }))
+          .filter(x => Number.isFinite(x.rate) && Number.isFinite(x.time));
 
-        const updated = data.time ? new Date(Number(data.time)) : new Date();
-        setText('oiNote', `Live from Binance Futures · ${updated.toLocaleTimeString()}`);
-      } catch (err) {
-        setText('oiValue', '-----');
-        setText('oiNote', 'Live OI unavailable');
-        console.error('OI realtime error:', err);
+        updateFundingWindows();
+        updateDecisionEngine();
+      } catch (e) {
+        console.error("Funding history error:", e);
       }
     }
 
-    function startRealtimeLoops() {
-      loadRealtimeBTC();
-      loadRealtimeFunding();
-      loadRealtimeOI();
+    async function fetchLongShortRatio() {
+      try {
+        const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYMBOL}&period=5m&limit=1`;
+        const res = await fetch(url);
+        const arr = await res.json();
+        const row = Array.isArray(arr) && arr.length ? arr[0] : null;
+        if (!row) return;
 
-      setInterval(loadRealtimeBTC, 15000);
-      setInterval(loadRealtimeFunding, 15000);
-      setInterval(loadRealtimeOI, 15000);
+        const ratio = Number(row.longShortRatio);
+        const longAcc = Number(row.longAccount);
+        const shortAcc = Number(row.shortAccount);
+
+        lastLsRatio = ratio;
+
+        setText("lsRatio", Number.isFinite(ratio) ? ratio.toFixed(3) : "—");
+        setText("longPct", Number.isFinite(longAcc) ? (longAcc * 100).toFixed(1) + "%" : "—");
+        setText("shortPct", Number.isFinite(shortAcc) ? (shortAcc * 100).toFixed(1) + "%" : "—");
+
+        const lsVal = document.getElementById("lsRatio");
+        lsVal.classList.remove("up", "down", "neutral");
+        if (ratio > 1.05) lsVal.classList.add("down");
+        else if (ratio < 0.95) lsVal.classList.add("up");
+        else lsVal.classList.add("neutral");
+
+        updateDecisionEngine();
+      } catch (e) {
+        console.error("Long/Short ratio error:", e);
+      }
     }
 
-    startRealtimeLoops();
+    function connectMarkWS() {
+      const ws = new WebSocket("wss://fstream.binance.com/ws/btcusdt@markPrice@1s");
+
+      ws.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          const mark = Number(data.p);
+          if (Number.isFinite(mark)) setText("markPrice", fmtPrice(mark));
+        } catch (e) {}
+      };
+
+      ws.onclose = () => setTimeout(connectMarkWS, 1500);
+    }
+
+    function connectLiquidationWS() {
+      setDot("liqDot", "warn");
+      setText("liqStatus", "Connecting…");
+
+      const ws = new WebSocket("wss://fstream.binance.com/ws/!forceOrder@arr");
+
+      ws.onopen = () => {
+        setDot("liqDot", "ok");
+        setText("liqStatus", "Live");
+      };
+
+      ws.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          const events = Array.isArray(data) ? data : [data];
+
+          for (const item of events) {
+            if (!item || !item.o) continue;
+            const o = item.o;
+            if (o.s !== SYMBOL) continue;
+
+            const side = String(o.S || "").toUpperCase();
+            const price = Number(o.p);
+            const qty = Number(o.q);
+            const ts = Number(o.T || item.E || Date.now());
+            const notional = price * qty;
+
+            addLiqRow(ts, side, price, qty, notional);
+
+            if (Number.isFinite(notional) && notional >= BIG_LIQ_USD) {
+              flash("liqBox");
+              playBeep();
+            }
+          }
+        } catch (e) {}
+      };
+
+      ws.onerror = () => {
+        setDot("liqDot", "bad");
+        setText("liqStatus", "Error");
+      };
+
+      ws.onclose = () => {
+        setDot("liqDot", "warn");
+        setText("liqStatus", "Reconnecting…");
+        setTimeout(connectLiquidationWS, 1500);
+      };
+    }
+
+    function addLiqRow(ts, side, price, qty, notional) {
+      const tbody = document.getElementById("liqTbody");
+
+      if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+        tbody.innerHTML = "";
+      }
+
+      const d = new Date(ts);
+      const time = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+
+      const tr = document.createElement("tr");
+
+      const tdTime = document.createElement("td");
+      tdTime.innerText = time;
+
+      const tdSide = document.createElement("td");
+      tdSide.innerText = side;
+      tdSide.className = (side === "BUY") ? "up" : (side === "SELL") ? "down" : "neutral";
+
+      const tdPrice = document.createElement("td");
+      tdPrice.innerText = fmtPrice(price);
+
+      const tdQty = document.createElement("td");
+      tdQty.innerText = fmtCompact(qty);
+
+      const tdNotional = document.createElement("td");
+      tdNotional.innerText = "$" + fmtCompact(notional);
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdSide);
+      tr.appendChild(tdPrice);
+      tr.appendChild(tdQty);
+      tr.appendChild(tdNotional);
+
+      tbody.insertBefore(tr, tbody.firstChild);
+
+      while (tbody.children.length > LIQ_MAX_ROWS) {
+        tbody.removeChild(tbody.lastChild);
+      }
+    }
+
+    function loadJournal() {
+      try {
+        const raw = localStorage.getItem(JOURNAL_STORAGE_KEY);
+        if (!raw) {
+          journalEntries = [];
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        journalEntries = Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        journalEntries = [];
+      }
+    }
+
+    function saveJournal() {
+      try {
+        localStorage.setItem(JOURNAL_STORAGE_KEY, JSON.stringify(journalEntries));
+      } catch (e) {}
+    }
+
+    function renderJournal() {
+      const tbody = document.getElementById("journalTbody");
+      if (!tbody) return;
+
+      if (!journalEntries.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:#bdbdbd;padding:12px;">No journal entries yet.</td></tr>`;
+      } else {
+        tbody.innerHTML = journalEntries
+          .slice()
+          .reverse()
+          .map(entry => {
+            const resultClass =
+              entry.result === "Win" ? "up" :
+              entry.result === "Loss" ? "down" :
+              entry.result === "Mixed" ? "warn" : "neutral";
+
+            return `
+              <tr>
+                <td>${entry.date || "—"}</td>
+                <td><span class="small-pill">${entry.bias || "—"}</span></td>
+                <td><span class="small-pill">${entry.decision || "—"}</span></td>
+                <td>${entry.etfFlow ?? "—"}</td>
+                <td>${entry.coinbasePremium ?? "—"}</td>
+                <td class="${resultClass}">${entry.result || "Pending"}</td>
+                <td>${(entry.notes || "").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      const total = journalEntries.length;
+      const wins = journalEntries.filter(x => x.result === "Win").length;
+      const losses = journalEntries.filter(x => x.result === "Loss").length;
+      const settled = journalEntries.filter(x => x.result === "Win" || x.result === "Loss").length;
+      const winRate = settled > 0 ? ((wins / settled) * 100).toFixed(1) : "0.0";
+
+      setText("journalTotal", total);
+      setText("journalWins", wins);
+      setText("journalLosses", losses);
+      setText("journalWinRate", winRate + "%");
+    }
+
+    function prefillJournalForm() {
+      document.getElementById("journalDate").value = todayISO();
+
+      const htfBiasEl = document.getElementById("htfBias");
+      const decisionBadgeEl = document.getElementById("decisionBadge");
+
+      const currentBias = htfBiasEl ? htfBiasEl.innerText.trim() : "Neutral";
+      const currentDecision = decisionBadgeEl ? decisionBadgeEl.innerText.trim() : "WAIT";
+
+      document.getElementById("journalBias").value =
+        currentBias === "Bullish" ? "Bullish" :
+        currentBias === "Bearish" ? "Bearish" : "Neutral";
+
+      document.getElementById("journalDecision").value =
+        currentDecision === "ATTACK" ? "ATTACK" :
+        currentDecision === "GO" ? "GO" : "WAIT";
+
+      document.getElementById("journalEtf").value = flowInputs.etfFlow || "";
+      document.getElementById("journalPremium").value = flowInputs.coinbasePremium || "";
+
+      const notes = [];
+      if (Number.isFinite(lastFunding)) notes.push(`Funding: ${(lastFunding * 100).toFixed(4)}%`);
+      if (Number.isFinite(lastLsRatio)) notes.push(`L/S ratio: ${lastLsRatio.toFixed(3)}`);
+      if (Number.isFinite(lastOIDeltaPct)) notes.push(`OI Δ%: ${lastOIDeltaPct.toFixed(3)}%`);
+
+      document.getElementById("journalNotes").value = notes.join(" | ");
+    }
+
+    function addJournalEntry() {
+      const entry = {
+        date: document.getElementById("journalDate").value || todayISO(),
+        bias: document.getElementById("journalBias").value,
+        decision: document.getElementById("journalDecision").value,
+        result: document.getElementById("journalResult").value,
+        etfFlow: document.getElementById("journalEtf").value || "",
+        coinbasePremium: document.getElementById("journalPremium").value || "",
+        notes: document.getElementById("journalNotes").value.trim(),
+        createdAt: Date.now()
+      };
+
+      journalEntries.push(entry);
+      saveJournal();
+      renderJournal();
+
+      document.getElementById("journalNotes").value = "";
+      document.getElementById("journalResult").value = "Pending";
+      flash("journalBox");
+    }
+
+    function exportJournalCSV() {
+      if (!journalEntries.length) return;
+
+      const headers = ["date", "bias", "decision", "result", "etfFlow", "coinbasePremium", "notes", "createdAt"];
+      const rows = journalEntries.map(entry =>
+        headers.map(h => {
+          const value = entry[h] ?? "";
+          return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(",")
+      );
+
+      const csv = [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "obsession_journal.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function clearJournal() {
+      const ok = confirm("Delete all journal entries?");
+      if (!ok) return;
+      journalEntries = [];
+      saveJournal();
+      renderJournal();
+    }
+
+    function bindJournal() {
+      document.getElementById("journalDate").value = todayISO();
+
+      document.getElementById("saveJournalBtn").addEventListener("click", addJournalEntry);
+      document.getElementById("prefillJournalBtn").addEventListener("click", prefillJournalForm);
+      document.getElementById("exportJournalBtn").addEventListener("click", exportJournalCSV);
+      document.getElementById("clearJournalBtn").addEventListener("click", clearJournal);
+    }
+
+    setInterval(() => {
+      if (!nextFundingTime) return;
+      const now = Date.now();
+      const diff = nextFundingTime - now;
+      if (!Number.isFinite(diff) || diff <= 0) return;
+
+      const h = Math.floor(diff / 1000 / 60 / 60);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      setText("fundingCountdown", `${h}h ${m}m ${s}s`);
+    }, 1000);
+
+    setText("soundState", soundEnabled ? "On" : "Off");
+    setText("liqThresholdLabel", `≥ $${BIG_LIQ_USD.toLocaleString("de-DE")}`);
+
+    loadFlowInputs();
+    bindFlowInputs();
+
+    loadJournal();
+    bindJournal();
+    renderJournal();
+
+    connectMarkWS();
+    connectLiquidationWS();
+
+    fetchFundingHistory();
+    setInterval(fetchFundingHistory, FUNDING_HISTORY_REFRESH_MS);
+
+    fetchDerivatives();
+    setInterval(fetchDerivatives, REFRESH_MS);
+
+    fetchLongShortRatio();
+    setInterval(fetchLongShortRatio, LS_REFRESH_MS);
+
+    updateFundingWindows();
+    updateDecisionEngine();
   </script>
 </body>
 </html>
