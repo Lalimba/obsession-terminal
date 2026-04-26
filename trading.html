@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Trading Chart Tutorial for Beginners</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #0f0f0f;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #cccccc;
+      margin: 0 auto 20px;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .topbar,
+    .controls,
+    .lesson-controls {
+      max-width: 1050px;
+      margin: 12px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button,
+    select {
+      padding: 10px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+    }
+
+    button {
+      background: #2d2d2d;
+      color: white;
+      border: 1px solid #444;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00aa66;
+      transform: translateY(-1px);
+    }
+
+    select {
+      background: #1f1f1f;
+      color: white;
+      border: 1px solid #444;
+    }
+
+    .active {
+      background: #00aa66 !important;
+      border-color: #00ff99;
+    }
+
+    .category-title {
+      max-width: 1050px;
+      margin: 18px auto 8px;
+      color: #ffcc00;
+      text-align: left;
+      font-size: 18px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+    }
+
+    .panel {
+      max-width: 900px;
+      margin: 14px auto;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      color: #ffcc00;
+    }
+
+    .meta {
+      color: #bbbbbb;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .quiz-box {
+      margin-top: 14px;
+      padding: 14px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+    }
+
+    .quiz-answer {
+      display: none;
+      margin-top: 10px;
+      color: #00ff99;
+      font-weight: bold;
+    }
+
+    canvas {
+      background: #222;
+      margin-top: 14px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      cursor: crosshair;
+      max-width: 100%;
+    }
+
+    .small-note {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      button,
+      select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="mainTitle">Interactive Trading Chart Tutorial</h1>
+  <p class="subtitle" id="subtitle">
+    Learn price action, market structure, smart money concepts, and risk management step by step.
+  </p>
+
+  <div class="topbar">
+    <select id="languageSelect" onchange="changeLanguage()">
+      <option value="en">English</option>
+      <option value="ti">ትግርኛ</option>
+    </select>
+
+    <select id="speedSelect" onchange="changeSpeed()">
+      <option value="700">Slow</option>
+      <option value="420" selected>Normal</option>
+      <option value="180">Fast</option>
+    </select>
+  </div>
+
+  <div id="lessonContainer"></div>
+
+  <div class="lesson-controls">
+    <button onclick="previousLesson()" id="prevBtn">Previous</button>
+    <button onclick="togglePlayPause()" id="playPauseBtn">Pause</button>
+    <button onclick="nextLesson()" id="nextBtn">Next</button>
+    <button onclick="enableDrawMode()" id="drawBtn">Draw</button>
+    <button onclick="disableDrawMode()" id="stopDrawBtn">Stop Drawing</button>
+    <button onclick="resetChart()" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2 id="lessonTitle">Tutorial</h2>
+    <div class="meta" id="lessonMeta">Choose one tutorial button to start.</div>
+    <div id="lessonText">Choose one tutorial button to start.</div>
+
+    <div class="quiz-box" id="quizBox">
+      <strong id="quizTitle">Quiz</strong>
+      <p id="quizQuestion">Choose a lesson first.</p>
+      <button onclick="showQuizAnswer()" id="showAnswerBtn">Show Answer</button>
+      <div class="quiz-answer" id="quizAnswer"></div>
+    </div>
+  </div>
+
+  <canvas id="chart" width="900" height="450"></canvas>
+  <div class="small-note" id="note">Educational tool only. Not financial advice.</div>
+
+<script>
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
+const lessonContainer = document.getElementById("lessonContainer");
+const lessonTitle = document.getElementById("lessonTitle");
+const lessonMeta = document.getElementById("lessonMeta");
+const lessonText = document.getElementById("lessonText");
+const quizQuestion = document.getElementById("quizQuestion");
+const quizAnswer = document.getElementById("quizAnswer");
+const speedSelect = document.getElementById("speedSelect");
+const languageSelect = document.getElementById("languageSelect");
+const playPauseBtn = document.getElementById("playPauseBtn");
+
+let points = [];
+let index = 0;
+let interval = null;
+let currentLessonKey = "";
+let animationSpeed = Number(speedSelect.value);
+let currentLanguage = "en";
+let isPaused = false;
+let drawMode = false;
+let isDrawing = false;
+
+const uiText = {
+  en: {
+    mainTitle: "Interactive Trading Chart Tutorial",
+    subtitle: "Learn price action, market structure, smart money concepts, and risk management step by step.",
+    previous: "Previous",
+    next: "Next",
+    pause: "Pause",
+    play: "Play",
+    draw: "Draw",
+    stopDrawing: "Stop Drawing",
+    reset: "Reset",
+    tutorial: "Tutorial",
+    choose: "Choose one tutorial button to start.",
+    quiz: "Quiz",
+    showAnswer: "Show Answer",
+    note: "Educational tool only. Not financial advice."
+  },
+  ti: {
+    mainTitle: "ቀሊል ናይ ትሬዲንግ ቻርት መምሃሪ",
+    subtitle: "Price action, market structure, smart money concepts እና risk management ብቐሊሉ ተማሃር።",
+    previous: "ድሕሪት",
+    next: "ቀጻሊ",
+    pause: "ኣቋርጽ",
+    play: "ኣጻውት",
+    draw: "ስኣል",
+    stopDrawing: "ስእሊ ደው ኣብል",
+    reset: "Reset",
+    tutorial: "መምሃሪ",
+    choose: "ሓደ tutorial ምረጽ።",
+    quiz: "ሕቶ",
+    showAnswer: "መልሲ ኣርኢ",
+    note: "እዚ ንትምህርቲ ጥራይ እዩ። Financial advice ኣይኮነን።"
+  }
+};
+
+const categories = {
+  basic: { en: "Basic Concepts", ti: "መሰረታዊ ኣምራት" },
+  structure: { en: "Market Structure", ti: "ናይ ዕዳጋ ስትራክቸር" },
+  smc: { en: "Smart Money Concepts", ti: "Smart Money Concepts" },
+  risk: { en: "Risk Management", ti: "Risk Management" }
+};
+
+const lessons = {
+  uptrend: {
+    category: "basic",
+    button: { en: "Uptrend", ti: "Uptrend" },
+    title: { en: "Uptrend", ti: "Uptrend / ወደ ላዕሊ ዝኸይድ ትሬንድ" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "An uptrend means price is creating higher highs and higher lows. Buyers are stronger than sellers.",
+      ti: "Uptrend ማለት ዋጋ Higher High እና Higher Low እናሰርሐ ክድይብ ከሎ እዩ።"
+    },
+    quiz: {
+      q: { en: "What two things do you usually see in an uptrend?", ti: "ኣብ Uptrend እንታይ ክልተ ነገራት ንርኢ?" },
+      a: { en: "Higher highs and higher lows.", ti: "Higher High እና Higher Low።" }
+    },
+    points: [{x:80,y:300},{x:180,y:240},{x:280,y:270},{x:400,y:190},{x:520,y:220},{x:660,y:130}],
+    labels: [
+      {text:{en:"Higher High",ti:"Higher High"}, x:520, y:120},
+      {text:{en:"Higher Low",ti:"Higher Low"}, x:410, y:210}
+    ]
+  },
+
+  downtrend: {
+    category: "basic",
+    button: { en: "Downtrend", ti: "Downtrend" },
+    title: { en: "Downtrend", ti: "Downtrend / ወደ ታሕቲ ዝኸይድ ትሬንድ" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "A downtrend means price is creating lower highs and lower lows. Sellers are stronger than buyers.",
+      ti: "Downtrend ማለት ዋጋ Lower High እና Lower Low እናሰርሐ ክወርድ ከሎ እዩ።"
+    },
+    quiz: {
+      q: { en: "What shows seller strength in a downtrend?", ti: "ኣብ Downtrend ናይ sellers ሓይሊ ዘርኢ እንታይ እዩ?" },
+      a: { en: "Lower highs and lower lows.", ti: "Lower High እና Lower Low።" }
+    },
+    points: [{x:80,y:120},{x:180,y:190},{x:280,y:160},{x:400,y:240},{x:520,y:210},{x:660,y:310}],
+    labels: [
+      {text:{en:"Lower High",ti:"Lower High"}, x:180, y:160},
+      {text:{en:"Lower Low",ti:"Lower Low"}, x:520, y:250}
+    ]
+  },
+
+  range: {
+    category: "basic",
+    button: { en: "Range", ti: "Range" },
+    title: { en: "Range", ti: "Range / ጎናዊ ምንቅስቓስ" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "A range means price moves sideways between a high area and a low area. There is no clear trend yet.",
+      ti: "Range ማለት ዋጋ ኣብ መንጎ Range High እና Range Low ክመላለስ ከሎ እዩ።"
+    },
+    quiz: {
+      q: { en: "Is a range trending strongly or moving sideways?", ti: "Range ብሓይሊ ይትሬንድ ድዩ ወይስ ጎናዊ ይንቀሳቐስ?" },
+      a: { en: "It is moving sideways.", ti: "ጎናዊ ይንቀሳቐስ።" }
+    },
+    points: [{x:80,y:210},{x:180,y:130},{x:280,y:260},{x:380,y:150},{x:500,y:270},{x:620,y:140},{x:740,y:250}],
+    zones: [
+      {type:"line", y:120, text:{en:"Range High",ti:"Range High"}, textX:720, textY:110},
+      {type:"line", y:280, text:{en:"Range Low",ti:"Range Low"}, textX:720, textY:300}
+    ]
+  },
+
+  supportResistance: {
+    category: "basic",
+    button: { en: "Support / Resistance", ti: "Support / Resistance" },
+    title: { en: "Support and Resistance", ti: "Support & Resistance" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "Support is an area where price often reacts upward. Resistance is an area where price often reacts downward.",
+      ti: "Support ዋጋ ብዙሕ ግዜ ዝድገፈሉ ቦታ እዩ። Resistance ዋጋ ብዙሕ ግዜ ዝተኸልከለሉ ቦታ እዩ።"
+    },
+    quiz: {
+      q: { en: "Where does price often react upward?", ti: "ዋጋ ብዙሕ ግዜ ካበይ ይድገፍ?" },
+      a: { en: "From support.", ti: "ካብ Support።" }
+    },
+    points: [{x:70,y:300},{x:170,y:190},{x:270,y:290},{x:370,y:180},{x:470,y:280},{x:590,y:170},{x:730,y:260}],
+    zones: [
+      {type:"line", y:180, text:{en:"Resistance",ti:"Resistance"}, textX:700, textY:170},
+      {type:"line", y:290, text:{en:"Support",ti:"Support"}, textX:710, textY:310}
+    ]
+  },
+
+  breakout: {
+    category: "structure",
+    button: { en: "Breakout", ti: "Breakout" },
+    title: { en: "Breakout", ti: "Breakout / ምስባር ዞን" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "A breakout happens when price breaks above resistance or below support and starts moving into a new area.",
+      ti: "Breakout ማለት ዋጋ ካብ Resistance ወይ Support ሰቢሩ ናብ ሓድሽ ኣንፈት ምኻድ እዩ።"
+    },
+    quiz: {
+      q: { en: "What does price break during a breakout?", ti: "ኣብ Breakout ዋጋ እንታይ ይሰብር?" },
+      a: { en: "Support, resistance, or a structure level.", ti: "Support, Resistance ወይ structure level።" }
+    },
+    points: [{x:80,y:260},{x:180,y:230},{x:280,y:250},{x:380,y:220},{x:500,y:180},{x:640,y:120},{x:760,y:90}],
+    zones: [{type:"line", y:220, text:{en:"Resistance Break",ti:"Resistance Break"}, textX:650, textY:210}],
+    labels: [
+      {text:{en:"Breakout",ti:"Breakout"}, x:500, y:165},
+      {text:{en:"Continuation",ti:"Continuation"}, x:620, y:80}
+    ]
+  },
+
+  fakeBreakout: {
+    category: "structure",
+    button: { en: "Fake Breakout", ti: "Fake Breakout" },
+    title: { en: "Fake Breakout", ti: "Fake Breakout / ሓሶት ምስባር" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "A fake breakout looks like a real breakout at first, but price quickly returns back inside the range or structure.",
+      ti: "Fake Breakout ማለት ዋጋ ዞን ሰቢሩ ዝመስል፣ ግን ብቕልጡፍ ናብ Range ዝምለስ እዩ።"
+    },
+    quiz: {
+      q: { en: "What is the main sign of a fake breakout?", ti: "ዋና ምልክት Fake Breakout እንታይ እዩ?" },
+      a: { en: "Price breaks a level but quickly returns back.", ti: "ዋጋ ዞን ይሰብር ግን ብቕልጡፍ ይምለስ።" }
+    },
+    points: [{x:80,y:250},{x:180,y:220},{x:280,y:250},{x:390,y:210},{x:500,y:160},{x:610,y:240},{x:740,y:280}],
+    zones: [{type:"line", y:220, text:{en:"Resistance",ti:"Resistance"}, textX:700, textY:210}],
+    labels: [
+      {text:{en:"Breaks above",ti:"ንላዕሊ ይሰብር"}, x:470, y:145},
+      {text:{en:"Returns back",ti:"ይምለስ"}, x:590, y:260}
+    ]
+  },
+
+  retest: {
+    category: "structure",
+    button: { en: "Retest", ti: "Retest" },
+    title: { en: "Retest", ti: "Retest / ተመሊሱ ምፍታን" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "A retest happens when price breaks a level, then comes back to test that same level before continuing.",
+      ti: "Retest ማለት ዋጋ ዞን ሰቢሩ ድሕሪኡ ናብቲ ዞን ተመሊሱ እንደገና ምፍታን እዩ።"
+    },
+    quiz: {
+      q: { en: "What happens after the breakout in a retest?", ti: "ድሕሪ Breakout ኣብ Retest እንታይ ይኸውን?" },
+      a: { en: "Price comes back to test the broken level.", ti: "ዋጋ ናብቲ ዝተሰብረ ዞን ይምለስ።" }
+    },
+    points: [{x:80,y:300},{x:180,y:260},{x:280,y:220},{x:390,y:180},{x:500,y:220},{x:620,y:150},{x:760,y:100}],
+    zones: [{type:"line", y:220, text:{en:"Broken resistance becomes support",ti:"Resistance ናብ Support ይቕየር"}, textX:470, textY:245}],
+    labels: [
+      {text:{en:"Breakout",ti:"Breakout"}, x:360, y:165},
+      {text:{en:"Retest",ti:"Retest"}, x:490, y:215},
+      {text:{en:"Continuation",ti:"Continuation"}, x:620, y:135}
+    ]
+  },
+
+  bos: {
+    category: "structure",
+    button: { en: "BOS", ti: "BOS" },
+    title: { en: "BOS / Break of Structure", ti: "BOS / Break of Structure" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "BOS means price breaks a previous structural high or low. It can show trend continuation.",
+      ti: "BOS ማለት ዋጋ ናይ ቀደም ስትራክቸር High ወይ Low ምስ ዝሰብር እዩ።"
+    },
+    quiz: {
+      q: { en: "Does BOS usually show continuation or hesitation?", ti: "BOS ብዙሕ ግዜ continuation ድዩ ዘርኢ?" },
+      a: { en: "Continuation.", ti: "Continuation።" }
+    },
+    points: [{x:80,y:260},{x:180,y:180},{x:280,y:230},{x:400,y:175},{x:520,y:130},{x:680,y:100}],
+    zones: [{type:"line", y:180, text:{en:"Previous High",ti:"Previous High"}, textX:130, textY:170}],
+    labels: [{text:{en:"BOS: structure breaks",ti:"BOS: structure ተሰቢሩ"}, x:470, y:120}]
+  },
+
+  choch: {
+    category: "structure",
+    button: { en: "CHoCH", ti: "CHoCH" },
+    title: { en: "CHoCH / Change of Character", ti: "CHoCH / Change of Character" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "CHoCH means price behavior changes. It can be an early warning that direction may change.",
+      ti: "CHoCH ማለት ዕዳጋ ባህርያቱ ክቕይር ከሎ እዩ። ካብ downtrend ናብ possible uptrend ክቕየር ይኽእል።"
+    },
+    quiz: {
+      q: { en: "What can CHoCH warn us about?", ti: "CHoCH ብዛዕባ እንታይ የጠንቅቐና?" },
+      a: { en: "A possible change in direction.", ti: "ክኸውን ዝኽእል ምቕያር ኣንፈት።" }
+    },
+    points: [{x:80,y:100},{x:180,y:180},{x:280,y:140},{x:390,y:260},{x:510,y:210},{x:660,y:120}],
+    labels: [
+      {text:{en:"Old direction down",ti:"ቀደም downtrend"}, x:100, y:90},
+      {text:{en:"Character changes",ti:"ባህሪ ይቕየር"}, x:380, y:230},
+      {text:{en:"Possible new direction",ti:"ሓድሽ ኣንፈት"}, x:540, y:170}
+    ]
+  },
+
+  bullishFVG: {
+    category: "smc",
+    button: { en: "Bullish FVG", ti: "Bullish FVG" },
+    title: { en: "Bullish Fair Value Gap", ti: "Bullish FVG / ናይ ምድያብ ኢምባላንስ" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "A bullish FVG is an imbalance left after a strong move upward. Price may later return to this area before continuing higher.",
+      ti: "Bullish FVG ድሕሪ ሓያል ምድያብ ዝተረፈ ክፍተት እዩ። ዋጋ ናብቲ zone ተመሊሱ ክቕጽል ይኽእል።"
+    },
+    quiz: {
+      q: { en: "What usually creates an FVG?", ti: "FVG ብዙሕ ግዜ ብምንታይ ይፍጠር?" },
+      a: { en: "A strong fast move that leaves imbalance.", ti: "ሓያል ቁልጡፍ ምንቅስቓስ ኢምባላንስ ምስ ዝገድፍ።" }
+    },
+    points: [{x:80,y:320},{x:160,y:290},{x:230,y:250},{x:300,y:155},{x:380,y:95},{x:500,y:170},{x:600,y:225},{x:720,y:90}],
+    zones: [{type:"box", x:250, y:145, w:190, h:80, text:{en:"BULLISH FVG",ti:"BULLISH FVG"}, textX:300, textY:140}],
+    labels: [
+      {text:{en:"Strong move up",ti:"ሓያል ምድያብ"}, x:250, y:80},
+      {text:{en:"Return into FVG",ti:"ናብ FVG ይምለስ"}, x:475, y:230},
+      {text:{en:"Continues higher",ti:"ንላዕሊ ይቕጽል"}, x:650, y:80}
+    ]
+  },
+
+  bearishFVG: {
+    category: "smc",
+    button: { en: "Bearish FVG", ti: "Bearish FVG" },
+    title: { en: "Bearish Fair Value Gap", ti: "Bearish FVG / ናይ ምውራድ ኢምባላንስ" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "A bearish FVG is an imbalance left after a strong move downward. Price may later return to this area before continuing lower.",
+      ti: "Bearish FVG ድሕሪ ሓያል ምውራድ ዝተረፈ ክፍተት እዩ። ዋጋ ናብቲ zone ተመሊሱ ክወርድ ይኽእል።"
+    },
+    quiz: {
+      q: { en: "In a bearish FVG, what direction was the strong move?", ti: "ኣብ Bearish FVG እቲ ሓያል ምንቅስቓስ ናበይ እዩ?" },
+      a: { en: "Downward.", ti: "ንታሕቲ።" }
+    },
+    points: [{x:80,y:100},{x:160,y:130},{x:230,y:170},{x:300,y:265},{x:380,y:330},{x:500,y:250},{x:600,y:225},{x:720,y:355}],
+    zones: [{type:"box", x:250, y:225, w:190, h:80, text:{en:"BEARISH FVG",ti:"BEARISH FVG"}, textX:300, textY:220}],
+    labels: [
+      {text:{en:"Strong move down",ti:"ሓያል ምውራድ"}, x:250, y:90},
+      {text:{en:"Return into FVG",ti:"ናብ FVG ይምለስ"}, x:475, y:215},
+      {text:{en:"Continues lower",ti:"ንታሕቲ ይቕጽል"}, x:650, y:360}
+    ]
+  },
+
+  liquiditySweep: {
+    category: "smc",
+    button: { en: "Liquidity Sweep", ti: "Liquidity Sweep" },
+    title: { en: "Liquidity Sweep", ti: "Liquidity Sweep / Stop Hunt" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "A liquidity sweep happens when price briefly breaks above highs or below lows, then quickly reverses back.",
+      ti: "Liquidity Sweep ማለት ዋጋ ኣብ ልዕሊ High ወይ ታሕቲ Low ቁሩብ ሰቢሩ ድሕሪኡ ብቕልጡፍ ክምለስ ከሎ እዩ።"
+    },
+    quiz: {
+      q: { en: "What often happens after a liquidity sweep?", ti: "ድሕሪ Liquidity Sweep ብዙሕ ግዜ እንታይ ይኸውን?" },
+      a: { en: "Price returns back or reverses.", ti: "ዋጋ ይምለስ ወይ reverses።" }
+    },
+    points: [{x:80,y:250},{x:180,y:180},{x:280,y:230},{x:380,y:180},{x:500,y:120},{x:620,y:220},{x:740,y:260}],
+    zones: [{type:"line", y:180, text:{en:"Equal Highs / Liquidity",ti:"Equal Highs / Liquidity"}, textX:560, textY:170}],
+    labels: [
+      {text:{en:"Sweep above highs",ti:"ልዕሊ Highs ይሰብር"}, x:465, y:105},
+      {text:{en:"Then returns",ti:"ድሕሪኡ ይምለስ"}, x:580, y:240}
+    ]
+  },
+
+  orderBlock: {
+    category: "smc",
+    button: { en: "Order Block", ti: "Order Block" },
+    title: { en: "Order Block", ti: "Order Block" },
+    level: { en: "Intermediate", ti: "ማእከላይ" },
+    text: {
+      en: "An order block is a price zone before a strong move. Many learners use it as a possible reaction or entry area.",
+      ti: "Order Block ብቀሊሉ ቅድሚ ሓያል ምንቅስቓስ ዝተፈጠረ ናይ ዋጋ zone እዩ።"
+    },
+    quiz: {
+      q: { en: "Where is an order block usually found?", ti: "Order Block ብዙሕ ግዜ ኣበይ ይርከብ?" },
+      a: { en: "Before a strong move.", ti: "ቅድሚ ሓያል ምንቅስቓስ።" }
+    },
+    points: [{x:80,y:300},{x:170,y:280},{x:260,y:300},{x:350,y:210},{x:460,y:140},{x:570,y:185},{x:720,y:95}],
+    zones: [{type:"box", x:150, y:265, w:130, h:55, text:{en:"Bullish OB",ti:"Bullish OB"}, textX:165, textY:255}],
+    labels: [
+      {text:{en:"Zone before strong move",ti:"ቅድሚ ሓያል move"}, x:290, y:330},
+      {text:{en:"Possible reaction area",ti:"Reaction area"}, x:430, y:210}
+    ]
+  },
+
+  entryRiskReward: {
+    category: "risk",
+    button: { en: "Entry / SL / TP", ti: "Entry / SL / TP" },
+    title: { en: "Entry, Stop Loss, Take Profit", ti: "Entry, Stop Loss, Take Profit" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "Before entering a trade, define your entry, stop loss, and take profit. This helps you control risk.",
+      ti: "ቅድሚ ናብ trade ምእታው Entry, Stop Loss ከምኡውን Take Profit ኣቐዲምካ ምውጣን ኣገዳሲ እዩ።"
+    },
+    quiz: {
+      q: { en: "What should be planned before entering a trade?", ti: "ቅድሚ trade ምእታው እንታይ ክንውጥን ኣለና?" },
+      a: { en: "Entry, stop loss, and take profit.", ti: "Entry, Stop Loss ከምኡውን Take Profit።" }
+    },
+    points: [{x:80,y:310},{x:180,y:250},{x:280,y:280},{x:390,y:210},{x:500,y:240},{x:650,y:150},{x:760,y:100}],
+    zones: [
+      {type:"line", y:240, text:{en:"Entry",ti:"Entry"}, textX:710, textY:232},
+      {type:"line", y:295, text:{en:"Stop Loss",ti:"Stop Loss"}, textX:690, textY:315},
+      {type:"line", y:150, text:{en:"Take Profit",ti:"Take Profit"}, textX:680, textY:142}
+    ]
+  },
+
+  riskReward: {
+    category: "risk",
+    button: { en: "Risk Reward", ti: "Risk Reward" },
+    title: { en: "Risk Reward Ratio", ti: "Risk Reward Ratio" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "Risk reward compares how much you risk with how much you aim to make. Example: risking 1 to make 2 is 1:2.",
+      ti: "Risk Reward ማለት ክንደይ ንሓደጋ ነቕርብ እና ክንደይ ክንረክብ ንደሊ ምንጽጻር እዩ። 1:2 ማለት 1 ንሓደጋ፣ 2 ንትርፊ።"
+    },
+    quiz: {
+      q: { en: "What does 1:2 risk reward mean?", ti: "1:2 Risk Reward ማለት እንታይ እዩ?" },
+      a: { en: "You risk 1 unit to aim for 2 units.", ti: "1 ንሓደጋ፣ 2 ንትርፊ ምውጣን።" }
+    },
+    points: [{x:80,y:310},{x:190,y:270},{x:300,y:250},{x:420,y:230},{x:540,y:200},{x:660,y:150},{x:760,y:100}],
+    zones: [
+      {type:"line", y:250, text:{en:"Entry",ti:"Entry"}, textX:710, textY:242},
+      {type:"line", y:300, text:{en:"Risk 1",ti:"Risk 1"}, textX:710, textY:320},
+      {type:"line", y:150, text:{en:"Reward 2",ti:"Reward 2"}, textX:700, textY:142}
+    ],
+    labels: [
+      {text:{en:"Risk area",ti:"Risk area"}, x:260, y:292},
+      {text:{en:"Reward area",ti:"Reward area"}, x:455, y:175}
+    ]
+  },
+
+  tradingPlan: {
+    category: "risk",
+    button: { en: "Trading Plan", ti: "Trading Plan" },
+    title: { en: "Trading Plan", ti: "Trading Plan / ናይ ትሬድ መደብ" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    text: {
+      en: "A trading plan helps you avoid emotional decisions. Plan your setup, entry, risk, target, and reason before trading.",
+      ti: "Trading Plan ካብ emotional decisions ክንርሕቕ ይሕግዘና። Setup, Entry, Risk, Target እውን  ምኽኒያታት ቅድሚ ትሬድ ኣዳሉ።"
+    },
+    quiz: {
+      q: { en: "Why is a trading plan useful?", ti: "Trading Plan ስለምንታይ ይጠቅም?" },
+      a: { en: "It helps avoid emotional trading and controls risk.", ti: "Emotional trading ክንከላኸልን risk ክንቆጻጸር ይሕግዘና።" }
+    },
+    points: [{x:80,y:280},{x:180,y:240},{x:280,y:260},{x:390,y:220},{x:500,y:230},{x:610,y:180},{x:740,y:150}],
+    zones: [
+      {type:"box", x:120, y:220, w:150, h:70, text:{en:"Setup",ti:"Setup"}, textX:165, textY:215},
+      {type:"box", x:430, y:175, w:150, h:70, text:{en:"Plan",ti:"Plan"}, textX:485, textY:170}
+    ],
+    labels: [
+      {text:{en:"1. Setup",ti:"1. Setup"}, x:120, y:330},
+      {text:{en:"2. Entry + Risk",ti:"2. Entry + Risk"}, x:360, y:330},
+      {text:{en:"3. Target",ti:"3. Target"}, x:610, y:330}
+    ]
+  }
+};
+
+function t(value) {
+  if (typeof value === "string") return value;
+  return value[currentLanguage] || value.en || "";
+}
+
+function lessonKeys() {
+  return Object.keys(lessons);
+}
+
+function createLessonButtons() {
+  lessonContainer.innerHTML = "";
+
+  Object.keys(categories).forEach(categoryKey => {
+    const title = document.createElement("div");
+    title.className = "category-title";
+    title.textContent = t(categories[categoryKey]);
+    lessonContainer.appendChild(title);
+
+    const controls = document.createElement("div");
+    controls.className = "controls";
+
+    lessonKeys()
+      .filter(key => lessons[key].category === categoryKey)
+      .forEach(key => {
+        const btn = document.createElement("button");
+        btn.textContent = t(lessons[key].button);
+        btn.onclick = () => startLesson(key);
+        btn.id = `btn-${key}`;
+        if (key === currentLessonKey) btn.classList.add("active");
+        controls.appendChild(btn);
+      });
+
+    lessonContainer.appendChild(controls);
+  });
+}
+
+function updateUiLanguage() {
+  const u = uiText[currentLanguage];
+  document.documentElement.lang = currentLanguage === "ti" ? "ti" : "en";
+  document.getElementById("mainTitle").textContent = u.mainTitle;
+  document.getElementById("subtitle").textContent = u.subtitle;
+  document.getElementById("prevBtn").textContent = u.previous;
+  document.getElementById("nextBtn").textContent = u.next;
+  document.getElementById("playPauseBtn").textContent = isPaused ? u.play : u.pause;
+  document.getElementById("drawBtn").textContent = u.draw;
+  document.getElementById("stopDrawBtn").textContent = u.stopDrawing;
+  document.getElementById("resetBtn").textContent = u.reset;
+  document.getElementById("quizTitle").textContent = u.quiz;
+  document.getElementById("showAnswerBtn").textContent = u.showAnswer;
+  document.getElementById("note").textContent = u.note;
+
+  createLessonButtons();
+
+  if (currentLessonKey) {
+    updateLessonPanel(currentLessonKey);
+    redrawChart();
+  } else {
+    lessonTitle.textContent = u.tutorial;
+    lessonMeta.textContent = u.choose;
+    lessonText.textContent = u.choose;
+    quizQuestion.textContent = u.choose;
+    quizAnswer.textContent = "";
+  }
+}
+
+function changeLanguage() {
+  currentLanguage = languageSelect.value;
+  updateUiLanguage();
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawBackground() {
+  ctx.strokeStyle = "#2f2f2f";
+  ctx.lineWidth = 1;
+
+  for (let x = 50; x < canvas.width; x += 50) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+
+  for (let y = 50; y < canvas.height; y += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+}
+
+function drawPointsAndLine() {
+  if (!points.length) return;
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+
+  for (let i = 1; i <= index; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+
+  ctx.strokeStyle = "#00ff88";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  for (let i = 0; i <= index; i++) {
+    ctx.beginPath();
+    ctx.arc(points[i].x, points[i].y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
+    ctx.fill();
+  }
+}
+
+function drawZones() {
+  const lesson = lessons[currentLessonKey];
+  if (!lesson || !lesson.zones) return;
+
+  ctx.font = "16px Arial";
+
+  lesson.zones.forEach(zone => {
+    ctx.strokeStyle = "#ffcc00";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+
+    if (zone.type === "line") {
+      ctx.beginPath();
+      ctx.moveTo(60, zone.y);
+      ctx.lineTo(820, zone.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillText(t(zone.text), zone.textX, zone.textY);
+    }
+
+    if (zone.type === "box") {
+      ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(255, 204, 0, 0.25)";
+      ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+      ctx.strokeStyle = "#ffcc00";
+      ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
+      ctx.fillStyle = "white";
+      ctx.fillText(t(zone.text), zone.textX, zone.textY);
+    }
+  });
+
+  ctx.setLineDash([]);
+}
+
+function drawLabels() {
+  const lesson = lessons[currentLessonKey];
+  if (!lesson || index < points.length - 1) return;
+
+  ctx.fillStyle = "white";
+  ctx.font = "16px Arial";
+
+  if (lesson.labels) {
+    lesson.labels.forEach(label => {
+      ctx.fillText(t(label.text), label.x, label.y);
+    });
+  }
+}
+
+function redrawChart() {
+  clearCanvas();
+  drawBackground();
+  drawZones();
+  drawPointsAndLine();
+  drawLabels();
+}
+
+function animate() {
+  if (isPaused) return;
+
+  if (index < points.length - 1) {
+    index++;
+    redrawChart();
+  } else {
+    clearInterval(interval);
+    redrawChart();
+  }
+}
+
+function startAnimation() {
+  clearInterval(interval);
+  isPaused = false;
+  playPauseBtn.textContent = uiText[currentLanguage].pause;
+  index = 0;
+  redrawChart();
+  interval = setInterval(animate, animationSpeed);
+}
+
+function updateLessonPanel(key) {
+  const lesson = lessons[key];
+  lessonTitle.textContent = t(lesson.title);
+  lessonMeta.textContent = `${t(categories[lesson.category])} • ${t(lesson.level)}`;
+  lessonText.textContent = t(lesson.text);
+  quizQuestion.textContent = t(lesson.quiz.q);
+  quizAnswer.textContent = t(lesson.quiz.a);
+  quizAnswer.style.display = "none";
+}
+
+function startLesson(key) {
+  currentLessonKey = key;
+  points = lessons[key].points;
+  updateLessonPanel(key);
+
+  document.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+  const activeBtn = document.getElementById(`btn-${key}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  startAnimation();
+}
+
+function previousLesson() {
+  const keys = lessonKeys();
+  if (!currentLessonKey) return startLesson(keys[0]);
+  const currentIndex = keys.indexOf(currentLessonKey);
+  const newIndex = currentIndex <= 0 ? keys.length - 1 : currentIndex - 1;
+  startLesson(keys[newIndex]);
+}
+
+function nextLesson() {
+  const keys = lessonKeys();
+  if (!currentLessonKey) return startLesson(keys[0]);
+  const currentIndex = keys.indexOf(currentLessonKey);
+  const newIndex = currentIndex >= keys.length - 1 ? 0 : currentIndex + 1;
+  startLesson(keys[newIndex]);
+}
+
+function togglePlayPause() {
+  if (!currentLessonKey) return;
+  isPaused = !isPaused;
+  playPauseBtn.textContent = isPaused ? uiText[currentLanguage].play : uiText[currentLanguage].pause;
+}
+
+function changeSpeed() {
+  animationSpeed = Number(speedSelect.value);
+  if (currentLessonKey) startAnimation();
+}
+
+function showQuizAnswer() {
+  quizAnswer.style.display = "block";
+}
+
+function enableDrawMode() {
+  drawMode = true;
+}
+
+function disableDrawMode() {
+  drawMode = false;
+  isDrawing = false;
+}
+
+function resetChart() {
+  clearInterval(interval);
+  points = [];
+  index = 0;
+  currentLessonKey = "";
+  drawMode = false;
+  isDrawing = false;
+  isPaused = false;
+  document.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+  updateUiLanguage();
+  clearCanvas();
+  drawBackground();
+}
+
+function getMousePos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
+canvas.addEventListener("mousedown", (e) => {
+  if (!drawMode) return;
+  isDrawing = true;
+  const pos = getMousePos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (!drawMode || !isDrawing) return;
+  const pos = getMousePos(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.strokeStyle = "#ffcc00";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+});
+
+canvas.addEventListener("mouseup", () => isDrawing = false);
+canvas.addEventListener("mouseleave", () => isDrawing = false);
+
+canvas.addEventListener("touchstart", (e) => {
+  if (!drawMode) return;
+  e.preventDefault();
+  isDrawing = true;
+  const touch = e.touches[0];
+  const pos = getMousePos(touch);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+}, { passive: false });
+
+canvas.addEventListener("touchmove", (e) => {
+  if (!drawMode || !isDrawing) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  const pos = getMousePos(touch);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.strokeStyle = "#ffcc00";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}, { passive: false });
+
+canvas.addEventListener("touchend", () => isDrawing = false);
+
+updateUiLanguage();
+drawBackground();
+</script>
+</body>
+</html>
