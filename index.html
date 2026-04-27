@@ -302,14 +302,24 @@
     text-align: center;
   }
 
-  /* ===== HORIZONTAL SCROLL LINKS (LIKE APP) ===== */
-  .nav-links-group {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 6px;
-  }
+/* ===== HORIZONTAL SCROLL LINKS (LIKE APP) ===== */
+.nav-links-group {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
+}
+
+.nav-links-group::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
+
+.nav-link {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
 
   .nav-link {
     font-size: 11px;
