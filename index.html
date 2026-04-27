@@ -294,6 +294,7 @@
     align-items: stretch;
     padding: 10px;
     gap: 10px;
+    overflow: hidden;
   }
 
   .tigrigna-text {
@@ -302,35 +303,36 @@
     text-align: center;
   }
 
-/* ===== HORIZONTAL SCROLL LINKS (LIKE APP) ===== */
-.nav-links-group {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-  width: 100%;
-  scrollbar-width: none; /* Firefox */
-}
+  /* ===== HORIZONTAL SCROLL LINKS ===== */
+  .nav-links-group {
+    display: flex !important;
+    gap: 6px;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    direction: ltr !important;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
 
-.nav-links-group::-webkit-scrollbar {
-  display: none; /* Chrome */
-}
+  .nav-links-group::-webkit-scrollbar {
+    display: none;
+  }
 
-.nav-link {
-  flex: 0 0 auto;
-  min-width: 120px;
-}
-
-  .nav-link {
+  .nav-links-group .nav-link {
+    flex: 0 0 auto !important;
+    min-width: 120px !important;
     font-size: 11px;
     padding: 8px 10px;
     text-align: center;
-    min-width: 110px;
     white-space: nowrap;
   }
 
-  .nav-sep {
-    display: none;
+  .nav-links-group .nav-sep {
+    display: none !important;
   }
 
   .main-row {
@@ -338,7 +340,7 @@
     gap: 10px;
   }
 
-  /* ===== BIG CHART LIKE MOBILE APP ===== */
+  /* ===== BIG CHART ===== */
   .chart-area {
     height: 60vh;
     min-height: 400px;
@@ -364,7 +366,7 @@
     border-radius: 12px;
   }
 
-  /* ===== DERIVATIVES BOX CLEAN STACK ===== */
+  /* ===== DERIVATIVES ===== */
   .binance-deriv {
     padding: 12px;
   }
@@ -387,7 +389,7 @@
     height: 80px;
   }
 
-  /* ===== VIDEO FIX ===== */
+  /* ===== VIDEO ===== */
   .mini-video-box {
     position: static;
     width: 100%;
