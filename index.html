@@ -287,10 +287,29 @@
     gap: 10px;
   }
 
-  .ticker-row {
-    height: 38px;
-    overflow: hidden;
-  }
+ /* ===== MOBILE TICKER CLEAN VERSION ===== */
+.ticker-row {
+  height: 28px !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+/* TradingView Container */
+.ticker-row .tradingview-widget-container {
+  height: 100% !important;
+}
+
+/* Widget selbst */
+.ticker-row .tradingview-widget-container__widget {
+  height: 100% !important;
+}
+
+/* iframe (wichtig für TradingView) */
+.ticker-row iframe {
+  height: 28px !important;
+  width: 100% !important;
+  border: none;
+}
 
   .academy-header {
     font-size: 18px;
