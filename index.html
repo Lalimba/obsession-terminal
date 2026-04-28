@@ -275,6 +275,7 @@
     overflow: auto;
   }
 
+    
   body {
     padding-bottom: 70px;
   }
@@ -379,7 +380,28 @@
     width: 100%;
     margin-top: 10px;
   }
+/* ===== MOBILE LINKS GRID ===== */
+.ticker-row {
+  display: none !important;
+}
 
+.nav-links-group .nav-link {
+  display: none !important;
+}
+
+.nav-links-group .mobile-main {
+  display: flex !important;
+  flex: 1 1 calc(50% - 6px);
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-links-group {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px;
+  justify-content: center !important;
+}
   /* ===== BINANCE STYLE BOTTOM NAV ===== */
   .mobile-bottom-nav {
     position: fixed;
@@ -473,13 +495,14 @@
             <a href="https://www.usdebtclock.org/" target="_blank" rel="noopener noreferrer" class="nav-link research">🌎 DebtClock</a>
 
             <span class="nav-sep" aria-hidden="true"></span>
-            <a href="trading.html" target="_blank" rel="noopener noreferrer" class="nav-link">💰 Trading Course p</a>
+            <a href="trading.html" target="_blank" rel="noopener noreferrer" class="nav-link mobile-main">💰 Trading Course</a>
             <a href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer" class="nav-link">💰 MarketCap</a>
-            <a href="bias-dashboard.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🚀 BTC-Dashboard</a>
-            <a href="macro.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🌍 Macro</a>
+           <a href="bias-dashboard.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🚀 BTC-Dashboard</a>
+           <a href="macro.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🌍 Macro</a>
             <a href="strategy.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🧠 Strategy</a>
-            <a href="bias.html" target="_blank" rel="noopener noreferrer" class="nav-link core">📡 Market Bias</a>
-            <a href="allinone.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🚀 AllInOne</a>
+           <a href="bias.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">📡 Market Bias</a>
+           <a href="allinone.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🚀 AllInOne</a>
+            <a href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer" class="nav-link mobile-main">📈 Charts</a>
             <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🦎 Gecko</a>
             <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🐦 X.com</a>
             <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🛠️ CryptoCraft</a>
