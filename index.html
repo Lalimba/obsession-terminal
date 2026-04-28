@@ -288,29 +288,31 @@
   }
 
  /* ===== MOBILE TICKER CLEAN VERSION ===== */
+/* ===== MOBILE TICKER SHOW ===== */
 .ticker-row {
-  height: 28px !important;
-  overflow: hidden !important;
   display: block !important;
+  height: 32px !important;
+  overflow: hidden !important;
 }
 
-/* TradingView Container */
 .ticker-row .tradingview-widget-container {
-  height: 100% !important;
-}
-
-/* Widget selbst */
-.ticker-row .tradingview-widget-container__widget {
-  height: 100% !important;
-}
-
-/* iframe (wichtig für TradingView) */
-.ticker-row iframe {
-  height: 28px !important;
+  display: block !important;
+  height: 32px !important;
   width: 100% !important;
-  border: none;
 }
 
+.ticker-row .tradingview-widget-container__widget {
+  display: block !important;
+  height: 32px !important;
+  width: 100% !important;
+}
+
+.ticker-row iframe {
+  display: block !important;
+  height: 32px !important;
+  width: 100% !important;
+  border: none !important;
+}
   .academy-header {
     font-size: 18px;
     line-height: 1.2;
