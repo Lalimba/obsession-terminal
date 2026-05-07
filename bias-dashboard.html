@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Obsession Trading Academy — PRO Desk+</title>
+<title>Obsession Trading Academy — PRO Desk+ላዕለዋይ ጥርዚ ፍልጠት</title>
 
 <style>
   html, body {
@@ -432,15 +433,131 @@
       grid-template-columns: 1fr;
     }
   }
+
+.alpha-shell {
+    background: #11141b;
+    border: 1px solid #2b2f36;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 15px;
+    font-family: 'Inter', sans-serif;
+}
+
+.alpha-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.alpha-label { font-size: 10px; color: #848e9c; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Multi-TF Grid */
+.alpha-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px;
+}
+.alpha-tf-box {
+    background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; text-align: center;
+}
+.alpha-tf-val { font-size: 13px; font-weight: bold; font-family: monospace; display: block; }
+
+/* Velocity Bar (Speed-Check) */
+.alpha-speed-wrap { margin-bottom: 15px; }
+.alpha-bar-bg { background: #1e222d; height: 4px; border-radius: 2px; margin-top: 5px; overflow: hidden; }
+#alpha-speed-bar { width: 0%; height: 100%; background: #f0b90b; transition: width 0.3s ease; }
+
+/* Alerts */
+.alpha-alert-box {
+    padding: 10px; border-radius: 6px; min-height: 40px;
+    background: rgba(0,0,0,0.2); border-left: 3px solid #444;
+}
+#alpha-signal { font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+#alpha-desc { font-size: 11px; color: #848e9c; line-height: 1.2; }
+
+.text-up { color: #00ffad; }
+.text-down { color: #ff3b69; }
+.text-warn { color: #f0b90b; }
+.chart-area {
+  position: relative;
+}
+
+.chart-hud {
+  position: absolute;
+  top: 95px;
+  left: 18px;
+  z-index: 999;
+  width: 230px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(5, 8, 12, 0.90);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.hud-title {
+  font-size: 10px;
+  color: #8c98a8;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.hud-main {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.hud-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #aab4c3;
+  line-height: 1.25;
+}
+
+.hud-neutral {
+  color: #d8dee9;
+}
+
+.hud-long {
+  color: #00ff88;
+}
+
+.hud-squeeze {
+  color: #ff3b3b;
+}
+
+.hud-short {
+  color: #4da3ff;
+}
+
+.hud-flush {
+  color: #ffcc4d;
+}
 </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="academy-header">Obsession Trading Academy — PRO Desk+</div>
+    <div class="academy-header">Obsession Trading Academy — PRO Desk+ላዕለዋይ ጥርዚ ፍልጠት</div>
 
     <div class="main-row">
       <div class="chart-area">
+<div class="chart-hud" id="priceOiHud">
+
+  <div class="hud-title">
+    PRICE + OI REGIME
+  </div>
+
+  <div class="hud-main hud-neutral" id="hud-main-state">
+    NEUTRAL
+  </div>
+
+  <div class="hud-sub" id="hud-main-desc">
+    Waiting for clear price/OI signal
+  </div>
+
+</div>
         <div id="tradingview_advanced" style="height:100%;width:100%"></div>
       </div>
 
@@ -493,6 +610,42 @@
               <div class="mini-sub" id="fund12hBias">—</div>
             </div>
           </div>
+<!-- Dein bestehender Funding Strip -->
+
+<div class="alpha-shell">
+    <div class="alpha-header">
+        <span class="alpha-label">OI Multi-Timeframe & Speed</span>
+        <span id="alpha-speed-text" class="alpha-label text-warn">Speed: Steady</span>
+    </div>
+
+    <div class="alpha-grid">
+        <div class="alpha-tf-box">
+            <span class="alpha-label">1H Δ</span>
+            <span id="alpha-oi1h" class="alpha-tf-val">--</span>
+        </div>
+        <div class="alpha-tf-box">
+            <span class="alpha-label">4H Δ</span>
+            <span id="alpha-oi4h" class="alpha-tf-val">--</span>
+        </div>
+        <div class="alpha-tf-box">
+            <span class="alpha-label">12H Δ</span>
+            <span id="alpha-oi12h" class="alpha-tf-val">--</span>
+
+        </div>
+    </div>
+
+    <div class="alpha-speed-wrap">
+        <div class="alpha-label">OI Velocity (Climax Detection)</div>
+        <div class="alpha-bar-bg"><div id="alpha-speed-bar"></div></div>
+    </div>
+
+    <div class="alpha-alert-box" id="alpha-alert-container">
+        <div id="alpha-signal">Scanning Market...</div>
+        <div id="alpha-desc">Analyzing price/OI divergence and liquidations.</div>
+
+    </div>
+</div>
+
 
           <div class="reason-box" id="decisionReason">
             Waiting for derivatives + flow inputs…
@@ -637,6 +790,7 @@
                 <option value="ATTACK">ATTACK</option>
               </select>
             </div>
+
 
             <div class="input-wrap">
               <label for="journalResult">Result</label>
@@ -1533,6 +1687,283 @@
 
     updateFundingWindows();
     updateDecisionEngine();
+const ALPHA_SYMBOL = "BTCUSDT";
+const ALPHA_STORAGE_KEY = "alpha_pro_data";
+const ALPHA_MAX_HISTORY = 10000;
+const ALPHA_UPDATE_MS = 5000;
+
+let alphaHistory = [];
+
+try {
+  alphaHistory = JSON.parse(localStorage.getItem(ALPHA_STORAGE_KEY)) || [];
+  alphaHistory = alphaHistory.filter(x =>
+    Number.isFinite(x.t) &&
+    Number.isFinite(x.oi) &&
+    Number.isFinite(x.p)
+  );
+} catch (e) {
+  alphaHistory = [];
+}
+
+async function updateAlphaModule() {
+  try {
+    const [oiR, pR] = await Promise.all([
+      fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${ALPHA_SYMBOL}`),
+      fetch(`https://fapi.binance.com/fapi/v1/ticker/price?symbol=${ALPHA_SYMBOL}`)
+    ]);
+
+    if (!oiR.ok || !pR.ok) {
+      throw new Error("Binance API request failed");
+    }
+
+    const oiD = await oiR.json();
+    const pD = await pR.json();
+
+    const now = Date.now();
+    const currentOI = Number(oiD.openInterest);
+    const currentPrice = Number(pD.price);
+
+    if (!Number.isFinite(currentOI) || !Number.isFinite(currentPrice)) {
+      throw new Error("Invalid OI or price data");
+    }
+
+    alphaHistory.push({
+      t: now,
+      oi: currentOI,
+      p: currentPrice
+    });
+
+    if (alphaHistory.length > ALPHA_MAX_HISTORY) {
+      alphaHistory = alphaHistory.slice(-ALPHA_MAX_HISTORY);
+    }
+
+    localStorage.setItem(ALPHA_STORAGE_KEY, JSON.stringify(alphaHistory));
+
+    renderAlphaUI(currentOI, currentPrice);
+  } catch (e) {
+    console.error("Alpha Module Error:", e);
+    const sig = document.getElementById("alpha-signal");
+    const desc = document.getElementById("alpha-desc");
+    const container = document.getElementById("alpha-alert-container");
+
+    if (sig) sig.innerText = "API ERROR";
+    if (desc) desc.innerText = "Could not update Binance OI / price data.";
+    if (container) container.style.borderLeftColor = "#ff3b69";
+  }
+}
+
+function getAlphaDelta(seconds) {
+  if (alphaHistory.length < 2) return null;
+
+  const targetTime = Date.now() - seconds * 1000;
+  const curr = alphaHistory[alphaHistory.length - 1];
+
+  let past = null;
+  let bestDiff = Infinity;
+
+  for (const point of alphaHistory) {
+    const diff = Math.abs(point.t - targetTime);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      past = point;
+    }
+  }
+
+  if (!past || past.oi <= 0 || past.p <= 0) return null;
+
+  return {
+    oi: ((curr.oi - past.oi) / past.oi) * 100,
+    p: ((curr.p - past.p) / past.p) * 100,
+    oiAbs: curr.oi - past.oi,
+    priceAbs: curr.p - past.p
+  };
+}
+
+function setAlphaText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
+function setAlphaClass(id, cls) {
+  const el = document.getElementById(id);
+  if (el) el.className = cls;
+}
+
+function renderAlphaUI(oi, price) {
+  const tfs = {
+    "1h": 3600,
+    "4h": 14400,
+    "12h": 43200
+  };
+
+  const d1h = getAlphaDelta(3600);
+
+  for (const [key, sec] of Object.entries(tfs)) {
+    const d = getAlphaDelta(sec);
+    const el = document.getElementById(`alpha-oi${key}`);
+
+    if (!el) continue;
+
+    if (d) {
+      el.innerText = `${d.oi >= 0 ? "+" : ""}${d.oi.toFixed(2)}%`;
+      el.className = "alpha-tf-val " + (d.oi >= 0 ? "text-up" : "text-down");
+    } else {
+      el.innerText = "--";
+      el.className = "alpha-tf-val";
+    }
+  }
+
+  if (alphaHistory.length > 5) {
+    const lastFew = alphaHistory[alphaHistory.length - 5];
+
+    if (lastFew && lastFew.oi > 0) {
+      const quickOiChange = Math.abs(((oi - lastFew.oi) / lastFew.oi) * 100);
+      const speedPercent = Math.min(quickOiChange * 500, 100);
+
+      const bar = document.getElementById("alpha-speed-bar");
+      const speedText = document.getElementById("alpha-speed-text");
+
+      if (bar) bar.style.width = speedPercent + "%";
+
+      if (speedText) {
+        if (speedPercent > 70) {
+          speedText.innerText = "Speed: CLIMAX";
+          speedText.className = "alpha-label text-down";
+        } else if (speedPercent > 30) {
+          speedText.innerText = "Speed: ACCELERATING";
+          speedText.className = "alpha-label text-warn";
+        } else {
+          speedText.innerText = "Speed: STEADY";
+          speedText.className = "alpha-label";
+        }
+      }
+    }
+  }
+
+  if (!d1h) {
+    setAlphaText("alpha-signal", "COLLECTING DATA");
+    setAlphaText("alpha-desc", "Waiting for enough OI / price history.");
+    const container = document.getElementById("alpha-alert-container");
+    if (container) container.style.borderLeftColor = "#444";
+    return;
+  }
+
+  let sig = "NEUTRAL";
+  let desc = "Price and OI are moving in sync.";
+  let col = "#444";
+
+  if (d1h.p > 0.4 && d1h.oi < -0.5) {
+    sig = "🔥 SHORT SQUEEZE";
+    desc = "Price up while OI drops. Shorts are likely being forced out.";
+    col = "#00ffad";
+  } else if (d1h.p > 0.8 && d1h.oi > 1.5) {
+    sig = "🚨 BULL EXHAUSTION";
+    desc = "Price up with strong OI buildup. Long crowding risk is increasing.";
+    col = "#f0b90b";
+  } else if (d1h.p < -0.4 && d1h.oi > 0.8) {
+    sig = "🛡️ ABSORPTION / SHORT BUILD";
+    desc = "Price down while OI rises. New shorts may be building; watch for absorption or breakdown.";
+    col = "#3a86ff";
+  } else if (d1h.p < -0.4 && d1h.oi < -0.5) {
+    sig = "⚠️ LONG FLUSH";
+    desc = "Price down while OI drops. Longs are likely being closed or liquidated.";
+    col = "#ff3b69";
+  } else if (d1h.p > 0.4 && d1h.oi > 0.5) {
+    sig = "📈 LONG BUILDUP";
+    desc = "Price up with OI rising. Trend can continue, but watch funding and premium.";
+    col = "#00ffad";
+  }
+
+  const signalEl = document.getElementById("alpha-signal");
+  const descEl = document.getElementById("alpha-desc");
+  const container = document.getElementById("alpha-alert-container");
+
+  if (signalEl) {
+    signalEl.innerText = sig;
+    signalEl.style.color = col;
+  }
+
+  if (descEl) descEl.innerText = desc;
+  if (container) container.style.borderLeftColor = col;
+}
+
+setInterval(updateAlphaModule, ALPHA_UPDATE_MS);
+updateAlphaModule();
+function updatePriceOIMatrix(d) {
+  const ids = [
+    "hud-long-build",
+    "hud-short-squeeze",
+    "hud-short-build",
+    "hud-long-flush"
+  ];
+
+  ids.forEach(id => {
+    document.getElementById(id)?.classList.remove("hud-active");
+  });
+
+  if (!d) return;
+
+  const priceThreshold = 0.10;
+  const oiThreshold = 0.10;
+
+  if (d.p > priceThreshold && d.oi > oiThreshold) {
+    document.getElementById("hud-long-build")?.classList.add("hud-active");
+  } else if (d.p > priceThreshold && d.oi < -oiThreshold) {
+    document.getElementById("hud-short-squeeze")?.classList.add("hud-active");
+  } else if (d.p < -priceThreshold && d.oi > oiThreshold) {
+    document.getElementById("hud-short-build")?.classList.add("hud-active");
+  } else if (d.p < -priceThreshold && d.oi < -oiThreshold) {
+    document.getElementById("hud-long-flush")?.classList.add("hud-active");
+  }
+}
+function updatePriceOIMatrix(d) {
+
+  const rows = {
+    long: document.getElementById("hud-long-build"),
+    squeeze: document.getElementById("hud-short-squeeze"),
+    short: document.getElementById("hud-short-build"),
+    flush: document.getElementById("hud-long-flush")
+  };
+
+  Object.values(rows).forEach(el => {
+    if (!el) return;
+
+    el.classList.remove(
+      "hud-active-long",
+      "hud-active-squeeze",
+      "hud-active-short",
+      "hud-active-flush"
+    );
+  });
+
+  if (!d) return;
+
+  const p = d.p;
+  const oi = d.oi;
+
+  const priceThreshold = 0.10;
+  const oiThreshold = 0.10;
+
+  // LONG BUILDUP
+  if (p > priceThreshold && oi > oiThreshold) {
+    rows.long?.classList.add("hud-active-long");
+  }
+
+  // SHORT SQUEEZE
+  else if (p > priceThreshold && oi < -oiThreshold) {
+    rows.squeeze?.classList.add("hud-active-squeeze");
+  }
+
+  // SHORT BUILD / ABSORPTION
+  else if (p < -priceThreshold && oi > oiThreshold) {
+    rows.short?.classList.add("hud-active-short");
+  }
+
+  // LONG FLUSH
+  else if (p < -priceThreshold && oi < -oiThreshold) {
+    rows.flush?.classList.add("hud-active-flush");
+  }
+}
   </script>
 </body>
 </html>
