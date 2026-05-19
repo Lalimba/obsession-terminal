@@ -1,0 +1,1230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tutorial 2 - Advanced Indicators</title>
+
+<style>
+body {
+    background: #0d0d0d;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 30px;
+}
+
+h1, h2 {
+    color: gold;
+}
+
+button {
+    background: #2b2b2b;
+    color: white;
+    border: 1px solid #555;
+    padding: 12px 18px;
+    margin: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: gold;
+    color: black;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.lesson {
+    background: #181818;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 25px;
+}
+
+.step {
+    border-left: 4px solid gold;
+    padding: 10px;
+    margin: 12px 0;
+    background: #222;
+}
+
+.chartBox img {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 25px;
+    border-radius: 12px;
+    border: 1px solid #444;
+    display: none;
+}
+
+.back-btn{
+    background:#2b2f3a;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.back-btn:hover{
+    background:#40485a;
+}
+@media (max-width: 600px) {
+
+  body {
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 23px;
+  }
+
+  button,
+  select,
+  .back-btn {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<button onclick="goBack()" class="back-btn">
+← Back
+</button>
+
+<script>
+function goBack(){
+    window.location.href="trading.html";
+}
+</script>
+<div class="container">
+
+<h1>Trading Academy - Tutorial 2 (ያላ ተበገስ ሎሚ አለካ ግዜ)</h1>
+
+<select id="language">
+    <option value="english">English</option>
+    <option value="tigrigna">ትግርኛ</option>
+    <option value="both">English + ትግርኛ</option>
+</select>
+
+<p>Advanced Indicators: ATR, Bollinger Bands, Fibonacci, EMA, RSI and MACD</p>
+
+<button onclick="showATR()">ATR</button>
+<button onclick="showBB()">Bollinger Bands</button>
+<button onclick="showFib()">Fibonacci</button>
+<button onclick="showEMA()">EMA</button>
+<button onclick="showRSI()">RSI</button>
+<button onclick="showMACD()">MACD</button>
+<button onclick="resetLesson()">Reset</button>
+
+<div id="lessonArea" class="lesson">
+    <h2>Welcome to Tutorial 2</h2>
+    <p>Choose one indicator button to start learning.</p>
+</div>
+
+<div class="chartBox">
+    <img id="indicatorImage" src="" alt="Indicator Chart">
+</div>
+
+</div>
+
+<script>
+function showImage(imageFile) {
+    const img = document.getElementById("indicatorImage");
+    img.src = imageFile;
+    img.style.display = "block";
+}
+
+function showATR() {
+    const lang = document.getElementById("language").value;
+    let content = "";
+
+    if (lang === "english") {
+        content = `
+            <h2>ATR - Average True Range</h2>
+            <p>ATR measures market volatility. It tells traders how much price moves on average.</p>
+            <div class="step">Low ATR = quiet market</div>
+            <div class="step">High ATR = strong volatility</div>
+            <div class="step">ATR helps traders place better Stop Loss levels.</div>
+        `;
+    } 
+    else if (lang === "tigrigna") {
+        content = `
+            <h2>ATR - Average True Range</h2>
+            <p>
+            ATR ናይ ተለዋዋጥነት መዓቀኒ (Volatility Measure)፦ ATR እቲ ዋጋ ናብ ላዕሊ ወይ ናብ ታሕቲ ክኸይድ ከምዘለዎ ኣይነግረካን እዩ።
+ ንሱ ዝነግረካ እቲ ዋጋ ብክንደይ ብርታዔ ይናወጽ ከምዘሎ ጥራይ እዩ።
+            ዋጋ ብኽንደይ ናሕሪ ይንቀሳቐስ ከምዘሎ ይሕብር።
+            </p>
+<p>
+
+      ንምንታይ የገልግል? (Trading Use Case)ንናይ Stop Loss መውሰኒ፦ ነጋዶ ንስቶፕ-ሎስ (Stop Loss) ክሰርዑ ከለዉ፡ እቲ ATR ዝለዓለ እንተኾይኑ፡ 
+እቲ ዋጋ ቀልጢፉ ንድሕሪት ተመሊሱ ንዕኦም ከየውጽኦም፡ ርሕቕ ኣቢሎም ይዕድጉ። </p>
+      <div class="step">ትሑት ATR = ዝተረጋገአ ዕዳጋ</div>
+            <div class="step">ዝለዓለ ATR = ብርቱዕ ምንቅስቓስ</div>
+            <div class="step">ATR ን Stop Loss ምቕማጥ ይሕግዝ</div>
+        `;
+    } 
+    else {
+        content = `
+            <h2>ATR - Average True Range</h2>
+
+            <h3>English</h3>
+            <p>ATR measures market volatility. It tells traders how much price moves on average.</p>
+            <div class="step">Low ATR = quiet market</div>
+            <div class="step">High ATR = strong volatility</div>
+
+            <hr>
+
+            <h3>ትግርኛ</h3>
+            <p>
+            ATR ናይ ዕዳጋ ምንቅስቓስ ይለክዕ።
+            ንኣንፈት ዋጋ ኣይኮነን ዘርኢ።
+            </p>
+            <div class="step">ትሑት ATR = ዝተረጋገአ ዕዳጋ</div>
+            <div class="step">ዝለዓለ ATR = ብርቱዕ ምንቅስቓስ</div>
+        `;
+    }
+
+    document.getElementById("lessonArea").innerHTML = content;
+    showImage("atr.png");
+}
+
+function showBB(){
+
+const lang=document.getElementById("language").value;
+
+let content="";
+
+if(lang==="english"){
+
+content=`
+
+<h2>Bollinger Bands</h2>
+
+<p>
+
+Bollinger Bands are volatility indicators that help traders understand
+whether the market is expanding or contracting.
+
+They consist of three lines:
+
+• Upper Band
+
+• Middle Band (Moving Average)
+
+• Lower Band
+
+</p>
+
+<div class="step">
+
+Price near Upper Band
+
+→ Market may be overbought
+
+</div>
+
+<div class="step">
+
+Price near Lower Band
+
+→ Market may be oversold
+
+</div>
+
+<div class="step">
+
+Bands become narrow (Squeeze)
+
+→ A large move may come soon
+
+</div>
+
+<div class="step">
+
+Wide bands
+
+→ Strong market volatility
+
+</div>
+
+`;
+
+}
+
+else if(lang==="tigrigna"){
+
+content=`
+
+<h2>Bollinger Bands</h2>
+
+<p>
+
+ (Bollinger Bands)፡ ዕዳጋ ይገፍሕ (ይሰፍሕ) ወይስ ይጸብብ ከም ዘሎ ንነጋዶ ን ምርዳእ ዝሕግዙ ናይ ተለዋዋጥነት መመልከቲታት (volatility indicators) እዮ</p>
+<p>
+3 መስመራት ኣለዎ፦
+</p>
+• Upper Band (ላዕለዋይ መስመር)
+
+• Middle Band (ማእከላይ Moving Average)
+
+• Lower Band (ታሕተዋይ መስመር)
+
+</p>
+
+<div class="step">
+
+ዋጋ ናብ Upper Band
+እንተቐረቡ
+
+→ ዕዳጋ ብዙሕ ተዓዲጉ
+(Overbought) ክኸውን ይኽእል
+
+</div>
+
+<div class="step">
+
+ዋጋ ናብ Lower Band
+እንተቐረበ
+
+→ አብ ዕዳጋ ብዙሕ ተሸጡ
+(Oversold) ክኸውን ይኽእል
+
+</div>
+
+<div class="step">
+
+Bands እንተጸበበ (Squeeze)
+
+→ ዓቢ ምንቅስቓስ ኣብ  
+ቀረባ ክመጽእ ይኽእል
+
+</div>
+
+<div class="step">
+
+Bands እንተሰፍሐ
+
+→ ብርቱዕ volatility
+ኣሎ ማለት እዩ
+
+</div>
+
+`;
+
+}
+
+else{
+
+content=`
+
+<h2>Bollinger Bands</h2>
+
+<h3>English</h3>
+
+<p>
+
+Bollinger Bands help traders understand market volatility.
+
+They include:
+
+• Upper Band
+
+• Middle Band
+
+• Lower Band
+
+</p>
+
+<div class="step">
+
+Price near Upper Band
+→ Overbought
+
+</div>
+
+<div class="step">
+
+Price near Lower Band
+→ Oversold
+
+</div>
+
+<hr>
+
+<h3>ትግርኛ</h3>
+
+<p>
+
+Bollinger Bands ናይ ዕዳጋ
+ምንቅስቓስ
+(Volatility)
+የርኢ።
+
+3 መስመራት ኣለዎ።
+
+</p>
+
+<div class="step">
+
+Upper Band
+→ Overbought
+
+</div>
+
+<div class="step">
+
+Lower Band
+→ Oversold
+
+</div>
+
+<div class="step">
+
+Squeeze
+→ ዓቢ ምንቅስቓስ ይመጽእ
+
+</div>
+
+`;
+
+}
+
+document.getElementById(
+"lessonArea"
+).innerHTML=content;
+
+showImage("bolingerbands.png");
+
+}
+
+function showFib(){
+
+const lang=document.getElementById("language").value;
+
+let content="";
+
+if(lang==="english"){
+
+content=`
+
+<h2>Fibonacci Retracement</h2>
+
+<p>
+
+Fibonacci Retracement is a tool traders use to identify
+possible support and resistance levels.
+
+It helps traders find pullback areas where price may reverse.
+
+Important levels:
+
+• 0.236
+
+• 0.382
+
+• 0.500
+
+• 0.618 (Golden Zone)
+
+• 0.786
+
+</p>
+
+<div class="step">
+
+0.382
+
+→ Small pullback
+
+</div>
+
+<div class="step">
+
+0.5
+
+→ Medium pullback
+
+</div>
+
+<div class="step">
+
+0.618 Golden Zone
+
+→ Strong area where many traders watch for entries
+
+</div>
+
+<div class="step">
+
+Traders often combine Fibonacci with:
+
+EMA + Support/Resistance + Candlestick confirmation
+
+</div>
+
+`;
+
+}
+
+else if(lang==="tigrigna"){
+
+content=`
+
+<h2>Fibonacci Retracement</h2>
+
+<p>
+
+Fibonacci Retracement
+ፊቦናቺ ሪትሬስመንት (Fibonacci Retracement)፡ ነጋዶ ሓደ ናይ ዋጋ ምንቅስቓስ (Trend)
+ ናብ ላዕሊ ወይ ናብ ታሕቲ ድሕሪ ምጉዓዙ፡ ንድሕሪት ተመሊሱ (Pullback)  ደው ክብልን መሊሱ ክቕጽልን ከም ዝኽእል ንምግማት ዝጥቀሙሉ ናይ ቴክኒካዊ ትንተና መሳርሒ (Trading tool) እዩ።
+</p>
+<p>
+ኣገደስቲ ደረጃታት:
+
+• 0.236
+
+• 0.382
+
+• 0.500
+
+• 0.618 (Golden Zone)
+
+• 0.786
+
+</p>
+
+<div class="step">
+
+0.382
+
+→ ንእሽቶ ምምላስ (Pullback)
+
+</div>
+
+<div class="step">
+
+0.5
+
+→ ማእከላይ ምምላስ
+
+</div>
+
+<div class="step">
+
+0.618 Golden Zone
+
+→ ብዙሓት traders
+ናይ entry ቦታ
+ዝጥምቱዎ ቦታ
+
+</div>
+
+<div class="step">
+
+Fibonacci
+ብ EMA ወይ Support/Resistance
+ምስ ተዋሃሃደ
+ዝበለጸ ምልክት ይህብ
+
+</div>
+<div class="step">
+ኸመይ ይዓዪ? (How traders use it)፦ኣብ ናይ ላዕሊ ምንቅስቓስ (Uptrend)፦ ካብቲ ዝተሓተ ነጥቢ (Swing Low) ናብቲ ዝለዓለ ነጥቢ (Swing High) መስመር ትስሕብ። እቲ ዋጋ ንድሕሪት ክምለስ ከሎ (ንምሳሌ ናብ 61.8%)፡ ነጋዶ ከም ጽቡቕ ናይ መግዝኢ ዕድል (Buy Entry) ይጥቀሙሉእዮም።<p>
+ኣብ ናይ ታሕቲ ምንቅስቓስ (Downtrend)፦ ካብቲ ዝለዓለ ነጥቢ (Swing High) ናብቲ ዝተሓተ ነጥቢ (Swing Low) ትስሕብ። ዋጋ ንላዕሊ ተመሊሱ ሪትሬስ ክገብር ከሎ (Short Entry) ንምእታው የገልግል።
+</div>
+`;
+
+}
+
+else{
+
+content=`
+
+<h2>Fibonacci Retracement</h2>
+
+<h3>English</h3>
+
+<p>
+
+Fibonacci helps traders identify support,
+resistance and pullback entries.
+
+</p>
+
+<div class="step">
+
+0.618 = Golden Zone
+
+</div>
+
+<hr>
+
+<h3>ትግርኛ</h3>
+
+<p>
+
+Fibonacci
+Supportን Resistanceን
+ንምፍላጥ ይሕግዝ።
+
+</p>
+
+<div class="step">
+
+0.618
+
+Golden Zone ይበሃል
+
+</div>
+
+`;
+
+}
+
+document.getElementById(
+"lessonArea"
+).innerHTML=content;
+
+showImage("fibunacci.png");
+
+}
+function showEMA(){
+
+const lang=document.getElementById("language").value;
+
+let content="";
+
+if(lang==="english"){
+
+content=`
+
+<h2>EMA - Exponential Moving Average</h2>
+
+<p>
+
+EMA is a trend-following indicator.
+
+It shows the average price,
+but gives more importance
+to recent prices.
+
+Because of this,
+EMA reacts faster than
+a normal Moving Average.
+
+</p>
+
+<div class="step">
+
+EMA 20
+
+→ Short-term trend
+
+</div>
+
+<div class="step">
+
+EMA 50
+
+→ Medium-term trend
+
+</div>
+
+<div class="step">
+
+EMA 200
+
+→ Long-term trend
+
+</div>
+
+<div class="step">
+
+Price above EMA
+
+→ Bullish market
+
+</div>
+
+<div class="step">
+
+Price below EMA
+
+→ Bearish market
+
+</div>
+
+<div class="step">
+
+EMA should be combined with:
+
+Support/Resistance
++ Candlestick confirmation
++ Market Structure
+
+</div>
+
+`;
+
+}
+
+else if(lang==="tigrigna"){
+
+content=`
+
+<h2>EMA - Exponential Moving Average</h2>
+
+<p>
+
+EMA ናይ trend
+ኣንፈት ዘርኢ indicator እዩ።
+
+EMA ማእከላይ ዋጋ የርኢ፣
+ግን ንሓደሽቲ ዋጋታት
+ዝያዳ ኣገዳሲነት ይህብ።
+
+ስለዚ EMA
+ካብ normal Moving Average
+ብቕልጡፍ ይምልስ።
+
+</p>
+
+<div class="step">
+
+EMA 20
+
+→ ሓጺር trend EMA 20 ማለት
+ናይ መወዳእታ 20 candles
+ማእከላይ ዋጋ ይሓስብ ማለት እዩ።
+
+</div>
+
+<div class="step">
+
+EMA 50
+
+→ ማእከላይ trend
+
+→ ናይ መወዳእታ 50 candles ይጥቀም።
+
+→ ማእከላይ trend የርኢ።
+
+</div>
+
+<div class="step">
+
+EMA 200
+
+→ ናይ ነዊሕ ግዜ trend ኣንፈት ንምፍላጥ ይጥቀሙሉ።
+
+
+
+</div>
+
+<div class="step">
+
+ዋጋ ልዕሊ EMA
+
+→ Bullish market
+
+</div>
+
+<div class="step">
+
+ዋጋ ትሕቲ EMA
+
+→ Bearish market
+
+</div>
+
+<div class="step">
+
+EMA
+ምስ Support/Resistance
+Candlestick confirmation
+ከምኡውን Market Structure
+ምጥቃም ይሓይሽ
+
+</div>
+
+`;
+
+}
+
+else{
+
+content=`
+
+<h2>EMA - Exponential Moving Average</h2>
+
+<h3>English</h3>
+
+<p>
+
+EMA shows trend direction
+and reacts faster than
+normal Moving Average.
+
+</p>
+
+<div class="step">
+
+Price above EMA
+→ Bullish
+
+</div>
+
+<div class="step">
+
+Price below EMA
+→ Bearish
+
+</div>
+
+<hr>
+
+<h3>ትግርኛ</h3>
+
+<p>
+
+EMA ናይ trend
+ኣንፈት የርኢ።
+
+</p>
+
+<div class="step">
+
+ዋጋ ልዕሊ EMA
+→ Bullish
+
+</div>
+
+<div class="step">
+
+ዋጋ ትሕቲ EMA
+→ Bearish
+
+</div>
+
+`;
+
+}
+
+document.getElementById("lessonArea").innerHTML=content;
+
+showImage("ema.png");
+
+}
+
+function showRSI(){
+
+const lang=document.getElementById("language").value;
+
+let content="";
+
+if(lang==="english"){
+
+content=`
+
+<h2>RSI - Relative Strength Index</h2>
+
+<p>
+
+RSI is a momentum indicator.
+
+It helps traders understand
+whether price is becoming
+too strong or too weak.
+
+RSI moves between 0 and 100.
+
+</p>
+
+<div class="step">
+
+RSI above 70
+
+→ Market may be overbought
+
+</div>
+
+<div class="step">
+
+RSI below 30
+
+→ Market may be oversold
+
+</div>
+
+<div class="step">
+
+Bullish divergence
+
+→ Sellers may be getting weak
+
+</div>
+
+<div class="step">
+
+Bearish divergence
+
+→ Buyers may be getting weak
+
+</div>
+
+`;
+
+}
+
+else if(lang==="tigrigna"){
+
+content=`
+
+<h2>RSI - Relative Strength Index</h2>
+
+<p>
+
+RSI ብቁልጡፍ ናይ ዋጋ ምልዋጥ ምኽንያት፡ ልዕሊ ዓቐን ተተገዚኡ (Overbought) ወይስ ልዕሊ ዓቐን ተተሸይጡ (Oversold) ከም ዘሎ ንምፍላጥ ዘገልግል ናይ ሞመንተም ወይ ናይ ዋጋ ናህሪ መመልከቲ (momentum indicator) እዩ።"
+
+ዋጋ ብርቱዕ
+ወይ ደኹም
+ከምዘሎ
+ንምርዳእ ይሕግዝ።
+
+RSI
+ካብ 0 ክሳብ 100
+ይንቀሳቐስ።
+
+</p>
+
+<div class="step">
+
+RSI ልዕሊ 70
+
+→ Overbought ወይ ልዕሊ ዓቀን ተገዚኡ<p>
+→ እቲ ዋጋ ንነዊሕ ግዜ ብሓያል ቅልጣፌ ናብ ላዕሊ ስለ ዝደየበ፡ እቲ ዕዳጋ "ደኺሙ" ኣሎ ማለት እዩ። ኣብዚ እዋን እዚ ሓደ ናይ ዋጋ ምቕናስ (Dump) ወይ ድማ ሪቨርሳል (Reversal) ክመጽእ ስለ ዝኽእል፡ ሓደ ናይ መሸጢ ምልክት (Sell Signal) ክኸውን ይኽእል</p>
+</div>
+
+<div class="step">
+
+RSI ትሕቲ 30
+
+→ Oversold ልዕሊ ዓቀን ተሸይጡ
+
+</div>
+<div class="step">
+ደረጃ 50 (ማእከላይ መስመር)፦ እቲ ዋጋ ኣብ ማእከል ምስ ዝህሉ፡ እቲ ትረንድ ንየናይ ሸነኽ ይዳሎ ከምዘሎ (Bullish ወይ Bearish) ንምፍላጥ የመልክት።
+
+</div>
+<div class="step">
+
+Bullish divergence
+
+→ Sellers ይደኽሙ ኣለዉ
+
+</div>
+
+<div class="step">
+
+Bearish divergence
+
+→ Buyers ይደኽሙ ኣለዉ
+
+</div>
+
+`;
+
+}
+
+else{
+
+content=`
+
+<h2>RSI - Relative Strength Index</h2>
+
+<h3>English</h3>
+
+<p>
+
+RSI measures momentum.
+
+</p>
+
+<div class="step">
+
+RSI above 70
+→ Overbought
+
+</div>
+
+<div class="step">
+
+RSI below 30
+→ Oversold
+
+</div>
+
+<hr>
+
+<h3>ትግርኛ</h3>
+
+<p>
+
+RSI ናይ momentum
+indicator እዩ።
+
+</p>
+
+<div class="step">
+
+RSI ልዕሊ 70
+→ Overbought
+
+</div>
+
+<div class="step">
+
+RSI ትሕቲ 30
+→ Oversold
+
+</div>
+
+`;
+
+}
+
+document.getElementById("lessonArea").innerHTML=content;
+
+showImage("rsi.png");
+
+}
+function showMACD(){
+
+const lang=document.getElementById("language").value;
+
+let content="";
+
+if(lang==="english"){
+
+content=`
+
+<h2>MACD - Moving Average Convergence Divergence</h2>
+
+<p>
+
+MACD is a trend and momentum indicator.
+
+It helps traders understand
+whether momentum is becoming
+stronger or weaker.
+
+MACD has 3 parts:
+
+• MACD Line
+
+• Signal Line
+
+• Histogram
+
+</p>
+
+<div class="step">
+
+MACD Line crossing above Signal Line
+
+→ Possible Buy Signal
+
+</div>
+
+<div class="step">
+
+MACD Line crossing below Signal Line
+
+→ Possible Sell Signal
+
+</div>
+
+<div class="step">
+
+Histogram growing bigger
+
+→ Momentum getting stronger
+
+</div>
+
+<div class="step">
+
+Histogram getting smaller
+
+→ Momentum getting weaker
+
+</div>
+
+`;
+
+}
+
+else if(lang==="tigrigna"){
+
+content=`
+
+<h2>MACD - Moving Average Convergence Divergence</h2>
+
+<p>
+
+"MACD (ኤም-ኤ-ሲ-ዲ)፡ ክልተ ናይ ዋጋ ማእከላይ አማካይ መስመራት (Moving Averages) ብምውድዳር፡ ሓደ ትረንድ (Trend) ናብ ኣየናይ ኣንፈት ይጓዓዝ ከምዘሎን ሓይሊ ናይቲ ምንቅስቓስ (Momentum)
+ ክንደይ ምዃኑን ንምፍላጥ ዝሕግዝ ናይ ቴክኒካዊ ትንተና መመልከቲ (indicator) እዩ።"
+
+Momentum ማለት ናይ ምግዛእ ተኸእሎ
+ይበርትዕ ኣሎ
+ወይ ይደክም ኣሎ
+ንምርዳእ ይሕግዝ።
+
+MACD
+3 ክፋላት ኣለዎ።
+
+•MACD Line (ናይ MACD መስመር)፦ ቅልጣፈ ናይቲ ዋጋ ዘርኢ ኮይኑ፡ ክልተ ናይ እዋናዊ ዋጋ ማእከል መስመራት (Exponential Moving Averages) ብምቕናስ ዝርከብ መስመር እዩ።
+
+• Signal Line (ናይ ምልክት መስመር)፦ እቲ ናይ መሸጢ ወይ መግዝኢ ግዜ ንምውሳን ዘገልግል ቀስ ዝበለ መስመር እዩ።
+
+• Histogram (ሂስቶግራም)፦ እቲ ኣብ መንጎ ክልቲኦም መስመራት ዘሎ ፍልልይ ብባር (bars) ዘርኢ ኮይኑ፡ እቲ ሞመንተም (ሓይሊ) ይውስኽ ወይ ይቕንስ ከምዘሎ የነጽር።
+• ብሓጺሩ፡ "MACD፡ እቲ ትረንድ ሓያል ድዩ ድኹም፡ ከምኡ እውን ክቕየር ይኽእል ድዩ ኣይኽእልን ንምግማት የገልግል።"
+
+
+</p>
+
+<div class="step">
+
+MACD Line
+ን Signal Line
+ናብ ላዕሊ እንተቖሪጹ
+
+→ ናይ ምግዛእ ምልክት
+
+</div>
+
+<div class="step">
+
+MACD Line
+ን Signal Line
+ናብ ታሕቲ እንተቖሪጹ
+
+→ናይ ምሻጥ ምልክት
+
+</div>
+
+<div class="step">
+
+Histogram bars
+እንተዓበዩ
+
+→ Momentum ማለት ሓይሊ ምንቅስቃስ  ይበርትዕ
+</div>
+
+<div class="step">
+
+Histogram bars
+እንተኒኢሱ
+
+→ Momentum ማለት ሓይሊ ምንቅስቃስ  ይደክም
+
+</div>
+
+`;
+
+}
+
+else{
+
+content=`
+
+<h2>MACD - Moving Average Convergence Divergence</h2>
+
+<h3>English</h3>
+
+<p>
+
+MACD measures trend
+and momentum.
+
+</p>
+
+<div class="step">
+
+MACD crossover
+→ Buy/Sell signal
+
+</div>
+
+<div class="step">
+
+Histogram
+→ Momentum strength
+
+</div>
+
+<hr>
+
+<h3>ትግርኛ</h3>
+
+<p>
+
+MACD
+trendን momentumን ወይ ናይ ዋጋ ናይ ምውሳኽ ወይ ምቅናስ ቅልጣፈ (ሓይሊ)
+የርኢ።
+
+</p>
+
+<div class="step">
+
+MACD crossover
+→ Buy/Sell signal
+
+</div>
+
+<div class="step">
+
+Histogram
+→ Momentum strength
+
+</div>
+
+`;
+
+}
+
+document.getElementById("lessonArea").innerHTML=content;
+
+showImage("macd.png");
+
+}
+function resetLesson() {
+    document.getElementById("lessonArea").innerHTML = `
+        <h2>Welcome to Tutorial 2</h2>
+        <p>Choose one indicator button to start learning.</p>
+    `;
+
+    const img = document.getElementById("indicatorImage");
+    img.src = "";
+    img.style.display = "none";
+}
+</script>
+
+</body>
+</html>

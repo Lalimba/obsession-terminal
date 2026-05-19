@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Trading Chart Tutorial</title>
+    <style>
+        :root {
+            --bg-dark: #121214;
+            --panel-bg: #1a1a1e;
+            --card-bg: #222227;
+            --text-gold: #ffb703;
+            --text-light: #e2e8f0;
+            --btn-bg: #2d2d34;
+            --btn-active: #3b82f6;
+            --bullish: #00c853;
+            --bearish: #ff3d00;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        header p {
+            color: #a0aec0;
+            margin: 0 0 15px 0;
+        }
+
+        .top-selectors {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        select {
+            background-color: var(--btn-bg);
+            color: white;
+            border: 1px solid #4a5568;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .category-group {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2d3748;
+            padding-bottom: 15px;
+        }
+
+        .category-title {
+            color: var(--text-gold);
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-topic {
+            background-color: var(--btn-bg);
+            color: var(--text-light);
+            border: 1px solid #4a5568;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-topic:hover {
+            background-color: #3d3d47;
+        }
+
+        .btn-topic.active {
+            background-color: var(--btn-active);
+            border-color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+
+        .btn-control {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-control:hover { background-color: #718096; }
+
+        /* Tutorial Display Workspace */
+        .tutorial-workspace {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid #2d3748;
+        }
+
+        .workspace-title {
+            color: var(--text-gold);
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            background-color: #141416;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 1px solid #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .explanation-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .step {
+            background-color: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-left: 3px solid var(--text-gold);
+            margin: 8px 0;
+            border-radius: 0 5px 5px 0;
+            font-size: 14px;
+        }
+
+        /* Multi-language toggles */
+        [data-lang="en"] .lang-ti { display: none !important; }
+        [data-lang="ti"] .lang-en { display: none !important; }
+        
+        /* Trend filtering */
+        [data-trend="bullish"] .trend-bear { display: none !important; }
+   .step{
+  font-size:22px;
+  line-height:1.8;
+  padding:18px;
+  margin-top:18px;
+  font-weight:bold;
+  border-left:5px solid gold;
+  background:#1f1f1f;
+  border-radius:10px;
+}
+
+.panel p{
+  font-size:22px;
+  line-height:1.8;
+}
+
+.panel h2{
+  font-size:34px;
+}
+
+.panel h3{
+  font-size:28px;
+  color:gold;
+  margin-top:30px;
+}
+
+button{
+  font-size:22px;
+  padding:14px 22px;
+}     [data-trend="bearish"] .trend-bull { display: none !important; }
+
+.back-btn{
+    background:#2b2f3a;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.back-btn:hover{
+    background:#40485a;
+}
+
+@media (max-width: 600px) {
+
+  body {
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 23px;
+  }
+
+  button,
+  select,
+  .back-btn {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+}
+    </style>
+</head>
+<body data-lang="en" data-trend="bullish">
+    <button onclick="goBack()" class="back-btn">
+← Back
+</button>
+
+<script>
+function goBack(){
+    window.location.href="trading.html";
+}
+</script>
+
+
+<div class="container">
+    <header>
+        <h1 class="lang-en">Interactive Trading Chart Tutorial</h1>
+        <h1 class="lang-ti">Interactive ናይ ትሬዲንግ ቻርት መምህሪ</h1>
+        <p class="lang-en">Learn price action, market structure, smart money concepts, and risk management step by step.</p>
+        <p class="lang-ti">Price action, Market structure, Smart money concepts ከምኡውን Risk management ደረጃ ብደረጃ ይማህሩ።</p>
+        
+        <div class="top-selectors">
+            <select id="langSelect" onchange="changeLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="ti">ትግርኛ</option>
+            </select>
+            <select id="modeSelect" onchange="changeTrendMode(this.value)">
+                <option value="bullish">📈 Bullish Trend</option>
+                <option value="bearish">📉 Bearish Trend</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Trading Timeframes Category -->
+    <div class="category-group">
+        <div class="category-title">Trading Timeframes</div>
+        <div class="button-grid">
+            <button class="btn-topic" onclick="loadTimeframe('1m')">1 Minute (1m)</button>
+            <button class="btn-topic" onclick="loadTimeframe('5m')">5 Minute (5m)</button>
+            <button class="btn-topic" onclick="loadTimeframe('15m')">15 Minute (15m)</button>
+            <button class="btn-topic" onclick="loadTimeframe('1h')">1 Hour (1h)</button>
+            <button class="btn-topic" onclick="loadTimeframe('4h')">4 Hour (4h)</button>
+            <button class="btn-topic" onclick="loadTimeframe('1d')">Daily (1d)</button>
+        </div>
+    </div>
+
+    <!-- Live Control Tools Row (For Layout Consistency) -->
+    <div class="control-panel">
+        <button class="btn-control" onclick="navigateTimeframe(-1)">Previous</button>
+        <button class="btn-control" onclick="navigateTimeframe(1)">Next</button>
+    </div>
+
+    <!-- Dynamic Tutorial Screen -->
+    <div class="tutorial-workspace">
+        <h2 class="workspace-title" id="lessonTitle">Choose a timeframe button to start</h2>
+        
+        <div class="chart-placeholder">
+            <span id="imgFallbackText" style="color: #4a5568; padding: 40px;">Select a timeframe from above to load the chart structure image.</span>
+            <img id="chartImg" class="chart-img" src="" alt="Trading Chart">
+        </div>
+
+        <div class="explanation-text" id="lessonExplanation">
+            <p class="lang-en">Please select one of the timeframe buttons above (1m, 5m, 15m, 1h, 4h, 1d) to view the live dynamic chart structure and breakdown analysis.</p>
+            <p class="lang-ti">ነቲ ህያው ዝኾነ ናይ ቻርት መዋቕርን ትንተናን ንምርኣይ ካብቶም ላዕለዎት ናይ ግዜ መዕቀኒ বুተናት (1m, 5m, 15m, 1h, 4h, 1d) ሓደ ምረጹ።</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Exact data structures linking images with multi-language layout details
+    const timeframeData = {
+        '1m': {
+            title: { en: "1 Minute Chart (1m)", ti: "1 ደቒቕ ቻርት (1m)" },
+            img: "1m.png",
+            exp: {
+                en: `
+                    <p>The 1m chart is very fast and noisy. Scalpers use it for quick trades. Small price movements happen very quickly.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> High speed buying pressure. Look for fast break-outs of minor resistances. Risk of sudden reversals is extremely high.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> High velocity panic selling. Price drops rapidly within seconds. Minor support lines fail instantly.</div>
+                    </div>
+                    <div class="step">Best for scalping</div>
+                    <div class="step">Very risky for beginners</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ 1 ደቒቕ (1m) ቻርት ብጣዕሚ ቅልጡፍን ጫውጫውታ (ምንቅስቓስ) ዝበዝሖን እዩ። ስካልፐርስ (Scalpers) ንቕልጡፍ ንግዲ ይጥቀሙሉ:: ናይ ዋጋ ንኣሽቱ ምንቅስቓሳት ብዝለዓለ ፍጥነት የጋጥሙ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ልዑል ፍጥነት ዘለዎ ናይ ምዕዳግ ጸቕጢ። ንኣሽቱ ናይ መኸተ (resistance) መስመራት ብቕልጡፍ ክስበሩ ከለዉ ይረአ። ሓደጋኡ ብጣዕሚ ልዑል እዩ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ፍርሒ ዝመልኦ ቅልጡፍ መሸጣ። ዋጋ ኣብ ውሽጢ ካልኢታት ይወርድ። ንኣሽቱ ናይ ደገፍ (support) መስመራት ብኡንብኡ ይፈሽሉ።</div>
+                    </div>
+                    <div class="step">ንዝተረረ ስካልፒንግ (Scalping) ዝበለጸ እዩ</div>
+                    <div class="step">ንጀመርቲ ብጣዕሚ ሓደገኛ እዩ</div>
+                `
+            }
+        },
+        '5m': {
+            title: { en: "5 Minute Chart (5m)", ti: "5 ደቒቕ ቻርት (5m)" },
+            img: "5m.png",
+            exp: {
+                en: `
+                    <p>The 5m chart is still fast but cleaner than 1m. Many day traders use it for short-term entries.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> Steeper uptrend steps. Price holds immediate micro support levels during retracements.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> Clean step-down pattern. Rallies are short-lived and rejected at short-term moving averages.</div>
+                    </div>
+                    <div class="step">Popular for scalpers</div>
+                    <div class="step">Better structure than 1m</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ 5 ደቒቕ (5m) ቻርት ገና ቅልጡፍ እዩ ግን ካብ 1m ዝጸረየ እዩ። ብዙሓት ናይ መዓልቲ ነጋዶ (Day traders) ንሓደ እዋን ምእተዊ ይጥቀሙሉ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ዝተረረ ናይ ዋጋ ምውሳኽ መስመር። ዋጋ ኣብ ግዜ መመጣጠኒ ምንካይ ነቶም ንኣшቱ ናይ ደገፍ ዞባታት ሒዙ ይድይብ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ንጹር ናይ ታሕቲ ውድቀት። ንላዕሊ ዝግበሩ ፈተነታት ሓጸርቲ እዮም፣ ብኡንብኡ ውድቅ ይኾኑ።</div>
+                    </div>
+                    <div class="step">ን ስካልፐርስ ፍቱው እዩ</div>
+                    <div class="step">ካብ 1m ዝበለጸ መዋቕር ኣለዎ</div>
+                `
+            }
+        },
+        '15m': {
+            title: { en: "15 Minute Chart (15m)", ti: "15 ደቒቕ ቻርት (15m)" },
+            img: "15m.png",
+            exp: {
+                en: `
+                    <p>The 15m chart gives clearer market structure. Good for beginners learning day trading.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> Clear Higher Highs and Higher Lows establish an intraday bullish channel. Consistent buying volume.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> Formation of Lower Highs and Lower Lows confirms intraday weakness. Breakouts of support lead to rapid drops.</div>
+                    </div>
+                    <div class="step">Good balance between speed and clarity</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ 15 ደቒቕ (15m) ቻርት ዝበለጸ ንጹር ናይ ዕዳጋ ቅርጺ የርኢ። ዴይ ትሬዲንግ (Day trading) ንዝመሃሩ ጀመርቲ ጽቡቕ እዩ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ንጹር ዝኾነ ዝለዓሉ ጫፋትን (Higher Highs) ትሕተ-ባይታታትን ብምስራሕ ናይ ዕብየት መስመር የውጽእ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ትሑት ጫፋትን ትሑት ውድቀታትን ብምምስራት ናይ ውድቀት መስመር የረጋግጽ። ናይ ደገፍ ምስባር ናብ ፈጣን ውድቀት ይመርሕ።</div>
+                    </div>
+                    <div class="step">ኣብ መንጎ ፍጥነትን ንጽርናን ጽቡቕ ሚዛን ዘለዎ እዩ</div>
+                `
+            }
+        },
+        '1h': {
+            title: { en: "1 Hour Chart (1h)", ti: "1 ሰዓት ቻርት (1h)" },
+            img: "1hour.png",
+            exp: {
+                en: `
+                    <p>The 1h chart shows stronger trend direction. Less noise compared to lower timeframes.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> Strong structural trends driving swing market movement. Key support levels hold firm against intraday noise.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> Strong macro supply entering. Rallies back up are heavily shorted by larger retail participants.</div>
+                    </div>
+                    <div class="step">Useful for swing traders</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ 1 ሰዓት (1h) ቻርት ዝደልደለ ናይ ትረንድ ኣንፈት የርኢ። ምስ ትሑታት ናይ ግዜ መዕቀኒታት (timeframes) ክነጻጸር ከሎ ጫውጫውታኡ ዝወሓደ እዩ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ሓያል ናይ ስዊንግ (Swing) ምንቅስቓስ ዝውስን ትረንድ። ቀንዲ ናይ ደገф ዞባታት ጽኑዓት ኮይኖም ይጸንሑ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ሓያል ናይ መሸጣ ሓይሊ ምእታው። ዋጋ ንላዕሊ ቁሩብ ክብ ክብ ክብል ከሎ ብዓበይቲ ነጋዶ ጸቕጢ ይግበረሉ::</div>
+                    </div>
+                    <div class="step">ን ስዊንግ ትሬደርስ (Swing Traders) ጠቓሚ እዩ</div>
+                `
+            }
+        },
+        '4h': {
+            title: { en: "4 Hour Chart (4h)", ti: "4 ሰዓት ቻርት (4h)" },
+            img: "4hour.png",
+            exp: {
+                en: `
+                    <p>The 4h chart is important for major market direction. Strong support and resistance appear clearly here.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> Institutional order blocks are protecting macro demands. Breakouts lead to massive multi-day expansion phases.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> Heavy distribution patterns. Major support floors snap, accelerating panic across lower timeframes.</div>
+                    </div>
+                    <div class="step">Institutional traders watch this timeframe</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ 4 ሰዓት (4h) ቻርት ንቐንዲ ናይ ዕዳጋ ኣንፈት ኣገዳሲ እዩ። ሓያላት ናይ ደገፍን (Support) መኸተን (Resistance) መስመራት لዚ ብንጹር ይረኣዩ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ዓበይቲ ትካላዊ ዞባታት ነቲ ናይ ነዊሕ ግዜ ደገፍ ይከላኸሉ ኣለዉ። እዚ ዞባ ምስ ዝስበር ንነዊሕ መዓልታት ዝጸንሕ ዕብExpansion ይመጽእ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ከቢድ ናይ መሸጣ (distribution) ቅርጺ። ዓበይቲ ናይ ደገፍ ባይታታት ምስ ዝስበሩ፣ ኣብቶም ትሑታት timeframes ፍርሒ ይፈጥር።</div>
+                    </div>
+                    <div class="step">ዓበይቲ ትካлаውያን ነጋዶ ነዚ ናይ ግዜ መዕቀኒ ይከታተልዎ እዮም</div>
+                `
+            }
+        },
+        '1d': {
+            title: { en: "Daily Chart (1d)", ti: "መዓልታዊ ቻርት (1d)" },
+            img: "1day.png",
+            exp: {
+                en: `
+                    <p>The daily chart dictates the overall macro trend of the asset. It filters out all short-term market noise.</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 Bullish Structure:</strong> Full structural Bull Market. Long-term investment phase. Buying market dips is the highly dominant strategy over months.</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 Bearish Structure:</strong> Structural Bear Market macro phase. Major economic decline. Recovery patterns take weeks or months to build.</div>
+                    </div>
+                    <div class="step">Essential for long-term investors</div>
+                `,
+                ti: `
+                    <p>እዚ ናይ መዓልታዊ (1d) ቻርት ነቲ ሓፈሻዊ ዓብዪ ትረንድ ይውስኖ። ንኹሉ ናይ کورቲ ግዜ ናይ ዕዳጋ ጫውጫውታታት የውጽኦ እዩ::</p>
+                    <div class="trend-bull">
+                        <div class="step"><strong>📈 ቡሊሽ ቅርጺ:</strong> ናይ ነዊሕ ግዜ ናይ ዕብየት ዕዳጋ (Bull Market)። ወርሓዊ ናይ ምዕዳግ መስመር። ዝወረደ ዋጋ ዓዲግካ ምጽባይ ቀንዲ ስትራተጂ እዩ።</div>
+                    </div>
+                    <div class="trend-bear">
+                        <div class="step"><strong>📉 ቤሪሽ ቅርጺ:</strong> ናይ ነዊሕ ግዜ ናይ ውድቀት ዕዳጋ (Bear Market)። ሓፈሻዊ ናይ ዋጋ ውድቀት። ንድሕሪት ንምምላስ ኣዋርሕ ይወስድ።</div>
+                    </div>
+                    <div class="step">ንነዊሕ ግዜ ወፈርትን ኣገዳሲ እዩ</div>
+                `
+            }
+        }
+    };
+
+    const timeframeKeys = ['1m', '5m', '15m', '1h', '4h', '1d'];
+    let currentKeyIndex = -1;
+
+    function loadTimeframe(key) {
+        currentKeyIndex = timeframeKeys.indexOf(key);
+        const data = timeframeData[key];
+        if (!data) return;
+
+        // Visual active status highlight update for the button row
+        document.querySelectorAll('.btn-topic').forEach(btn => {
+            if(btn.textContent.toLowerCase().includes(key)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Set Title text directly
+        const currentLang = document.body.getAttribute('data-lang');
+        document.getElementById('lessonTitle').innerText = data.title[currentLang];
+
+        // Update Explanations content block area
+        document.getElementById('lessonExplanation').innerHTML = `
+            <div class="lang-en">${data.exp.en}</div>
+            <div class="lang-ti">${data.exp.ti}</div>
+        `;
+
+        // Update target Image source file instantly
+        const img = document.getElementById('chartImg');
+        const fallbackText = document.getElementById('imgFallbackText');
+        
+        img.src = data.img;
+        img.style.display = 'block';
+        fallbackText.style.display = 'none';
+    }
+
+    function changeLanguage(lang) {
+        document.body.setAttribute('data-lang', lang);
+        if(currentKeyIndex !== -1) {
+            loadTimeframe(timeframeKeys[currentKeyIndex]);
+        }
+    }
+
+    function changeTrendMode(trend) {
+        document.body.setAttribute('data-trend', trend);
+    }
+
+    function navigateTimeframe(step) {
+        let newIndex = currentKeyIndex + step;
+        if (newIndex >= 0 && newIndex < timeframeKeys.length) {
+            loadTimeframe(timeframeKeys[newIndex]);
+        }
+    }
+</script>
+</body>
+</html>
