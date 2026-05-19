@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,6 +122,24 @@
       font-weight: bold;
     }
 
+
+    .step {
+      border-left: 4px solid #ffcc00;
+      padding: 10px;
+      margin: 12px 0;
+      background: #222;
+      border-radius: 6px;
+    }
+
+    .lesson-image {
+      display: block;
+      width: 100%;
+      max-width: 850px;
+      margin: 18px auto 0;
+      border-radius: 12px;
+      border: 1px solid #444;
+    }
+
     canvas {
       background: #222;
       margin-top: 14px;
@@ -149,6 +169,31 @@
         width: 100%;
       }
     }
+    <style>
+
+.extra-tutorials{
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+.tutorial-link{
+    background:#2b2f3a;
+    color:white;
+    padding:10px 18px;
+    border:1px solid #555;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:16px;
+    transition:0.2s;
+}
+
+.tutorial-link:hover{
+    background:#40485a;
+}
+
+</style>
   </style>
 </head>
 
@@ -157,7 +202,17 @@
   <p class="subtitle" id="subtitle">
     Learn price action, market structure, smart money concepts, and risk management step by step.
   </p>
+<div class="extra-tutorials">
 
+    <a href="tutorial2.html" class="tutorial-link">
+        Tutorial 2
+    </a>
+
+    <a href="tutorial3.html" class="tutorial-link">
+        Tutorial 3
+    </a>
+
+</div>
   <div class="topbar">
     <select id="languageSelect" onchange="changeLanguage()">
       <option value="en">English</option>
@@ -264,6 +319,60 @@ const categories = {
 };
 
 const lessons = {
+  candles: {
+    category: "basic",
+    button: { en: "Candles", ti: "ሻምዓታት" },
+    title: { en: "Candlestick Basics", ti: "መሰረታዊ ናይ ሻምዓ ትምህርቲ" },
+    level: { en: "Beginner", ti: "ጀማሪ" },
+    htmlText: {
+      en: `
+        <h3>What is a Candle?</h3>
+        <p>A candle shows how price moved during one time period. For example: 1 minute, 5 minutes, 1 hour, or 1 day.</p>
+
+        <div class="step">Opening Price → where price started</div>
+        <div class="step">Closing Price → where price finished</div>
+        <div class="step">Highest Price → the highest place price reached before returning</div>
+        <div class="step">Lowest Price → the lowest place price reached before returning</div>
+
+        <h3>Blue Candle / Bullish Candle</h3>
+        <p>A blue candle means buyers were stronger. Price closed higher than where it opened.</p>
+
+        <h3>Red Candle / Bearish Candle</h3>
+        <p>A red candle means sellers were stronger. Price closed lower than where it opened.</p>
+
+        <div class="step">Long candle → strong movement</div>
+        <div class="step">Short candle → weak movement or market hesitation</div>
+        <div class="step">Wicks show price went up or down and returned back.</div>
+      `,
+      ti: `
+        <h3>መሰረታዊ ናይ ሽምዓ ምትምህርቲ</h3>
+        <p>ሓንቲ Candle (ሽምዓ) ዋጋ ኣብ ሓደ ግዜ ከመይ ከም ዝንቀሳቐሰ የርኢ።</p>
+
+        <div class="step">ዋጋ ዝኸፈተሉ ቦታ → እቲ Candle ዝጀመረሉ ዋጋ</div>
+        <div class="step">ዋጋ ዝዓጸወሉ ቦታ → እቲ Candle ዝወድአሉ ዋጋ</div>
+        <div class="step">ዋጋ ካብ ላዕሊ ዝተመልሰሉ → ዋጋ ንላዕሊ ከይዱ ተመሊሱ ዝመጸሉ ቦታ</div>
+        <div class="step">ዋጋ ካብ ታሕቲ ዝተመልሰሉ → ዋጋ ንታሕቲ ከይዱ ተመሊሱ ዝመጸሉ ቦታ</div>
+
+        <h3>ሰማያዊ Candle</h3>
+        <p>ሰማያዊ Candle ማለት buyers ሓያላት እዮም። ዋጋ ካብ ዝኸፈተሉ ቦታ ንላዕሊ ዓጺዩ ማለት እዩ።</p>
+
+        <h3>ቀይሕ Candle</h3>
+        <p>ቀይሕ Candle ማለት sellers ሓያላት እዮም። ዋጋ ካብ ዝኸፈተሉ ቦታ ንታሕቲ ዓጺዩ ማለት እዩ።</p>
+
+        <div class="step">ነዊሕ Candle → ብርቱዕ ምንቅስቓስ የርኢ</div>
+        <div class="step">ሓጺር Candle → ደኺም ምንቅስቓስ ወይ ምድንጓይ የርኢ</div>
+        <div class="step">Wick → ዋጋ ናብ ላዕሊ ወይ ታሕቲ ከይዱ ተመሊሱ ከምዝመጸ የርኢ</div>
+      `
+    },
+    quiz: {
+      q: { en: "What does a blue candle usually mean?", ti: "ሰማያዊ Candle ብዙሕ ግዜ እንታይ የርኢ?" },
+      a: { en: "Buyers were stronger and price moved upward.", ti: "Buyers ሓያላት እዮም፣ ዋጋ ንላዕሊ ከምዝኸደ የርኢ።" }
+    },
+    points: [],
+    labels: [],
+    image: "candles.png"
+  },
+
   uptrend: {
     category: "basic",
     button: { en: "Uptrend", ti: "Uptrend" },
@@ -802,7 +911,20 @@ function updateLessonPanel(key) {
   const lesson = lessons[key];
   lessonTitle.textContent = t(lesson.title);
   lessonMeta.textContent = `${t(categories[lesson.category])} • ${t(lesson.level)}`;
-  lessonText.textContent = t(lesson.text);
+
+  if (lesson.htmlText) {
+    lessonText.innerHTML = t(lesson.htmlText);
+  } else {
+    lessonText.textContent = t(lesson.text);
+  }
+
+  if (lesson.image) {
+  lessonText.innerHTML += `
+    <img src="${lesson.image}"
+    style="width:100%;max-width:700px;margin-top:20px;border-radius:10px;">
+  `;
+}
+
   quizQuestion.textContent = t(lesson.quiz.q);
   quizAnswer.textContent = t(lesson.quiz.a);
   quizAnswer.style.display = "none";
