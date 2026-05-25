@@ -1,10 +1,12 @@
 
+
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Obsession Trading Academy — PRO Desk+ላዕለዋይ ጥርዚ ፍልጠት</title>
+<title>Obsession Trading Academy — PRO Desk+ላዕለዋይ ጥርዚ Trading </title>
 
 <style>
   html, body {
@@ -477,6 +479,43 @@
 .text-up { color: #00ffad; }
 .text-down { color: #ff3b69; }
 .text-warn { color: #f0b90b; }
+
+  .debug-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .debug-row {
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(0,0,0,0.20);
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .debug-k {
+    color: #8c98a8;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+  }
+
+  .debug-v {
+    color: #fff;
+    font-weight: 800;
+    margin-top: 2px;
+    word-break: break-word;
+  }
+
+  .debug-warn {
+    color: #ffae00;
+    font-size: 11px;
+    margin-top: 8px;
+    line-height: 1.35;
+  }
+
 .chart-area {
   position: relative;
 }
@@ -663,8 +702,28 @@
           </div>
 
           <div class="small-note">
-            Manual flow inputs are saved locally in the browser.
+            Manual ETF input is saved locally. Coinbase Premium can be auto-read live; ETF flow still needs manual verification because official ETF flow publishes after market close.
           </div>
+
+          <div class="debug-grid">
+            <div class="debug-row">
+              <div class="debug-k">Binance Spot BTCUSDT</div>
+              <div class="debug-v" id="debugBinanceSpot">—</div>
+            </div>
+            <div class="debug-row">
+              <div class="debug-k">Coinbase Spot BTC-USD</div>
+              <div class="debug-v" id="debugCoinbaseSpot">—</div>
+            </div>
+            <div class="debug-row">
+              <div class="debug-k">Premium Formula</div>
+              <div class="debug-v" id="debugPremiumFormula">Coinbase − Binance = —</div>
+            </div>
+            <div class="debug-row">
+              <div class="debug-k">Data Freshness</div>
+              <div class="debug-v" id="debugFreshness">Waiting…</div>
+            </div>
+          </div>
+          <div class="debug-warn" id="debugWarning">Debug: waiting for live data…</div>
         </div>
 
         <!-- DERIVATIVES -->
@@ -940,6 +999,7 @@
     const LS_REFRESH_MS = 30000;
     const FUNDING_HISTORY_REFRESH_MS = 60000;
     const LIQ_MAX_ROWS = 25;
+    const PREMIUM_REFRESH_MS = 15000;
     const BIG_LIQ_USD = 2_000_000;
     const ENABLE_SOUND = true;
     const FLOW_STORAGE_KEY = "obsession_flow_inputs_v1";
@@ -951,6 +1011,13 @@
     let lastFunding = null;
     let nextFundingTime = null;
     let latestIndexPrice = null;
+    let latestMarkPrice = null;
+    let latestBinanceSpot = null;
+    let latestCoinbaseSpot = null;
+    let latestPremiumTs = null;
+    let latestDerivativesTs = null;
+    let latestLsTs = null;
+    let alphaD1h = null;
     let soundEnabled = ENABLE_SOUND;
     let lastLsRatio = null;
     let lastOIDeltaPct = null;
@@ -1005,6 +1072,39 @@
     function nowHHMMSS() {
       const d = new Date();
       return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
+    }
+
+    function ageText(ts) {
+      if (!ts) return "—";
+      const sec = Math.max(0, Math.round((Date.now() - ts) / 1000));
+      if (sec < 60) return `${sec}s ago`;
+      const min = Math.floor(sec / 60);
+      const rem = sec % 60;
+      return `${min}m ${rem}s ago`;
+    }
+
+    function updateDebugPanel() {
+      setText("debugBinanceSpot", Number.isFinite(latestBinanceSpot) ? fmtPrice(latestBinanceSpot) : "—");
+      setText("debugCoinbaseSpot", Number.isFinite(latestCoinbaseSpot) ? fmtPrice(latestCoinbaseSpot) : "—");
+
+      if (Number.isFinite(latestBinanceSpot) && Number.isFinite(latestCoinbaseSpot)) {
+        const diff = latestCoinbaseSpot - latestBinanceSpot;
+        setText("debugPremiumFormula", `${fmtPrice(latestCoinbaseSpot)} − ${fmtPrice(latestBinanceSpot)} = ${diff.toFixed(2)}`);
+      } else {
+        setText("debugPremiumFormula", "Coinbase − Binance = —");
+      }
+
+      setText(
+        "debugFreshness",
+        `Premium ${ageText(latestPremiumTs)} | Derivatives ${ageText(latestDerivativesTs)} | L/S ${ageText(latestLsTs)}`
+      );
+
+      const warnings = [];
+      if (!Number.isFinite(latestBinanceSpot) || !Number.isFinite(latestCoinbaseSpot)) warnings.push("Coinbase/Binance spot premium not confirmed yet.");
+      if (latestPremiumTs && Date.now() - latestPremiumTs > 60_000) warnings.push("Premium feed is stale.");
+      if (Math.abs(flowInputs.etfFlow) > 0 && Math.abs(flowInputs.etfFlow) < 25) warnings.push("ETF flow is very small; do not treat it as a strong signal.");
+      if (flowInputs.coinbasePremium < 0 && alphaD1h && alphaD1h.p > 0) warnings.push("Premium is negative, but price is rising; offshore/futures demand may be stronger than US spot selling.");
+      setText("debugWarning", warnings.length ? "Debug: " + warnings.join(" ") : "Debug: feeds look consistent.");
     }
 
     function playBeep() {
@@ -1120,37 +1220,56 @@
       let reasons = [];
       let crowding = "Neutral";
 
-      if (flowInputs.etfFlow > 0) {
-        score += flowInputs.etfFlow >= 100 ? 3 : 2;
-        reasons.push(`ETF flows positive (${flowInputs.etfFlow.toFixed(2)}m)`);
-      } else if (flowInputs.etfFlow < 0) {
-        score -= Math.abs(flowInputs.etfFlow) >= 100 ? 3 : 2;
-        reasons.push(`ETF flows negative (${flowInputs.etfFlow.toFixed(2)}m)`);
+      const etf = flowInputs.etfFlow;
+      const prem = flowInputs.coinbasePremium;
+
+      // ETF flow is a slower daily signal. Small values should not dominate the live engine.
+      if (Number.isFinite(etf) && etf !== 0) {
+        const a = Math.abs(etf);
+        let pts = 0;
+        if (a >= 300) pts = 3;
+        else if (a >= 100) pts = 2;
+        else if (a >= 25) pts = 1;
+
+        score += etf > 0 ? pts : -pts;
+        reasons.push(pts === 0
+          ? `ETF flow small / low weight (${etf.toFixed(2)}m)`
+          : `ETF flows ${etf > 0 ? "positive" : "negative"} (${etf.toFixed(2)}m, ${etf > 0 ? "+" : "-"}${pts})`);
       } else {
         reasons.push("ETF flow not entered / neutral");
       }
 
-      if (flowInputs.coinbasePremium > 0) {
-        score += flowInputs.coinbasePremium >= 20 ? 3 : 2;
-        reasons.push(`Coinbase Premium positive ($${flowInputs.coinbasePremium.toFixed(2)})`);
-      } else if (flowInputs.coinbasePremium < 0) {
-        score -= Math.abs(flowInputs.coinbasePremium) >= 20 ? 3 : 2;
-        reasons.push(`Coinbase Premium negative ($${flowInputs.coinbasePremium.toFixed(2)})`);
+      // Coinbase premium is useful, but negative premium can coexist with rising BTC.
+      // Treat it as relative US spot pressure, not as an automatic sell signal.
+      if (Number.isFinite(prem) && prem !== 0) {
+        const a = Math.abs(prem);
+        let pts = 0;
+        if (a >= 150) pts = 3;
+        else if (a >= 75) pts = 2;
+        else if (a >= 25) pts = 1;
+
+        score += prem > 0 ? pts : -pts;
+        reasons.push(pts === 0
+          ? `Coinbase Premium small / low weight ($${prem.toFixed(2)})`
+          : `Coinbase Premium ${prem > 0 ? "positive" : "negative"} ($${prem.toFixed(2)}, ${prem > 0 ? "+" : "-"}${pts})`);
       } else {
         reasons.push("Coinbase Premium not entered / neutral");
       }
 
       if (Number.isFinite(lastFunding)) {
         const fundingPct = lastFunding * 100;
-        if (fundingPct < 0) {
+        if (fundingPct < -0.01) {
+          score += 2;
+          reasons.push("Funding negative enough = short squeeze fuel (+2)");
+        } else if (fundingPct < 0) {
           score += 1;
-          reasons.push("Negative live funding = short-crowded fuel");
+          reasons.push("Negative live funding = short-crowded fuel (+1)");
         } else if (fundingPct >= 0.03) {
           score -= 2;
-          reasons.push("Funding too hot = long crowding risk");
+          reasons.push("Funding too hot = long crowding risk (-2)");
         } else if (fundingPct > 0) {
           score -= 1;
-          reasons.push("Positive funding = mild long crowding");
+          reasons.push("Positive funding = mild long crowding (-1)");
         }
       }
 
@@ -1158,24 +1277,41 @@
         if (lastLsRatio < 0.95) {
           score += 1;
           crowding = "Shorts crowded";
-          reasons.push("Long/Short ratio < 0.95");
+          reasons.push("Long/Short ratio < 0.95 (+1)");
         } else if (lastLsRatio > 1.05) {
           score -= 1;
           crowding = "Longs crowded";
-          reasons.push("Long/Short ratio > 1.05");
+          reasons.push("Long/Short ratio > 1.05 (-1)");
         } else {
           crowding = "Balanced";
           reasons.push("Long/Short ratio balanced");
         }
       }
 
+      // Price + OI regime is the missing live context.
+      if (alphaD1h) {
+        if (alphaD1h.p > 0.4 && alphaD1h.oi < -0.5) {
+          score += 2;
+          reasons.push("1H price up + OI down = short squeeze / de-risking (+2)");
+        } else if (alphaD1h.p > 0.4 && alphaD1h.oi > 0.5) {
+          score += 1;
+          reasons.push("1H price up + OI up = long buildup; trend support but crowded (+1)");
+        } else if (alphaD1h.p < -0.4 && alphaD1h.oi > 0.8) {
+          score -= 1;
+          reasons.push("1H price down + OI up = short build / absorption (-1)");
+        } else if (alphaD1h.p < -0.4 && alphaD1h.oi < -0.5) {
+          score -= 1;
+          reasons.push("1H price down + OI down = long flush (-1)");
+        }
+      }
+
       if (Number.isFinite(lastOIDeltaPct)) {
         if (lastOIDeltaPct > 0 && Number.isFinite(lastFunding) && lastFunding <= 0) {
           score += 1;
-          reasons.push("OI rising while funding ≤ 0");
+          reasons.push("OI rising while funding ≤ 0 (+1)");
         } else if (lastOIDeltaPct > 0 && Number.isFinite(lastFunding) && lastFunding > 0) {
           score -= 1;
-          reasons.push("OI rising while funding > 0");
+          reasons.push("OI rising while funding > 0 (-1)");
         } else if (lastOIDeltaPct < 0) {
           reasons.push("OI cooling / leverage reduced");
         }
@@ -1186,20 +1322,20 @@
       if (Number.isFinite(f4h) && Number.isFinite(f12h)) {
         if (f4h < 0 && f12h < 0) {
           score += 1;
-          reasons.push("4H + 12H funding supportive");
+          reasons.push("4H + 12H funding supportive (+1)");
         } else if (f4h > 0 && f12h > 0) {
           score -= 1;
-          reasons.push("4H + 12H funding crowded long");
+          reasons.push("4H + 12H funding crowded long (-1)");
         }
       }
 
       let htfBias = "Neutral";
-      if (score >= 4) htfBias = "Bullish";
+      if (score >= 3) htfBias = "Bullish";
       else if (score <= -3) htfBias = "Bearish";
 
       let decision = "WAIT";
       if (score >= 6) decision = "ATTACK";
-      else if (score >= 3) decision = "GO";
+      else if (score >= 4) decision = "GO";
 
       setText("flowScore", score);
       setText("htfBias", htfBias);
@@ -1234,12 +1370,44 @@
 
       const reason =
         decision === "ATTACK"
-          ? `ATTACK: HTF flows and derivatives align. ${reasons.slice(0, 4).join(" • ")}`
+          ? `ATTACK: Strong bullish alignment. ${reasons.slice(0, 6).join(" • ")}`
           : decision === "GO"
-          ? `GO: Bullish bias exists, but timing still matters. ${reasons.slice(0, 4).join(" • ")}`
-          : `WAIT: Mixed or incomplete confirmation. ${reasons.slice(0, 4).join(" • ")}`;
+          ? `GO: Bullish bias exists, but timing still matters. ${reasons.slice(0, 6).join(" • ")}`
+          : `WAIT: Mixed, stale, or incomplete confirmation. ${reasons.slice(0, 6).join(" • ")}`;
 
       setText("decisionReason", reason);
+      updateDebugPanel();
+    }
+
+    async function fetchCoinbasePremiumAuto() {
+      try {
+        const [binanceRes, coinbaseRes] = await Promise.all([
+          fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { cache: "no-store" }),
+          fetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker", { cache: "no-store" })
+        ]);
+
+        if (!binanceRes.ok || !coinbaseRes.ok) throw new Error("Premium spot API failed");
+
+        const b = await binanceRes.json();
+        const c = await coinbaseRes.json();
+
+        latestBinanceSpot = Number(b.price);
+        latestCoinbaseSpot = Number(c.price);
+        latestPremiumTs = Date.now();
+
+        if (Number.isFinite(latestBinanceSpot) && Number.isFinite(latestCoinbaseSpot)) {
+          const premium = latestCoinbaseSpot - latestBinanceSpot;
+          flowInputs.coinbasePremium = premium;
+          const premEl = document.getElementById("coinbasePremiumInput");
+          if (premEl && document.activeElement !== premEl) premEl.value = premium.toFixed(2);
+          saveFlowInputs();
+          updateDecisionEngine();
+          updateDebugPanel();
+        }
+      } catch (e) {
+        console.error("Coinbase premium auto error:", e);
+        updateDebugPanel();
+      }
     }
 
     async function fetchDerivatives() {
@@ -1335,6 +1503,9 @@
         updateFundingWindows();
         updateDecisionEngine();
 
+        latestDerivativesTs = Date.now();
+        updateDebugPanel();
+
         setDot("apiDot", "ok");
         setText("lastUpdate", `Updated ${nowHHMMSS()}`);
       } catch (e) {
@@ -1358,6 +1529,7 @@
           .filter(x => Number.isFinite(x.rate) && Number.isFinite(x.time));
 
         updateFundingWindows();
+        updateDebugPanel();
         updateDecisionEngine();
       } catch (e) {
         console.error("Funding history error:", e);
@@ -1388,6 +1560,8 @@
         else if (ratio < 0.95) lsVal.classList.add("up");
         else lsVal.classList.add("neutral");
 
+        latestLsTs = Date.now();
+        updateDebugPanel();
         updateDecisionEngine();
       } catch (e) {
         console.error("Long/Short ratio error:", e);
@@ -1401,7 +1575,10 @@
         try {
           const data = JSON.parse(ev.data);
           const mark = Number(data.p);
-          if (Number.isFinite(mark)) setText("markPrice", fmtPrice(mark));
+          if (Number.isFinite(mark)) {
+            latestMarkPrice = mark;
+            setText("markPrice", fmtPrice(mark));
+          }
         } catch (e) {}
       };
 
@@ -1685,8 +1862,12 @@
     fetchLongShortRatio();
     setInterval(fetchLongShortRatio, LS_REFRESH_MS);
 
+    fetchCoinbasePremiumAuto();
+    setInterval(fetchCoinbasePremiumAuto, PREMIUM_REFRESH_MS);
+
     updateFundingWindows();
     updateDecisionEngine();
+    setInterval(updateDebugPanel, 5000);
 const ALPHA_SYMBOL = "BTCUSDT";
 const ALPHA_STORAGE_KEY = "alpha_pro_data";
 const ALPHA_MAX_HISTORY = 10000;
@@ -1797,6 +1978,8 @@ function renderAlphaUI(oi, price) {
   };
 
   const d1h = getAlphaDelta(3600);
+  updatePriceOiHud(d1h);
+  alphaD1h = d1h;
 
   for (const [key, sec] of Object.entries(tfs)) {
     const d = getAlphaDelta(sec);
@@ -1845,6 +2028,7 @@ function renderAlphaUI(oi, price) {
     setAlphaText("alpha-desc", "Waiting for enough OI / price history.");
     const container = document.getElementById("alpha-alert-container");
     if (container) container.style.borderLeftColor = "#444";
+    updateDecisionEngine();
     return;
   }
 
@@ -1885,8 +2069,58 @@ function renderAlphaUI(oi, price) {
 
   if (descEl) descEl.innerText = desc;
   if (container) container.style.borderLeftColor = col;
+  updateDecisionEngine();
 }
+function updatePriceOiHud(d){
 
+ if(!d)return;
+
+ const state=document.getElementById("hud-main-state");
+ const desc=document.getElementById("hud-main-desc");
+
+ if(!state||!desc)return;
+
+ if(d.p>0.10 && d.oi>0.10){
+
+   state.innerText="LONG BUILD";
+   state.className="hud-main hud-long";
+   desc.innerText="Price rising + OI rising";
+
+ }
+
+ else if(d.p>0.10 && d.oi<-0.10){
+
+   state.innerText="SHORT SQUEEZE";
+   state.className="hud-main hud-squeeze";
+   desc.innerText="Price rising + OI falling";
+
+ }
+
+ else if(d.p<-0.10 && d.oi>0.10){
+
+   state.innerText="SHORT BUILD";
+   state.className="hud-main hud-short";
+   desc.innerText="Price falling + OI rising";
+
+ }
+
+ else if(d.p<-0.10 && d.oi<-0.10){
+
+   state.innerText="LONG FLUSH";
+   state.className="hud-main hud-flush";
+   desc.innerText="Price falling + OI falling";
+
+ }
+
+ else{
+
+   state.innerText="NEUTRAL";
+   state.className="hud-main hud-neutral";
+   desc.innerText="Waiting for clear price/OI signal";
+
+ }
+
+}
 setInterval(updateAlphaModule, ALPHA_UPDATE_MS);
 updateAlphaModule();
 function updatePriceOIMatrix(d) {
