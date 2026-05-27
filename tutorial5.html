@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="ti">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obsession Trading - Tutorial 5</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --card:#121314;
+      --card-soft:#181a20;
+      --text:#ffffff;
+      --muted:#b7bdc6;
+      --yellow:#ffd800;
+      --yellow2:#f0b90b;
+      --border:#2b3139;
+      --danger:#f6465d;
+      --success:#0ecb81;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      background:radial-gradient(circle at 18% 20%,rgba(255,216,0,.10),transparent 28%),linear-gradient(90deg,#090900 0%,#050505 55%,#020202 100%);
+      color:var(--text);
+      line-height:1.65;
+      padding:clamp(14px,4vw,42px);
+    }
+
+    .container{width:100%;max-width:1120px;margin:0 auto}
+
+    .tutorial-badge{
+      width:min(760px,100%);
+      margin:0 auto clamp(20px,4vw,34px);
+      background:var(--yellow);
+      color:#000;
+      padding:10px 22px;
+      border-radius:999px;
+      text-align:center;
+      font-weight:900;
+      box-shadow:0 0 35px rgba(255,216,0,.10);
+    }
+
+    .hero{text-align:center;margin-bottom:clamp(20px,4vw,34px)}
+
+    .main-title{
+      color:var(--yellow);
+      font-size:clamp(2rem,6vw,4.2rem);
+      line-height:1.08;
+      font-weight:900;
+      margin-bottom:18px;
+      letter-spacing:-1px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0 auto 26px;
+      padding:0 6px;
+      color:#eaecef;
+      font-size:clamp(1rem,2.2vw,1.38rem);
+    }
+
+    .lang-switch{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+
+    .lang-btn{
+      min-width:92px;
+      border:1px solid rgba(255,216,0,.45);
+      background:#101114;
+      color:#fff;
+      padding:10px 18px;
+      border-radius:999px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .lang-btn.active{background:var(--yellow);color:#000;border-color:var(--yellow)}
+
+    .tabs-wrap{
+      width:100%;
+      max-width:930px;
+      margin:0 auto clamp(24px,5vw,42px);
+      padding:clamp(12px,2.5vw,20px);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      background:rgba(18,19,20,.82);
+      box-shadow:0 22px 55px rgba(0,0,0,.35);
+    }
+
+    .tabs-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .tab-button{
+      min-height:56px;
+      padding:10px 8px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg,#1c1d20,#121315);
+      color:#fff;
+      font-size:clamp(.82rem,2.8vw,1rem);
+      font-weight:900;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .tab-button:hover,.tab-button.active{border-color:var(--yellow);color:var(--yellow)}
+
+    .content-section{
+      display:none;
+      width:100%;
+      background:linear-gradient(180deg,#151618,#0f1012);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      padding:clamp(18px,4vw,36px);
+      margin-bottom:30px;
+      box-shadow:0 18px 48px rgba(0,0,0,.30);
+    }
+
+    .content-section.active{display:block}
+
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      padding-bottom:16px;
+      margin-bottom:20px;
+    }
+
+    .section-header h2{
+      color:var(--yellow);
+      font-size:clamp(1.45rem,4.8vw,2.25rem);
+      line-height:1.15;
+      font-weight:900;
+    }
+
+    .section-number{
+      flex:0 0 auto;
+      width:44px;
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:12px;
+      color:var(--yellow);
+      border:1px solid rgba(255,216,0,.45);
+      background:rgba(255,216,0,.08);
+      font-weight:900;
+    }
+
+    p{color:#eaecef;font-size:clamp(.95rem,2.6vw,1.08rem);margin-bottom:14px}
+    ul{list-style:none;margin-top:12px}
+    li{position:relative;padding-left:22px;margin-bottom:10px;color:var(--muted);font-size:clamp(.92rem,2.4vw,1rem)}
+    li:before{content:'•';position:absolute;left:0;top:-2px;color:var(--yellow);font-weight:900;font-size:1.25rem}
+    h3{color:#fff;margin-bottom:10px;font-size:clamp(1.05rem,3vw,1.25rem)}
+    strong{color:#fff}
+
+    .grid-2{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+
+    .sub-card,.note,.danger{
+      border-radius:16px;
+      padding:16px;
+      background:#17181a;
+      border:1px solid var(--border);
+    }
+
+    .note{border-left:4px solid var(--yellow);background:rgba(255,216,0,.08);margin-top:14px;color:#f5f5f5}
+    .danger{border-left:4px solid var(--danger);background:rgba(246,70,93,.08);margin-top:14px;color:#f5f5f5}
+
+    .badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:10px}
+    .badge-cex{color:var(--success);border:1px solid var(--success);background:rgba(14,203,129,.12)}
+    .badge-dex{color:var(--danger);border:1px solid var(--danger);background:rgba(246,70,93,.12)}
+
+    footer{text-align:center;color:#848e9c;padding:24px 0;font-size:.9rem}
+
+    [lang="en"]{display:none}
+    body.lang-en [lang="en"]{display:inline}
+    body.lang-en [lang="ti"]{display:none}
+    body.lang-ti [lang="ti"]{display:inline}
+    body.lang-ti [lang="en"]{display:none}
+
+    @media (max-width:420px){
+      body{padding:12px}
+      .tabs-grid{grid-template-columns:1fr}
+      .tab-button{min-height:50px}
+      .section-header{align-items:flex-start;flex-direction:column-reverse}
+      .section-number{width:38px;height:38px}
+    }
+
+    @media (min-width:700px){
+      .tabs-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .grid-2{grid-template-columns:1fr 1fr;gap:20px}
+    }
+
+    @media (min-width:1000px){
+      .tabs-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+      .tab-button{min-height:64px}
+    }
+  </style>
+</head>
+<body class="lang-ti">
+  <main class="container">
+    <div class="tutorial-badge">Tutorial 5</div>
+<button class="back-btn" onclick="goBack()">
+← Back
+</button>
+
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+
+    <section class="hero">
+      <h1 class="main-title">
+        <span lang="en">Futures Trading Basics</span>
+        <span lang="ti">መሰረታዊ ኣፍልጦ ብዛዕባ Futures and Leverage</span>
+      </h1>
+      <p class="subtitle">
+        <span lang="en">Learn CEX, DEX, futures types, funding fee, margin, and risk modes.</span>
+        <span lang="ti">CEX, DEX, Futures, Funding Fee, Margin ዎ Risk Modes ብቐሊሉ ተማሃሩ።</span>
+      </p>
+      <div class="lang-switch">
+        <button id="btn-ti" class="lang-btn active" type="button" onclick="setLanguage('ti')">ትግርኛ</button>
+        <button id="btn-en" class="lang-btn" type="button" onclick="setLanguage('en')">English</button>
+      </div>
+    </section>
+
+    <nav class="tabs-wrap" aria-label="Tutorial sections">
+      <div class="tabs-grid">
+        <button id="tab1" class="tab-button active" type="button" onclick="switchTab('section1','tab1')">CEX vs DEX</button>
+        <button id="tab2" class="tab-button" type="button" onclick="switchTab('section2','tab2')">Futures</button>
+        <button id="tab3" class="tab-button" type="button" onclick="switchTab('section3','tab3')">Funding Fee</button>
+        <button id="tab4" class="tab-button" type="button" onclick="switchTab('section4','tab4')">Margin</button>
+        <button id="tab5" class="tab-button" type="button" onclick="switchTab('section5','tab5')">Risk Modes</button>
+      </div>
+    </nav>
+
+    <section id="section1" class="content-section active">
+      <div class="section-header"><h2>Centralized vs. Decentralized Exchanges</h2><div class="section-number">1</div></div>
+      <p><span lang="en">In crypto there are two main exchange types. The key difference is control and custody.</span><span lang="ti">ክሪፕቶ ክልተ ዓይነት መለዋወጢ አለዎ። ፍልልዮም ኣብ ቁጽጽርን ደሕንነትን ዝተሰረተ እዩ።</span></p>
+      <div class="grid-2">
+        <div class="sub-card">
+          <span class="badge badge-cex">CEX</span>
+          <h3>Centralized Exchange</h3>
+          <p><span lang="en">Works like a bank. One company controls deposits, withdrawals, and order matching.</span><span lang="ti">ከም ባንኪ ይሰርሕ። ሓደ ማእከላይ ትካል ንገንዘብን ንትእዛዛትን ይቆጻጸር።</span></p>
+          <ul><li><strong>KYC:ማለት ብታሰራካ ከም ባንኪ ተጠቃሚ ትሕተት</strong> Binance, Coinbase, OKX.</li><li><span lang="en">Easy for beginners, but funds are controlled by the company.</span><span lang="ti">ንጀመርቲ ቀሊል እዩ፣ ግን ገንዘብካ ኣብ ቁጽጽር እቲ ኩባንያ ይኸውን።</span></li></ul>
+        </div>
+        <div class="sub-card">
+          <span class="badge badge-dex">DEX</span>
+          <h3>Decentralized Exchange</h3>
+          <p><span lang="en">No central company controls your coins. You connect your wallet and trade directly.</span><span lang="ti">ማእከላይ ኣካል የብሉን። ቦርሳኻ ብምትእስሳር ብቐጥታ ትነግድ።</span></p>
+          <ul><li><strong>Wallet:</strong> Uniswap,Aster,HYPE PancakeSwap, dYdX.</li><li><span lang="en">More control, but you are responsible for wallet safety.</span><span lang="ti">ቁጽጽር ኣብ ኢድካ እዩ፣ ግን ደሕንነት ቦርሳኻ ንስኻ ትሕለዎ።</span></li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="section2" class="content-section">
+      <div class="section-header"><h2>Traditional Futures vs. Perpetual Futures</h2><div class="section-number">2</div></div>
+      <p><span lang="en">Both are contracts based on the future price of an asset.</span><span lang="ti">ክልቲኦም ንዋጋ ሓደ ክሪፕቶ ንመጻኢ ብምግማት እትነግዱሎም ውዕላት እዮም።</span></p>
+      <div class="grid-2">
+        <div class="sub-card"><h3>Traditional Futures</h3><p><span lang="en">Has an expiry date. The contract closes on a fixed date.</span><span lang="ti">ናይ መወዳእታ መዓልቲ ኣለዎ። ኣብታ ዝተወሰነት መዓልቲ ብግዲ ይዕጾ።</span></p><div class="note"><span lang="en">Example: BTC is $76,000 today. You expect $86,000 by June 30. On June 30, the contract ends.</span><span lang="ti">ኣብነት፦ BTC ሎሚ $76,000 እንተኾይኑ፣ ኣብ ሰነ 30 $86,000 ክበጽሕ እዩ ትብል። ሰነ 30 እቲ ውዕል ይዕጾ።</span></div></div>
+        <div class="sub-card"><h3>Perpetual Futures</h3><p><span lang="en">Has no expiry date. You can keep it open until you close it or liquidation happens.</span><span lang="ti">ናይ መወዳእታ መዓልቲ የብሉን። ባዕልኻ ክሳብ እትዓጽዎ ወይ Liquidation ክሳብ ዝመጽእ ክፉት ይቕጽል።</span></p><div class="note"><span lang="en">Example: You long BTC at $60,000 and close when it reaches $80,000.</span><span lang="ti">ኣብነት፦ BTC $60,000 ከሎ Long ትኸፍት፣ $80,000 ምስ በጽሐ ትዓጽዎ።</span></div></div>
+      </div>
+    </section>
+
+    <section id="section3" class="content-section">
+      <div class="section-header"><h2>Funding Fee</h2><div class="section-number">3</div></div>
+      <p><span lang="en">Funding fee keeps perpetual futures close to the real spot market price.</span><span lang="ti">Funding Fee ዋጋ Perpetual Futures ምስ Spot Price ተመሳሳሊ ንክቕጽል ዝሕግዝ ክፍሊት እዩ።</span></p>
+      <div class="note"><span lang="en">It is usually exchanged between traders every few hours. The exchange normally does not take this fee.</span><span lang="ti">ብዙሕ ግዜ በብ 8 ሰዓት ኣብ መንጎ ነጋዶ ይለዋወጥ። Exchange ብቐጥታ ኣይወስዶን።</span></div>
+      <ul><li><strong>Positive Funding:</strong> <span lang="en">Longs pay Shorts.</span><span lang="ti">Longs ን Shorts ይኸፍሉ።</span></li><li><strong>Negative Funding:</strong> <span lang="en">Shorts pay Longs.</span><span lang="ti">Shorts ን Longs ይኸፍሉ።</span></li></ul>
+    </section>
+
+    <section id="section4" class="content-section">
+      <div class="section-header"><h2>Initial Margin vs. Maintenance Margin</h2><div class="section-number">4</div></div>
+      <p><span lang="en">Margin is collateral required to open and keep a futures position.</span><span lang="ti">Margin ማለት ን Futures Position ንምኽፋትን ንምቕጻልን ዘድሊ ትሕጃ እዩ።</span></p>
+      <div class="grid-2">
+        <div class="sub-card"><h3>Initial Margin</h3><p><span lang="en">The minimum money needed to open a trade.</span><span lang="ti">ንሓደ ውዕል ንምጅማር ዘድሊ ውሑድ ገንዘብ እዩ።</span></p><div class="note"><span lang="en">Example: You open a $10,000 trade with $1,000. That $1,000 is Initial Margin.</span><span lang="ti">ኣብነት፦ ብ $1,000 ናይ $10,000 ንግዲ ትኸፍት። እቲ $1,000 Initial Margin እዩ።</span></div></div>
+        <div class="sub-card"><h3>Maintenance Margin</h3><p><span lang="en">The minimum balance needed to keep the position open.</span><span lang="ti">Position ከይዕጾ ኣብ ቦርሳኻ ክህሉ ዘለዎ ዝተሓተ ገንዘብ እዩ።</span></p><div class="danger"><span lang="en">If your balance falls below this, liquidation can happen.</span><span lang="ti">ገንዘብካ ካብዚ እንተንኢሱ Liquidation ክመጽእ ይኽእል።</span></div></div>
+      </div>
+    </section>
+
+    <section id="section5" class="content-section">
+      <div class="section-header"><h2>Isolated Margin vs. Cross Margin</h2><div class="section-number">5</div></div>
+      <p><span lang="en">This controls how your wallet balance is used for risk.</span><span lang="ti">እዚ ኣገባብ ኣብ ቦርሳኻ ዘሎ ገንዘብ ምስ Risk ከመይ ከም ዝተጠቀም ይውስን።</span></p>
+      <div class="grid-2">
+        <div class="sub-card"><h3>Isolated Margin</h3><ul><li><span lang="en">Each position uses only the money assigned to it.</span><span lang="ti">ነፍሲ ወከፍ Position ናቱ ዝተወሰነ ገንዘብ ጥራይ ይሕዝ።</span></li><li><span lang="en">Your risk is limited to that position.</span><span lang="ti">ሓደጋኻ ኣብታ Position ዘላ ገንዘብ ጥራይ ይውሰን።</span></li></ul><div class="note"><span lang="en">Better for beginners.</span><span lang="ti">ንጀመርቲ ዝያዳ ውሑስ እዩ።</span></div></div>
+        <div class="sub-card"><h3>Cross Margin</h3><ul><li><span lang="en">All available wallet balance supports all open positions.</span><span lang="ti">ኣብ ቦርሳኻ ዘሎ ኵሉ ገንዘብ ንኹሎም ክፉታት Positions የገልግል።</span></li><li><span lang="en">Can delay liquidation, but can risk more of your wallet.</span><span lang="ti">Liquidation ከደናጉዮ ይኽእል፣ ግን ብዙሕ ገንዘብ ክጠፍእ ይኽእል።</span></li></ul><div class="danger"><span lang="en">Use carefully.</span><span lang="ti">ብጥንቃቐ ተጠቐሙሉ።</span></div></div>
+      </div>
+    </section>
+
+    <footer>Obsession Trading Academy • Tutorial 5</footer>
+  </main>
+
+  <script>
+    function switchTab(sectionId, buttonId){
+      document.querySelectorAll('.content-section').forEach(function(section){section.classList.remove('active');});
+      document.querySelectorAll('.tab-button').forEach(function(button){button.classList.remove('active');});
+      var section=document.getElementById(sectionId);
+      var button=document.getElementById(buttonId);
+      if(section){section.classList.add('active');}
+      if(button){button.classList.add('active');}
+    }
+
+    function setLanguage(lang){
+      document.body.classList.toggle('lang-ti', lang==='ti');
+      document.body.classList.toggle('lang-en', lang==='en');
+      document.getElementById('btn-ti').classList.toggle('active', lang==='ti');
+      document.getElementById('btn-en').classList.toggle('active', lang==='en');
+    }
+  </script>
+  <button class="back-btn" onclick="goBack()">
+← Back
+</button>
+
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+
+</body>
+</html>

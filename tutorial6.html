@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Obsession Flow Terminal - Decision Index Tutorial
+  </title>
+  <style>
+   :root{--bg-color:#050505;--card-bg:#121314;--text-color:#fff;--text-muted:#848e9c;--primary-color:#f0b90b;--border-color:#1e2023;--danger-color:#f6465d;--success-color:#0ecb81;--blue-volume:#00b2ff;--panel-bg:#17181a}*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}body{background:var(--bg-color);color:var(--text-color);padding:20px 10px;display:flex;flex-direction:column;align-items:center;min-height:100vh}.container{width:100%;max-width:1060px;display:flex;flex-direction:column;align-items:center}.tutorial-badge{background:var(--primary-color);color:#000;font-weight:bold;padding:8px 60px;border-radius:20px;font-size:.9rem;margin-bottom:25px;text-align:center}h1.main-title{font-size:2.1rem;color:var(--primary-color);text-align:center;margin-bottom:15px;font-weight:800}p.subtitle{color:var(--text-muted);text-align:center;max-width:760px;font-size:1rem;margin-bottom:25px;line-height:1.55}.lang-switch{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;justify-content:center}.lang-btn{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);padding:8px 20px;border-radius:20px;cursor:pointer;font-weight:700;font-size:.9rem;transition:all .25s ease}.lang-btn.active{background:var(--primary-color);color:#000;border-color:var(--primary-color)}.tabs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%;margin-bottom:30px}.tab-button{background:var(--card-bg);border:1px solid var(--border-color);color:#fff;padding:17px 10px;border-radius:10px;cursor:pointer;font-weight:700;font-size:.88rem;text-align:center;transition:all .25s ease}.tab-button:hover{border-color:var(--primary-color);transform:translateY(-1px)}.tab-button.active{background:#1a1c1e;border-color:var(--primary-color);color:var(--primary-color);box-shadow:0 0 0 1px rgba(240,185,11,.25)}.content-section{background:var(--card-bg);border:1px solid var(--border-color);border-radius:15px;width:100%;padding:25px;margin-bottom:40px;display:none}.content-section.active{display:block}.section-header{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--border-color);padding-bottom:15px;margin-bottom:20px}.section-header h2{color:var(--primary-color);font-size:1.45rem;line-height:1.3}.section-number{background:#1a1c1e;color:var(--primary-color);border:1px solid var(--border-color);min-width:34px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:bold;font-size:.9rem}.content-body p{color:#e3e6e8;font-size:1rem;line-height:1.65;margin-bottom:15px}.content-body ul{list-style:none;margin-top:15px}.content-body li{position:relative;padding-left:20px;margin-bottom:12px;color:#b7bdc6;font-size:.96rem;line-height:1.55}.content-body li::before{content:'•';color:var(--primary-color);font-weight:bold;font-size:1.2rem;position:absolute;left:0;top:-2px}.alert-box,.danger-box,.success-box{padding:15px;border-radius:8px;margin:20px 0;color:#e3e6e8;line-height:1.55}.alert-box{background:rgba(240,185,11,.06);border:1px solid rgba(240,185,11,.18);border-left:4px solid var(--primary-color)}.danger-box{background:rgba(246,70,93,.06);border:1px solid rgba(246,70,93,.18);border-left:4px solid var(--danger-color)}.success-box{background:rgba(14,203,129,.06);border:1px solid rgba(14,203,129,.18);border-left:4px solid var(--success-color)}.dual-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:15px}.sub-card{background:var(--panel-bg);border:1px solid var(--border-color);padding:16px;border-radius:10px}.sub-card h3{color:#fff;margin-bottom:10px;font-size:1.08rem;line-height:1.3}.txt-bearish{color:var(--danger-color);font-weight:800}.txt-bullish{color:var(--success-color);font-weight:800}.txt-blue{color:var(--blue-volume);font-weight:800}.txt-wait{color:var(--primary-color);font-weight:800}.i18n-ti{display:none}body.lang-ti .i18n-en{display:none!important}body.lang-ti .i18n-ti{display:inline}body.lang-ti p.i18n-ti,body.lang-ti ul.i18n-ti,body.lang-ti div.i18n-ti{display:block}body.lang-ti li.i18n-ti{display:list-item}body.lang-en .i18n-ti{display:none!important}body.lang-en .i18n-en{display:inline}body.lang-en p.i18n-en,body.lang-en ul.i18n-en,body.lang-en div.i18n-en{display:block}body.lang-en li.i18n-en{display:list-item}@media(min-width:650px){.tabs-grid{grid-template-columns:repeat(3,1fr)}}@media(min-width:940px){body{padding:38px 20px}.tabs-grid{grid-template-columns:repeat(6,1fr)}.dual-grid{grid-template-columns:1fr 1fr}h1.main-title{font-size:2.7rem}.content-section{padding:35px}}
+  
+/* ===== MOBILE + LAPTOP RESPONSIVE FIX ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.container {
+  width: min(100%, 1060px);
+}
+
+.tab-button {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(.72rem, 2vw, .9rem);
+  word-break: break-word;
+}
+
+.lang-btn {
+  min-width: 110px;
+  padding: 10px 20px;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 12px 6px;
+  }
+
+  h1.main-title {
+    font-size: 1.45rem !important;
+    line-height: 1.2;
+  }
+
+  p.subtitle {
+    font-size: .85rem;
+    padding: 0 8px;
+  }
+
+  .tutorial-badge {
+    padding: 7px 35px;
+    margin-bottom: 18px;
+  }
+
+  .tabs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  .tab-button {
+    padding: 14px 8px;
+    min-height: 54px;
+  }
+
+  .content-section {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .section-number {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+
+  .dual-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .content-body p,
+  .content-body li {
+    font-size: .92rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 939px) {
+  .tabs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1.main-title {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 940px) {
+  .tabs-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .dual-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* ===== END MOBILE + LAPTOP RESPONSIVE FIX ===== */
+
+</style>
+ </head>
+ <body class="lang-en">
+  <button class="back-btn" onclick="goBack()">
+← Back
+</button>
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+
+  <div class="container">
+   <div class="tutorial-badge">
+    Tutorial 6
+   </div>
+   <h1 class="main-title">
+    <span class="i18n-en">
+     OBSESSION FLOW TERMINAL - DECISION INDEX
+    </span>
+    <span class="i18n-ti">
+     OBSESSION FLOW TERMINAL - መወሰኒ መለክዒ
+    </span>
+   </h1>
+   <p class="subtitle">
+    <span class="i18n-en">
+     A bilingual guide that teaches followers how to read your GitHub Decision Index: market bias, execution state, funding, speed, institutional flows, and chart volume.
+    </span>
+    <span class="i18n-ti">
+     ንተኸታተልትኻ ኣብ GitHub ዘሎ Decision Index ብኸመይ ከም ዝንበብ ዝምህር ናይ እንግሊዝኛን ትግርኛን መመርሒ።
+    </span>
+   </p>
+   <div class="lang-switch">
+    <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')" type="button">
+     English
+    </button>
+    <button class="lang-btn" id="btn-ti" onclick="setLanguage('ti')" type="button">
+     ትግርኛ
+    </button>
+   </div>
+   <div class="tabs-grid" role="tablist">
+    <button class="tab-button active" onclick="switchTab(0)" type="button">
+     Bias &amp; Regime
+    </button>
+    <button class="tab-button" onclick="switchTab(1)" type="button">
+     Execution State
+    </button>
+    <button class="tab-button" onclick="switchTab(2)" type="button">
+     Funding Matrices
+    </button>
+    <button class="tab-button" onclick="switchTab(3)" type="button">
+     Speed &amp; Velocity
+    </button>
+    <button class="tab-button" onclick="switchTab(4)" type="button">
+     Institutional Flows
+    </button>
+    <button class="tab-button" onclick="switchTab(5)" type="button">
+     Chart Volume
+    </button>
+   </div>
+   <section class="content-section active">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       1. HTF Bias &amp; Market Regime
+      </span>
+      <span class="i18n-ti">
+       1. ናይ ነዊሕ ግዜ ኣንፈትን ናይ ዕዳጋ ኩነታትን
+      </span>
+     </h2>
+     <div class="section-number">
+      1
+     </div>
+    </div>
+    <div class="content-body">
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3>
+        <span class="txt-bearish">
+         HTF Bias: Bearish
+        </span>
+       </h3>
+       <p class="i18n-en">
+        HTF Bias tells you who controls the larger timeframe. When it is bearish, sellers control the main structure and long trades need stronger confirmation.
+       </p>
+       <p class="i18n-ti">
+        HTF Bias ኣብ ዓቢ ግዜ መን ከም ዝቆጻጸር የርኢ። Bearish እንተኾይኑ፣ ሸየጥቲ ነቲ ዓቢ ኣቃውማ ይቆጻጸርዎ፣ Long ንምእታው ድማ ዝያዳ ጽኑዕ ምርግጋጽ የድሊ።
+       </p>
+      </div>
+      <div class="sub-card">
+       <h3>
+        <span class="txt-wait">
+         Market Regime
+        </span>
+       </h3>
+       <p class="i18n-en">
+        Regime describes the environment: trend, range, squeeze, expansion, risk-on, or risk-off. The Decision Index should never be read from one number alone.
+       </p>
+       <p class="i18n-ti">
+        Regime ማለት ናይ ዕዳጋ ኩነታት እዩ፤ trend, range, squeeze, expansion, risk-on ወይ risk-off። Decision Index ብሓደ ቁጽሪ ጥራይ ክንበብ የብሉን።
+       </p>
+      </div>
+     </div>
+     <div class="alert-box">
+      <span class="i18n-en">
+       <b>
+        Teaching point:
+       </b>
+       Bias is the map. Execution is the trigger. Never confuse direction with entry.
+      </span>
+      <span class="i18n-ti">
+       <b>
+        ናይ ትምህርቲ ነጥቢ፦
+       </b>
+       Bias ካርታ እዩ። Execution ድማ መእተዊ trigger እዩ። ኣንፈትን መእተዊን ኣይትሓዋውስ።
+      </span>
+     </div>
+    </div>
+   </section>
+   <section class="content-section">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       2. Execution State
+      </span>
+      <span class="i18n-ti">
+       2. ናይ ኣፈጻጽማ ኩነታት
+      </span>
+     </h2>
+     <div class="section-number">
+      2
+     </div>
+    </div>
+    <div class="content-body">
+     <p class="i18n-en">
+      Execution State explains whether the terminal allows action now or whether the trader must wait. It converts the data into a trading condition.
+     </p>
+     <p class="i18n-ti">
+      Execution State ሕጂ ምእታው ይፍቀድ ድዩ ወይ ንጽበ ይብል ድዩ ይገልጽ። እቲ ዳታ ናብ ናይ trading ኩነታት ይቕይሮ።
+     </p>
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3 class="txt-bullish">
+        Valid Execution
+       </h3>
+       <ul class="i18n-en">
+        <li>
+         Bias, liquidity, volume, and speed support the same direction.
+        </li>
+        <li>
+         Price is near a planned level, not in the middle of noise.
+        </li>
+        <li>
+         Risk is clear before the trade is taken.
+        </li>
+       </ul>
+       <ul class="i18n-ti">
+        <li>
+         Bias, liquidity, volume, speed ኩሎም ኣብ ሓደ ኣንፈት እንተተሰማሚዖም።
+        </li>
+        <li>
+         ዋጋ ኣብ ዝተደለየ መደብ እንተቐሪቡ፣ ኣብ noise ማእከል እንተዘይኮይኑ።
+        </li>
+        <li>
+         Risk ቅድሚ trade ምእታው ግልጺ እንተኾይኑ።
+        </li>
+       </ul>
+      </div>
+      <div class="sub-card">
+       <h3 class="txt-wait">
+        No-Trade / Wait
+       </h3>
+       <ul class="i18n-en">
+        <li>
+         Signals conflict with each other.
+        </li>
+        <li>
+         Funding is crowded but price has not confirmed.
+        </li>
+        <li>
+         Volume is weak or fake breakout behavior appears.
+        </li>
+       </ul>
+       <ul class="i18n-ti">
+        <li>
+         መለክዒታት ንሓድሕዶም እንተተጋጭዮም።
+        </li>
+        <li>
+         Funding ጽዑቕ እንተኾይኑ ግን ዋጋ እንተዘየረጋጊጹ።
+        </li>
+        <li>
+         Volume ደኺሙ ወይ fake breakout እንተተራእዩ።
+        </li>
+       </ul>
+      </div>
+     </div>
+     <div class="danger-box">
+      <span class="i18n-en">
+       <b>
+        Rule:
+       </b>
+       The Decision Index is not a buy/sell button. It is a filter that tells you when conditions are clean enough to act.
+      </span>
+      <span class="i18n-ti">
+       <b>
+        ሕጊ፦
+       </b>
+       Decision Index ናይ buy/sell button ኣይኮነን። ኩነታት ንምእታው ክሳብ ክንደይ ጽሩይ ከም ዝኾነ ዝሕብር filter እዩ።
+      </span>
+     </div>
+    </div>
+   </section>
+   <section class="content-section">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       3. Funding Matrices
+      </span>
+      <span class="i18n-ti">
+       3. Funding Matrices / ናይ Funding መለክዒታት
+      </span>
+     </h2>
+     <div class="section-number">
+      3
+     </div>
+    </div>
+    <div class="content-body">
+     <p class="i18n-en">
+      Funding Matrices show whether derivatives traders are crowded long or crowded short. They help identify pressure, imbalance, and possible squeeze risk.
+     </p>
+     <p class="i18n-ti">
+      Funding Matrices ናይ derivatives traders long ድዮም ብዙሓት ወይ short ድዮም ብዙሓት የርእዩ። ጸቕጢ፣ ዘይሚዛን፣ squeeze risk ንምርዳእ ይሕግዙ።
+     </p>
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3 class="txt-bearish">
+        Long-Crowded
+       </h3>
+       <p class="i18n-en">
+        Positive funding with weak price action can warn that too many traders are already long. This can create downside liquidation risk.
+       </p>
+       <p class="i18n-ti">
+        Positive funding እንተሃልዩ ግን price action ደኺሙ እንተኾይኑ፣ ብዙሓት ቀዲሞም long ኣትዮም ከም ዘለዉ የጠንቅቕ። እዚ downside liquidation risk ከምጽእ ይኽእል።
+       </p>
+      </div>
+      <div class="sub-card">
+       <h3 class="txt-bullish">
+        Short-Crowded
+       </h3>
+       <p class="i18n-en">
+        Negative funding with strong price recovery can warn that shorts are trapped. This can create upside squeeze risk.
+       </p>
+       <p class="i18n-ti">
+        Negative funding እንተሃልዩ እሞ ዋጋ ብሓይሊ እንተተመሊሱ፣ shorts ተታሒዞም ከም ዘለዉ የርኢ። እዚ upside squeeze risk ከምጽእ ይኽእል።
+       </p>
+      </div>
+     </div>
+     <div class="alert-box">
+      <span class="i18n-en">
+       <b>
+        Teaching point:
+       </b>
+       Funding does not predict alone. It becomes powerful when it agrees with price rejection, volume, and liquidation zones.
+      </span>
+      <span class="i18n-ti">
+       <b>
+        ናይ ትምህርቲ ነጥቢ፦
+       </b>
+       Funding በይኑ ትንበያ ኣይገብርን። ምስ price rejection, volume, liquidation zones እንተተሰማሚዑ ግን ሓይሊ ይረክብ።
+      </span>
+     </div>
+    </div>
+   </section>
+   <section class="content-section">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       4. Speed &amp; Velocity
+      </span>
+      <span class="i18n-ti">
+       4. ፍጥነትን Velocityን
+      </span>
+     </h2>
+     <div class="section-number">
+      4
+     </div>
+    </div>
+    <div class="content-body">
+     <p class="i18n-en">
+      Speed and velocity explain how fast the market is moving and whether the move is accelerating or losing power. This helps avoid late entries.
+     </p>
+     <p class="i18n-ti">
+      Speed ን Velocity ዕዳጋ ብኽንደይ ፍጥነት ይንቀሳቐስ ከም ዘሎ፣ እቲ ምንቅስቓስ ይበርትዕ ድዩ ወይ ይደክም ድዩ ይገልጹ። እዚ ድሕሪ ግዜ ምእታው ንምክልኻል ይሕግዝ።
+     </p>
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3 class="txt-blue">
+        Acceleration
+       </h3>
+       <p class="i18n-en">
+        Acceleration means momentum is building. If it matches bias and volume, continuation probability improves.
+       </p>
+       <p class="i18n-ti">
+        Acceleration ማለት momentum ይህነጽ ኣሎ ማለት እዩ። ምስ bias ን volume እንተተሰማሚዑ፣ continuation ዕድል ይውስኽ።
+       </p>
+      </div>
+      <div class="sub-card">
+       <h3 class="txt-wait">
+        Exhaustion
+       </h3>
+       <p class="i18n-en">
+        Exhaustion means price moved too far too fast and new volume is not supporting it. This warns against chasing.
+       </p>
+       <p class="i18n-ti">
+        Exhaustion ማለት ዋጋ ብፍጥነት ርሒቑ ከይዱ፣ ሓድሽ volume ግን ኣይድግፎን ኣሎ ማለት እዩ። እዚ chasing ንኸይትገብር የጠንቅቕ።
+       </p>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="content-section">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       5. Institutional Flows
+      </span>
+      <span class="i18n-ti">
+       5. ትካላዊ ዋሕዚ / Institutional Flows
+      </span>
+     </h2>
+     <div class="section-number">
+      5
+     </div>
+    </div>
+    <div class="content-body">
+     <p class="i18n-en">
+      Institutional Flows help explain whether larger players may be accumulating, distributing, hedging, or defending levels. This is where ETF flow, liquidity maps, open interest, and macro data matter.
+     </p>
+     <p class="i18n-ti">
+      Institutional Flows ዓበይቲ ተጻወትቲ accumulating, distributing, hedging ወይ ደረጃታት ይከላኸሉ ኣለዉ ድዮም ንምርዳእ ይሕግዝ። ኣብዚ ETF flow, liquidity maps, open interest, macro data ኣገዳሲ ይኸውን።
+     </p>
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3 class="txt-bullish">
+        Accumulation Signs
+       </h3>
+       <ul class="i18n-en">
+        <li>
+         Dips are bought quickly.
+        </li>
+        <li>
+         Volume appears near support.
+        </li>
+        <li>
+         Price holds while bad news fails to push lower.
+        </li>
+       </ul>
+       <ul class="i18n-ti">
+        <li>
+         Dips ብፍጥነት እንተተዓዲጎም።
+        </li>
+        <li>
+         Volume ኣብ support እንተተራእዩ።
+        </li>
+        <li>
+         ዋጋ እንተተታሒዙ፣ ሕማቕ ዜና እውን ንታሕቲ ከይደፍኦ።
+        </li>
+       </ul>
+      </div>
+      <div class="sub-card">
+       <h3 class="txt-bearish">
+        Distribution Signs
+       </h3>
+       <ul class="i18n-en">
+        <li>
+         Rallies are sold quickly.
+        </li>
+        <li>
+         Volume increases on red candles.
+        </li>
+        <li>
+         Price fails at resistance again and again.
+        </li>
+       </ul>
+       <ul class="i18n-ti">
+        <li>
+         Rallies ብፍጥነት እንተተሸይጦም።
+        </li>
+        <li>
+         Volume ኣብ red candles እንተወሲኹ።
+        </li>
+        <li>
+         ዋጋ ኣብ resistance ብተደጋጋሚ እንተፈሺሉ።
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="content-section">
+    <div class="section-header">
+     <h2>
+      <span class="i18n-en">
+       6. Chart Volume
+      </span>
+      <span class="i18n-ti">
+       6. ናይ Chart Volume ትርጉም
+      </span>
+     </h2>
+     <div class="section-number">
+      6
+     </div>
+    </div>
+    <div class="content-body">
+     <p class="i18n-en">
+      Chart Volume confirms whether a move has real participation. A breakout without volume is weaker than a breakout with strong volume confirmation.
+     </p>
+     <p class="i18n-ti">
+      Chart Volume ሓደ ምንቅስቓስ ብሓቂ ተሳትፎ ኣለዎ ድዩ የረጋግጽ። Volume ዘይብሉ breakout ካብ strong volume ዘለዎ breakout ዝደኸመ እዩ።
+     </p>
+     <div class="dual-grid">
+      <div class="sub-card">
+       <h3 class="txt-bullish">
+        Healthy Volume
+       </h3>
+       <p class="i18n-en">
+        Healthy volume supports the direction of price. Green expansion with rising volume can support upside continuation; red expansion with rising volume can support downside continuation.
+       </p>
+       <p class="i18n-ti">
+        ጥዑይ volume ንኣንፈት ዋጋ ይድግፍ። Green expansion ምስ rising volume ንላዕሊ continuation ይድግፍ፤ red expansion ምስ rising volume ንታሕቲ continuation ይድግፍ።
+       </p>
+      </div>
+      <div class="sub-card">
+       <h3 class="txt-wait">
+        Weak / Trap Volume
+       </h3>
+       <p class="i18n-en">
+        Weak volume means the move may be a trap. When price breaks a level but volume does not confirm, the Decision Index should warn followers to wait.
+       </p>
+       <p class="i18n-ti">
+        ደኺም volume እቲ ምንቅስቓስ trap ክኸውን ከም ዝኽእል የርኢ። ዋጋ level እንተሰቢሩ ግን volume እንተዘየረጋጊጹ፣ Decision Index ንተኸታተልቲ ንጽበ ክብሎም ኣለዎ።
+       </p>
+      </div>
+     </div>
+     <div class="success-box">
+      <span class="i18n-en">
+       <b>
+        Final lesson:
+       </b>
+       The best reading comes when Bias, Execution State, Funding, Speed, Institutional Flow, and Volume all tell the same story.
+      </span>
+      <span class="i18n-ti">
+       <b>
+        መወዳእታ ትምህርቲ፦
+       </b>
+       ዝበለጸ ንባብ ዝመጽእ Bias, Execution State, Funding, Speed, Institutional Flow, Volume ኩሎም ሓደ ታሪኽ እንተነጊሮም እዩ።
+      </span>
+     </div>
+    </div>
+   </section>
+  </div>
+  <script>
+   function switchTab(index){const buttons=document.querySelectorAll('.tab-button');const sections=document.querySelectorAll('.content-section');if(!sections[index])return;buttons.forEach(function(btn,i){btn.classList.toggle('active',i===index);btn.setAttribute('aria-selected',i===index?'true':'false')});sections.forEach(function(section,i){section.classList.toggle('active',i===index)})}
+function setLanguage(lang){const useTi=lang==='ti';document.body.classList.toggle('lang-ti',useTi);document.body.classList.toggle('lang-en',!useTi);document.getElementById('btn-en').classList.toggle('active',!useTi);document.getElementById('btn-ti').classList.toggle('active',useTi);document.documentElement.setAttribute('lang',useTi?'ti':'en')}
+document.addEventListener('DOMContentLoaded',function(){switchTab(0);setLanguage('en')});
+  </script>
+  <button class="back-btn" onclick="goBack()">
+← Back
+</button>
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+
+ </body>
+</html>

@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutorial 4 - Professional Trading Mindset</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#050505;
+--panel:#101010;
+--panel2:#171717;
+--gold:#ffd700;
+--text:#ffffff;
+--muted:#cfcfcf;
+--border:#2b2b2b;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+margin:0;
+background:
+radial-gradient(circle at top left, rgba(255,215,0,.10), transparent 35%),
+linear-gradient(180deg,#050505,#0b0b0b 45%,#050505);
+color:var(--text);
+font-family:'Noto Sans Ethiopic', Arial, sans-serif;
+line-height:1.7;
+}
+.container{max-width:1180px;margin:0 auto;padding:34px 22px 80px;}
+.hero{
+text-align:center;
+padding:38px 20px 26px;
+}
+.hero-badge{
+display:inline-block;
+color:#111;
+background:var(--gold);
+padding:8px 16px;
+border-radius:999px;
+font-weight:800;
+margin-bottom:18px;
+}
+h1{
+margin:0;
+font-size:clamp(34px,5vw,62px);
+color:var(--gold);
+font-weight:800;
+letter-spacing:-1px;
+}
+.subtitle{
+max-width:760px;
+margin:18px auto 0;
+color:var(--muted);
+font-size:clamp(18px,2vw,23px);
+}
+.language-switch{
+display:flex;
+justify-content:center;
+gap:14px;
+margin:28px 0 28px;
+flex-wrap:wrap;
+}
+.language-switch button{
+border:1px solid rgba(255,215,0,.45);
+background:#181818;
+color:#fff;
+padding:13px 26px;
+border-radius:999px;
+font-size:18px;
+font-weight:800;
+cursor:pointer;
+transition:.25s ease;
+}
+.language-switch button.active,
+.language-switch button:hover{
+background:var(--gold);
+color:#000;
+transform:translateY(-2px);
+}
+.nav-buttons{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+gap:14px;
+background:rgba(255,255,255,.025);
+border:1px solid var(--border);
+border-radius:28px;
+padding:22px;
+margin:26px 0 44px;
+box-shadow:0 16px 45px rgba(0,0,0,.38);
+}
+.nav-buttons button{
+background:linear-gradient(145deg,#222,#111);
+color:#fff;
+border:1px solid #3a3a3a;
+padding:16px 18px;
+border-radius:16px;
+font-size:17px;
+font-weight:800;
+cursor:pointer;
+transition:.25s ease;
+min-height:62px;
+}
+.nav-buttons button:hover{
+background:var(--gold);
+color:#000;
+transform:translateY(-3px);
+box-shadow:0 12px 25px rgba(255,215,0,.18);
+}
+.section-card{
+margin:0 0 34px;
+padding:34px;
+border-radius:28px;
+background:linear-gradient(145deg,rgba(26,26,26,.96),rgba(10,10,10,.96));
+border:1px solid var(--border);
+box-shadow:0 20px 55px rgba(0,0,0,.42);
+}
+.section-top{
+display:flex;
+align-items:flex-start;
+justify-content:space-between;
+gap:22px;
+border-bottom:1px solid #242424;
+padding-bottom:18px;
+margin-bottom:24px;
+}
+h2{
+margin:0;
+color:var(--gold);
+font-size:clamp(28px,3.2vw,42px);
+line-height:1.2;
+}
+.number{
+min-width:48px;
+height:48px;
+border-radius:14px;
+display:grid;
+place-items:center;
+background:rgba(255,215,0,.12);
+border:1px solid rgba(255,215,0,.35);
+color:var(--gold);
+font-weight:800;
+font-size:20px;
+}
+p{font-size:clamp(19px,2vw,24px);color:#f2f2f2;margin:0 0 22px;}
+.steps{display:grid;gap:14px;margin-top:22px;}
+.step{
+background:#1b1b1b;
+border-left:5px solid var(--gold);
+padding:18px 20px;
+border-radius:14px;
+font-size:clamp(18px,2vw,22px);
+font-weight:700;
+}
+img{
+width:100%;
+max-width:900px;
+display:block;
+margin:28px auto 0;
+border-radius:18px;
+border:1px solid #303030;
+background:#0f0f0f;
+}
+.lang-content{display:none;}
+body.en .english{display:block;}
+body.ti .tigrigna{display:block;}
+body.en .lang.en{display:inline-block;}
+body.en .lang.ti{display:none;}
+body.ti .lang.en{display:none;}
+body.ti .lang.ti{display:inline-block;}
+@media(max-width:720px){
+.container{padding:22px 14px 60px;}
+.section-card{padding:24px 18px;border-radius:22px;}
+.section-top{flex-direction:column;}
+.nav-buttons{grid-template-columns:1fr;padding:16px;}
+}
+
+</style>
+</head>
+<body class="en">
+<div class="container">
+<header class="hero">
+<div class="hero-badge english lang-content">Tutorial 4</div>
+<button class="back-btn" onclick="goBack()">
+← Back
+</button>
+
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+<div class="hero-badge tigrigna lang-content">ትምህርቲ 4</div>
+<h1 class="english lang-content">Professional Trading Mindset</h1>
+<h1 class="tigrigna lang-content">ሞያዊ ኣተሓሳስባ ትሬዲንግ</h1>
+<p class="subtitle english lang-content">Learn risk control, discipline, entries, exits, and the mindset needed to trade professionally.</p>
+<p class="subtitle tigrigna lang-content">"ኣተሓሕዛ ስግኣት (Risk Control)፣ ስርዓትን ትዕግስትን (Discipline)፣ ትአትወሉን ትወጻሉን ምንጻር (Entries & Exits)፣ ከምኡ ውን ከም በዓል ሞያ ነጋዳይ ዘድሊ ናይ ኣእምሮ ምድላው ።</p>
+</header>
+
+<div class="language-switch">
+<button id="btn-en" class="active" onclick="setLanguage('en')">English</button>
+<button id="btn-ti" onclick="setLanguage('ti')">ትግርኛ</button>
+</div>
+
+<nav class="nav-buttons">
+<button class="lang en" onclick="scrollToSection('risk')">Risk Management</button>
+<button class="lang ti" onclick="scrollToSection('risk')">ምሕደራ ሓደጋ</button>
+<button class="lang en" onclick="scrollToSection('sl')">Stop Loss</button>
+<button class="lang ti" onclick="scrollToSection('sl')">ትእዛዝ ምዕጻው ኪሳራ</button>
+<button class="lang en" onclick="scrollToSection('tp')">Take Profit</button>
+<button class="lang ti" onclick="scrollToSection('tp')">ምውሳድ ረብሓ</button>
+<button class="lang en" onclick="scrollToSection('precision')">Precision Entry</button>
+<button class="lang ti" onclick="scrollToSection('precision')">ልክዕ መእተዊ</button>
+<button class="lang en" onclick="scrollToSection('smalltf')">Small TF Entry</button>
+<button class="lang ti" onclick="scrollToSection('smalltf')">ናይ ሓጺር ግዜ መእተዊ</button>
+<button class="lang en" onclick="scrollToSection('rr')">Risk Reward</button>
+<button class="lang ti" onclick="scrollToSection('rr')">ምውድዳር ሓደጋን ረብሓን</button>
+<button class="lang en" onclick="scrollToSection('position')">Position Size</button>
+<button class="lang ti" onclick="scrollToSection('position')">መጠን ትሬድ</button>
+<button class="lang en" onclick="scrollToSection('psychology')">Psychology</button>
+<button class="lang ti" onclick="scrollToSection('psychology')">ስነ-ኣእምሮ ትሬዲንግ</button>
+<button class="lang en" onclick="scrollToSection('mistakes')">Beginner Mistakes</button>
+<button class="lang ti" onclick="scrollToSection('mistakes')">ናይ ጀማሪታት ጌጋታት</button>
+<button class="lang en" onclick="scrollToSection('plan')">Trading Plan</button>
+<button class="lang ti" onclick="scrollToSection('plan')">መደብ ትሬዲንግ</button>
+</nav>
+
+<section id="risk" class="section-card">
+<div class="english lang-content">
+<div class="section-top"><h2>Risk Management</h2><div class="number">1</div></div>
+<p>Risk Management means protecting your capital before thinking about profit.</p>
+<div class="steps"><div class="step">Never risk too much on one trade.</div><div class="step">Beginners should risk only 1% to 2% per trade.</div><div class="step">Capital protection is more important than fast profit.</div></div>
+</div>
+<div class="tigrigna lang-content">
+<div class="section-top"><h2>ምሕደራ ሓደጋ</h2><div class="number">1</div></div>
+<p>ምሕደራ ሓደጋ ማለት ቅድሚ ረብሓ ምሕሳብ፣ ርእሰ ገንዘብካ ምክልኻል ማለት እዩ።</p>
+<div class="steps"><div class="step">ኣብ ሓደ ትሬድ ብዙሕ ሓደጋ ኣይትውሰድ።</div><div class="step">ጀማሪታት ኣብ ሓደ ትሬድ 1% ክሳብ 2% ጥራይ ክሓድጉ ይሓይሽ።</div><div class="step">ርእሰ ገንዘብ ምሕላው ካብ ቅልጡፍ ረብሓ ይበልጽ።</div></div>
+</div>
+<img src="riskmanagement.png" alt="">
+</section>
+
+<section id="sl" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Stop Loss</h2><div class="number">2</div></div><p>Stop Loss protects traders from big losses.</p><div class="steps"><div class="step">Every trade should have a Stop Loss.</div><div class="step">SL protects you from emotional trading.</div><div class="step">SL should be placed where the trade idea becomes invalid.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ትእዛዝ ምዕጻው ኪሳራ</h2><div class="number">2</div></div><p>Stop Loss ንትሬደራት ካብ ዓቢ ኪሳራ ይከላኸል።</p><div class="steps"><div class="step">ኩሉ ትሬድ Stop Loss ክህልዎ ኣለዎ።</div><div class="step">Stop Loss ብስምዒት ካብ ምትሬድ ይከላኸለካ።</div><div class="step">Stop Loss ሓሳብ ትሬድካ ዘይሰርሕ ኣብ ዝኾነሉ ቦታ ክቕመጥ ኣለዎ።</div></div></div>
+<img src="sl.png" alt="">
+</section>
+
+<section id="tp" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Take Profit</h2><div class="number">3</div></div><p>Take Profit locks profits automatically.</p><div class="steps"><div class="step">TP helps control greed.</div><div class="step">Professional traders define TP before entry.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ምውሳድ ረብሓ</h2><div class="number">3</div></div><p>Take Profit ረብሓኻ ብኣውቶማቲክ ንምውሳድ ይሕግዝ።</p><div class="steps"><div class="step">TP ስስዐ ንምቁጽጻር ይሕግዝ።</div><div class="step">ሞያውያን ትሬደራት ቅድሚ ምእታው TP ይውስኑ።</div></div></div>
+<img src="tp.png" alt="">
+</section>
+
+<section id="precision" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Precision Entry</h2><div class="number">4</div></div><p>Higher timeframe shows the main trend. Lower timeframe helps traders enter more precisely.</p><div class="steps"><div class="step">4H trend + 15m confirmation = better entry. </div><div class="step">Precision entry improves Risk Reward.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ልክዕ  መእተዊ</h2><div class="number">4</div></div><p>ዓቢ timeframe ዋና trend የርኢ። ንእሽቶ timeframe ድማ ብዝበለጸ ልክዕ መእተዊ ንምርካብ ይሕግዝ።</p><div class="steps"><div class="step">4H trend + 15m confirmation = ዝሓሸ መእተዊ።</div><div class="step">ልክዕ  መእተዊ Risk Reward የመሓይሽ።</div></div></div>
+<img src="precisionentry.png" alt="">
+</section>
+
+<section id="smalltf" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Small Timeframe Entry</h2><div class="number">5</div></div><p>Many traders use 1m, 5m and 15m for precise entries.</p><div class="steps"><div class="step">Lower timeframe = more noise.</div><div class="step">Smaller timeframe gives tighter Stop Loss.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ናይ ሓጺር ግዜ መእተዊ</h2><div class="number">5</div></div><p>ብዙሓት ትሬደራት ንልክዕ  መእተዊ 1m, 5m, 15m timeframe ይጥቀሙ።</p><div class="steps"><div class="step">ንእሽቶ timeframe ብዙሕ noise ክህልዎ ይኽእል።</div><div class="step">ንእሽቶ timeframe ዝቐረበ Stop Loss ንምቕማጥ ይሕግዝ።</div></div></div>
+<img src="smalltf.png" alt="">
+</section>
+
+<section id="rr" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Risk Reward Ratio</h2><div class="number">6</div></div><p>Risk Reward compares risk with possible profit.</p><div class="steps"><div class="step">1:2 means risking 1 to make 2.</div><div class="step">Good Risk Reward helps long-term profitability.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ምውድዳር ሓደጋን ረብሓን</h2><div class="number">6</div></div><p>Risk Reward ማለት እትወስዶ ሓደጋ ምስ እትጽበዮ ረብሓ ምውድዳር እዩ።</p><div class="steps"><div class="step">1:2 ማለት 1 ንምሕዳግ፣ 2 ንምርባሕ ማለት እዩ።</div><div class="step">ጽቡቕ Risk Reward ኣብ ነዊሕ ግዜ ረብሓ ንምርካብ ይሕግዝ።</div></div></div>
+<img src="riskreward.png" alt="">
+</section>
+
+<section id="position" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Position Size</h2><div class="number">7</div></div><p>Position Size controls how much money is used in one trade.</p><div class="steps"><div class="step">Too much leverage is dangerous.</div><div class="step">Protect the account first.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>መጠን ትሬድ</h2><div class="number">7</div></div><p>Position Size ኣብ ሓደ ትሬድ ክንደይ ገንዘብ ከም እትጥቀም ይቆጻጸር።</p><div class="steps"><div class="step">ብዙሕ leverage ሓደገኛ እዩ።</div><div class="step">ቅድሚ ኩሉ ኣካውንትካ ሓሉ።</div></div></div>
+<img src="positionsize.png" alt="">
+</section>
+
+<section id="psychology" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Trading Psychology</h2><div class="number">8</div></div><p>Fear and greed destroy many traders.</p><div class="steps"><div class="step">Revenge trading is dangerous.</div><div class="step">Patience is very important.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ስነ-ኣእምሮ ትሬዲንግ</h2><div class="number">8</div></div><p>ፍርሕን ስስዐን ብዙሓት ትሬደራት የጥፍኡ።</p><div class="steps"><div class="step">ብቅርሕቲ ምትሬድ ሓደገኛ እዩ።</div><div class="step">ትዕግስቲ ብጣዕሚ ኣገዳሲ እዩ።</div></div></div>
+<img src="psychology.png" alt="">
+</section>
+
+<section id="mistakes" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Beginner Mistakes</h2><div class="number">9</div></div><div class="steps"><div class="step">No Stop Loss.</div><div class="step">Too much leverage.</div><div class="step">FOMO entries.</div><div class="step">Trading emotionally.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>ናይ ጀማሪታት ጌጋታት</h2><div class="number">9</div></div><div class="steps"><div class="step">Stop Loss ዘይምጥቃም።</div><div class="step">ብዙሕ leverage ምጥቃም።</div><div class="step">ብ FOMO ምእታው።</div><div class="step">ብስምዒት ምትሬድ።</div></div></div>
+<img src="mistakes.png" alt="">
+</section>
+
+<section id="plan" class="section-card">
+<div class="english lang-content"><div class="section-top"><h2>Trading Plan</h2><div class="number">10</div></div><p>Professional traders follow a plan before entering trades.</p><div class="steps"><div class="step">1. Check higher timeframe.</div><div class="step">2. Mark support and resistance.</div><div class="step">3. Wait for confirmation.</div><div class="step">4. Define Entry, SL and TP.</div><div class="step">5. Manage risk properly.</div></div></div>
+<div class="tigrigna lang-content"><div class="section-top"><h2>መደብ ትሬዲንግ</h2><div class="number">10</div></div><p>ሞያውያን ትሬደራት ቅድሚ ትሬድ ምእታው መደብ ይኽተሉ።</p><div class="steps"><div class="step">1. ዓቢ timeframe ርኣይ።</div><div class="step">2. Support እና resistance ምልክት ግበር።</div><div class="step">3. Confirmation ተጸበ።</div><div class="step">4. Entry, SL, TP ወስን።</div><div class="step">5. ሓደጋ ብግቡእ ኣመሓድር።</div></div></div>
+<img src="tradingplan.png" alt="">
+</section>
+</div>
+<script>
+function scrollToSection(id){
+const el = document.getElementById(id);
+if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+function setLanguage(lang){
+document.body.classList.remove('en','ti');
+document.body.classList.add(lang);
+document.documentElement.lang = lang === 'ti' ? 'ti' : 'en';
+document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+document.getElementById('btn-ti').classList.toggle('active', lang === 'ti');
+}
+</script>
+<button class="back-btn" onclick="goBack()">
+← Back
+</button>
+
+<script>
+function goBack() {
+    location.href = "./trading.html";
+}
+</script>
+</body>
+</html>
+
+
