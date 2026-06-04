@@ -1,0 +1,744 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funding System Rules - English & Tigrinya</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: #070a12;
+      color: #d1d5db;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 290px;
+      background: #090b16;
+      border-right: 1px solid #1f2433;
+      padding: 24px 18px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #22c55e);
+    }
+
+    .search {
+      width: 100%;
+      background: #0f1322;
+      border: 1px solid #252b3d;
+      color: #d1d5db;
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 26px;
+      outline: none;
+    }
+
+    .nav-group {
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: #aeb4c2;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: #111827;
+      color: #8ea2ff;
+    }
+
+    .content {
+      margin-left: 290px;
+      width: calc(100% - 290px);
+      padding: 42px 60px;
+    }
+
+    .breadcrumb {
+      color: #9ca3af;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .hero {
+      max-width: 900px;
+      margin-bottom: 60px;
+    }
+
+    .hero h1 {
+      color: #f9fafb;
+      font-size: 42px;
+      line-height: 1.25;
+      margin: 0 0 18px;
+    }
+
+    .hero p {
+      color: #aeb4c2;
+      font-size: 18px;
+      max-width: 760px;
+    }
+
+    .section {
+      max-width: 940px;
+      padding-bottom: 60px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #1f2433;
+    }
+
+    .section h2 {
+      color: #f3f4f6;
+      font-size: 30px;
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
+
+    .section h3 {
+      color: #e5e7eb;
+      font-size: 22px;
+      margin-top: 34px;
+      margin-bottom: 12px;
+    }
+
+    .section p {
+      color: #b7bdc9;
+      font-size: 16px;
+      max-width: 780px;
+    }
+
+    .lang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .card {
+      background: #0d111d;
+      border: 1px solid #202638;
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .card h4 {
+      margin-top: 0;
+      color: #93a4ff;
+      font-size: 16px;
+      letter-spacing: 0.03em;
+    }
+
+    ul, ol {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .warning {
+      background: #24150b;
+      border-left: 4px solid #f97316;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .success {
+      background: #092017;
+      border-left: 4px solid #22c55e;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .danger {
+      background: #261014;
+      border-left: 4px solid #ef4444;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #111827;
+      color: #93a4ff;
+      border: 1px solid #28304a;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+
+    .table th,
+    .table td {
+      border: 1px solid #263044;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .table th {
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    .table td {
+      background: #0d111d;
+    }
+
+    footer {
+      color: #7f8797;
+      padding: 40px 0;
+      max-width: 900px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 28px 20px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .lang-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Strong mobile support */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .section,
+    .hero,
+    footer {
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .layout {
+        display: block;
+        min-height: auto;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        width: 100%;
+        max-height: 46vh;
+        overflow-y: auto;
+        border-right: 0;
+        border-bottom: 1px solid #1f2433;
+        padding: 16px;
+      }
+
+      .brand {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .brand-icon {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 auto;
+      }
+
+      .search {
+        margin-bottom: 14px;
+        padding: 10px 12px;
+      }
+
+      .nav-group {
+        margin-bottom: 14px;
+      }
+
+      .nav-title {
+        font-size: 13px;
+      }
+
+      .nav-link {
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 24px 16px;
+      }
+
+      .breadcrumb {
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+
+      .hero {
+        margin-bottom: 36px;
+      }
+
+      .hero h1 {
+        font-size: clamp(26px, 8vw, 34px);
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .section {
+        padding-bottom: 38px;
+      }
+
+      .section h2 {
+        font-size: clamp(24px, 7vw, 30px);
+      }
+
+      .section h3 {
+        font-size: 19px;
+      }
+
+      .section p,
+      li {
+        font-size: 15px;
+      }
+
+      .lang-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 16px;
+      }
+
+      .table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .table th,
+      .table td {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sidebar {
+        max-height: 40vh;
+        padding: 14px 12px;
+      }
+
+      .content {
+        padding: 22px 12px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .warning,
+      .success,
+      .danger {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      ul,
+      ol {
+        padding-left: 18px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        Funding Rules (Obsession Trading Academy) 
+      </div>
+
+      <input class="search" placeholder="Search for lessons..." />
+
+      <div class="nav-group">
+        <div class="nav-title">Home</div>
+        <a class="nav-link active" href="#intro">Overview</a>
+      </div>
+<a href="trading.html" class="back-btn">← Return Back</a>
+      <div class="nav-group">
+        <div class="nav-title">Rules</div>
+
+        <a class="nav-link" href="#risk-management">Risk Management Conditions</a>
+        <a class="nav-link" href="#three-percent-risk">3% Risk Per Position</a>
+        <a class="nav-link" href="#trailing-drawdown">Trailing Daily Drawdown</a>
+        <a class="nav-link" href="#overnight">Overnight Positions</a>
+        <a class="nav-link" href="#positions">Number of Positions</a>
+        <a class="nav-link" href="#inactivity">Inactivity Rule</a>
+        <a class="nav-link" href="#funded-rules">Funded Account Rules</a>
+        <a class="nav-link" href="#second-chance">Breaking the Rules</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-title">Trading Restrictions</div>
+        <a class="nav-link" href="#prohibited">Prohibited Trading Actions</a>
+        <a class="nav-link" href="#copy-trading">Copy Trading</a>
+        <a class="nav-link" href="#news-trading">News Trading</a>
+        <a class="nav-link" href="#spot-trading">Spot Trading</a>
+        <a class="nav-link" href="#profit-distribution">Profit Distribution Rule</a>
+        <a class="nav-link" href="#stop-loss-breach">Stop-Loss Breaches</a>
+        <a class="nav-link" href="#correct-stop-loss">Correct Stop Loss Setup</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="breadcrumb">Home › Funding Rules Academy › Rules & Trading Restrictions</div>
+
+      <section class="hero" id="intro">
+        <h1>Funding Account Rules Explained Step by Step (ክትፈልጦ ዝግበአካ ቅድሚ ምጅማርካ)</h1>
+        <p>This guide is made for educational purposes. It explains common rules used by many funding systems and prop trading challenges in both English and Tigrigna.</p>
+        <div class="warning">This is not written for one specific company. Always check the official rules of the funding company you use.</div>
+        <div>ሓደ ነገር አስተውዕል ኢዚኦም ትካላት ትገዝአሎም ተመሳሰልቲ እዮም</div>
+      </section>
+
+      <section class="section" id="risk-management">
+        <span class="tag">Rule 1</span>
+        <h2>Risk Management Conditions / ናይ Risk Management ሕግታት</h2>
+        <div class="lang-grid">
+          <div class="card">
+            <h4>English</h4>
+            <p>Most funding systems require traders to follow strict risk management rules. These usually include maximum risk per trade, daily drawdown, maximum loss, stop-loss obligation, and responsible trading behavior.</p>
+            <ul>
+              <li>Do not risk more than the allowed percentage per position.</li>
+              <li>Use a stop loss on every position.</li>
+              <li>Avoid gambling or all-or-nothing trading behavior.</li>
+              <li>Do not rely on one lucky trading day.</li>
+            </ul>
+            <div class="warning">Commissions and fees may be included in risk calculations depending on the funding provider.</div>
+          </div>
+          <div class="card">
+            <h4>ትግርኛ</h4>
+            <p>ብዙሓት Funding Systems ትሬደራት ጽኑዕ ናይ Risk Management ሕግታት ክኽተሉ ይጠልቡ። እዚ ብዙሕ ግዜ Maximum Risk Per Trade፣ Daily Drawdown፣ Maximum Loss፣ Stop-Loss Obligation ከምኡውን Responsible Trading ይሓዝ።</p>
+            <ul>
+              <li>ኣብ ሓደ Position ካብ ዝተፈቐደ መጠን ዝበዝሕ Risk ኣይትውሰድ።</li>
+              <li>ኣብ ኩሉ Position Stop Loss ተጠቐም።</li>
+              <li>Gambling ወይ all-or-nothing ኣተሓሳስባ ኣይትጠቐም።</li>
+              <li>ኣብ ሓንቲ ዕድለኛ መዓልቲ ጥራይ ኣይትምርኮስ።</li>
+            </ul>
+            <div class="warning">Commission ከምኡውን Fees ኣብ Risk Calculation ክኣትዉ ይኽእሉ፣ እዚ ኣብ ሕጊ ናይቲ Funding Provider ይምርኮስ።</div>
+          </div>
+        </div>
+
+      </section>
+
+<section class="section" id="trailing-drawdown">
+  <span class="tag">Important Lesson</span>
+  <h2>Trailing Daily Drawdown / ናይ Trailing Daily Drawdown ምርዳእ</h2>
+
+  <div class="lang-grid">
+
+    <div class="card">
+      <h4>English</h4>
+
+      <p>
+        Many funding systems calculate Daily Drawdown using <strong>Equity</strong>,
+        not only closed profits and losses.
+      </p>
+
+      <ul>
+        <li>Floating profit counts.</li>
+        <li>Floating loss counts.</li>
+        <li>Daily Drawdown changes throughout the day.</li>
+        <li>If your equity improves, drawdown can decrease.</li>
+        <li>If your equity worsens, drawdown can increase.</li>
+      </ul>
+
+      <h3>Real Example</h3>
+
+      <table class="table">
+        <tr>
+          <th>Situation</th>
+          <th>Daily Drawdown</th>
+        </tr>
+        <tr>
+          <td>Position moves against you</td>
+          <td>-15</td>
+        </tr>
+        <tr>
+          <td>Position recovers</td>
+          <td>-12</td>
+        </tr>
+        <tr>
+          <td>Position falls again</td>
+          <td>-13</td>
+        </tr>
+      </table>
+
+      <div class="warning">
+        <strong>Important:</strong><br>
+        Daily Drawdown is a live value. It can increase or decrease as your account equity changes.
+      </div>
+
+      <p>
+        Think of Daily Drawdown as a live risk meter:
+      </p>
+
+      <ul>
+        <li>Better Equity = Smaller Drawdown</li>
+        <li>Worse Equity = Larger Drawdown</li>
+      </ul>
+
+      <div class="danger">
+        If Daily Drawdown reaches the firm's maximum limit, the account may fail.
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>ትግርኛ</h4>
+
+      <p>
+        ብዙሓት Funding Systems Daily Drawdown ብ <strong>Equity</strong>
+        ይሓስቡ፣ ብ Closed Profit ወይ Closed Loss ጥራይ ኣይኮነን።ምሳሌ 2000 ከሲብካ ጽኒሕካ እንድሕር 1000 አጥፊካ ተካሪጅካ አለካ ።
+      </p>
+
+      <ul>
+        <li>Floating Profit ይቑጸር።</li>
+        <li>Floating Loss ይቑጸር።</li>
+        <li>Daily Drawdown ኣብ ውሽጢ ደቃይቅ ክቕየር ይኽእል።</li>
+        <li>Equity እንተ ተመሓየሸ Drawdown ይጎድል።</li>
+        <li>Equity እንተ ወሪዱ Drawdown ይውስኽ።</li>
+      </ul>
+
+      <h3>ናይ ሓቂ ኣብነት</h3>
+
+      <table class="table">
+        <tr>
+          <th>ኩነታት</th>
+          <th>Daily Drawdown</th>
+        </tr>
+        <tr>
+          <td>ትሬድ ናብ ክሳራ ይኸይድ</td>
+          <td>-15</td>
+        </tr>
+        <tr>
+          <td>ትሬድ ይምለስ</td>
+          <td>-12</td>
+        </tr>
+        <tr>
+          <td>ዳግማይ ይወርድ</td>
+          <td>-13</td>
+        </tr>
+      </table>
+
+      <div class="warning">
+        <strong>ኣገዳሲ:</strong><br>
+        Daily Drawdown ህያው (Live) ቁጽሪ እዩ። ብመጠን Equity ኣብ ውሽጢ መዓልቲ ክውስኽ ወይ ክጎድል ይኽእል።
+      </div>
+
+      <p>
+        Daily Drawdown ከም ናይ Risk ሚዛን ክትርእዮ ትኽእል፦
+      </p>
+
+      <ul>
+        <li>Equity እንተ ተመሓየሸ → Drawdown ይጎድል</li>
+        <li>Equity እንተ ወሪዱ → Drawdown ይውስኽ</li>
+      </ul>
+
+      <div class="danger">
+        Daily Drawdown ካብ ዝላዓለ መኽሰብ እንተወሪዱ፣ Account ክወድቕ ይኽእል እዩ። ዋላ አብ መክሰብ ከለኻ።
+      </div>
+    </div>
+
+  </div>
+</section>
+
+            <section class="section" id="overnight">
+        <span class="tag">Rule 3</span>
+        <h2>Do I Have to Close Positions Overnight?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>In many funding systems, overnight and weekend holding may be allowed. This means traders do not always need to close positions before the end of the day.</p><div class="success">Always check the specific provider, because some firms restrict overnight or weekend holding.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ኣብ ብዙሓት Funding Systems፣ Overnight ከምኡውን Weekend Holding ይፈቅዱ። ማለት ትሬደር ቅድሚ መዓልቲ ምውዳእ Positions ክዓጽዎም ግዴታ የብሉን።</p><div class="success">ግን ኩሉ ግዜ ናይቲ Provider ሕጊ ኣረጋግጽ፣ ምኽንያቱ ገለ Firms Overnight ወይ Weekend Holding ይኽልክሉ።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="positions">
+        <span class="tag">Rule 4</span>
+        <h2>How Many Positions Can I Open?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Some funding systems do not limit the number of positions, but the trader must manage total risk. For example, two positions risking 3% each can create 6% daily loss if both fail.</p><div class="danger">Even if each trade is valid alone, the combined loss may breach daily drawdown.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ገለ Funding Systems ብዝሒ Positions ኣይገድቡን፣ ግን ትሬደር ጠቕላላ Risk ክቆጻጸር ኣለዎ። ንኣብነት 2 Positions ነፍሲ ወከፉ 3% Risk እንተ ኾይኑ፣ ክልቲኦም እንተ ኸሲሮም 6% Daily Loss ይፈጥሩ።</p><div class="danger">ነፍሲ ወከፍ ትሬድ በበይኑ ቅቡል እኳ እንተ ኾነ፣ ጠቕላላ Loss ን Daily Drawdown ክጥሕስ ይኽእል።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="inactivity">
+        <span class="tag">Rule 5</span>
+        <h2>Inactivity Rule</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Many funding accounts have inactivity rules. A common example is that if the most recent trading day is older than 30 days, the account may be disabled.</p><p>A trading day usually means the day a trade was closed, not the day it was opened.</p></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ብዙሓት Funding Accounts ናይ Inactivity ሕግታት ኣለዎም። ኣብነት፣ ካብ መወዳእታ ዝተዓጽወ ትሬድ 30 መዓልታት እንተ ሓሊፉ፣ ኣካውንት ክዕጾ ወይ ክስንከል ይኽእል።</p><p>Trading Day ብዙሕ ግዜ ትሬድ ዝተዓጽወሉ መዓልቲ እዩ፣ ዝተኸፈተሉ መዓልቲ ኣይኮነን።</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="funded-rules">
+        <span class="tag">Rule 6</span>
+        <h2>Funded Account Rules</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>After a trader becomes funded, extra rules may apply. Common funded account limits include maximum margin exposure and maximum total open position value.</p><ul><li>Maximum exposure may be limited to 25% of initial account balance.</li><li>Total open position value may be limited to 2× initial account balance.</li><li>Daily drawdown, maximum loss, risk per trade, and stop-loss rules usually continue.</li></ul></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ትሬደር Funded ምስ ኮነ፣ ተወሳኺ ሕግታት ክህልዉ ይኽእሉ። ዝተለመዱ ሕግታት Maximum Margin Exposure ከምኡውን Maximum Total Open Position Value ይሓዙ።</p><ul><li>Maximum Exposure ክሳብ 25% ናይ መጀመርታ ባላንስ ክግደብ ይኽእል።</li><li>Total Open Position Value ክሳብ 2× ናይ መጀመርታ ባላንስ ክግደብ ይኽእል።</li><li>Daily Drawdown፣ Maximum Loss፣ Risk Per Trade፣ Stop-Loss Rules ብዙሕ ግዜ ይቕጽሉ።</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="second-chance">
+        <span class="tag">Rule 7</span>
+        <h2>If I Break the Rules, Do I Get Another Chance?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>In many funding systems, if a trader violates a trading objective, that account is invalidated. If the breach happens on a funded account, the agreement may be terminated.</p><div class="warning">Usually, a trader can start again by buying a new challenge, but repeat attempts may not receive a discount.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ኣብ ብዙሓት Funding Systems፣ ትሬደር ናይ Trading Objective ሕጊ እንተ ጥሒሱ፣ እቲ Account ይወድቕ። እቲ ጥሕሰት ኣብ Funded Account እንተ ኾይኑ፣ Agreement ክቋረጽ ይኽእል።</p><div class="warning">ብዙሕ ግዜ ትሬደር ሓድሽ Challenge ብምግዛእ ዳግማይ ክጅምር ይኽእል፣ ግን Discount ክወሃብ ኣይግድን።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="prohibited">
+        <span class="tag">Restriction 1</span>
+        <h2>Prohibited Trading Actions</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Funding systems may set a maximum capital allocation per user across all active challenges. Some platforms also prohibit actions such as requesting extra demo funds, modifying balances, altering API keys, trading the wrong market type, or combining restricted trading modes.</p><ul><li>Do not modify account balance.</li><li>Do not change or delete API keys if prohibited.</li><li>Do not trade restricted pairs or products.</li><li>Do not mix spot and margin if the account rules forbid it.</li></ul></div>
+          <div class="card"><h4>ትግርኛ</h4><p>Funding Systems ኣብ ኩሎም Active Challenges ንሓደ User ዝፍቀድ Maximum Capital Allocation ክውስኑ ይኽእሉ። ገለ Platforms ተወሳኺ Demo Funds ምሕታት፣ Balance ምቕያር፣ API Key ምቕያር፣ ዘይተፈቐደ Market Type ምትሬድ ወይ Restricted Trading Modes ምሕዋስ ይኽልክሉ።</p><ul><li>Account Balance ኣይትቐይር።</li><li>API Keys ምቕያር ወይ ምስራዝ እንተ ተኸልኪሉ ኣይትግበር።</li><li>Restricted Pairs ወይ Products ኣይትትሬድ።</li><li>Rules እንተ ከልኪሎም Spot ከምኡውን Margin ኣይትሕወስ።</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="copy-trading">
+        <span class="tag">Restriction 2</span>
+        <h2>Is Copy Trading Allowed?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Copying other traders is usually not allowed in funding challenges. Funding systems want to evaluate your own skill, discipline, strategy, and risk management.</p><div class="danger">Copy trading can lead to account failure if it is prohibited by the provider.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ናይ ካልኦት ትሬደራት ትሬድ ምቕዳሕ ኣብ Funding Challenges ብዙሕ ግዜ ኣይፍቀድን። Funding Systems ናይ ገዛእ ርእስኻ ክእለት፣ Discipline፣ Strategy ከምኡውን Risk Management ክፍትኑ ይደልዩ።</p><div class="danger">Provider እንተ ከልኪልዎ፣ Copy Trading Account Failure ከስዕብ ይኽእል።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="news-trading">
+        <span class="tag">Restriction 3</span>
+        <h2>Is News Trading Allowed?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Trading solely based on news events is often restricted because it is considered high risk. However, many systems do not require traders to close existing positions during news events.</p></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ብ News Events ጥራይ ተመርኲስካ ትሬድ ምግባር ብዙሕ ግዜ ይኽልከል፣ ምኽንያቱ ብጣዕሚ High Risk ስለ ዝኾነ። ግን ብዙሓት Systems ኣብ News Events ዘለዉ Positions ክዕጸዉ ግዴታ ኣይገብሩን።</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="spot-trading">
+        <span class="tag">Restriction 4</span>
+        <h2>Can I Trade Spot?</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>Many crypto funding challenges are focused on futures trading. Spot trading may not be available unless the provider clearly allows it.</p><div class="warning">Do not trade spot if the challenge is futures-based.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ብዙሓት Crypto Funding Challenges ኣብ Futures Trading ዝተመስረቱ እዮም። Spot Trading Provider ብግልጺ እንተ ዘይፈቒዱ ።</p><div class="warning">Challenge Futures-based እንተ ኾይኑ፣ Spot Trading ኣይትግበር።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="profit-distribution">
+        <span class="tag">Restriction 5</span>
+        <h2>Profit Distribution Rule</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>During evaluation phases, one trading day may be limited to a maximum percentage of total required profit. A common example is 40%.</p><table class="table"><tr><th>Profit Target</th><th>40% Limit</th><th>Daily Profit</th><th>Counted</th></tr><tr><td>$500</td><td>$200</td><td>$320</td><td>$200</td></tr></table><p>The excess $120 is ignored and does not count toward the target.</p></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ኣብ Evaluation Phases፣ ሓደ Trading Day ካብ ጠቕላላ Required Profit ዝተወሰነ Percentage ጥራይ ክቑጸር ይኽእል። ዝተለመደ ኣብነት 40% እዩ።</p><table class="table"><tr><th>Profit Target</th><th>40% Limit</th><th>Daily Profit</th><th>Counted</th></tr><tr><td>$500</td><td>$200</td><td>$320</td><td>$200</td></tr></table><p>ተወሳኺ $120 ኣይቑጸርን፣ ናብ Target ኣይኣቱን።</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="stop-loss-breach">
+        <span class="tag">Restriction 6</span>
+        <h2>Stop-Loss Obligation Breaches</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><ul><li>No stop loss placed.</li><li>Stop loss not placed within 5 minutes.</li><li>Risk exceeds 3% of the initial account balance.</li><li>Stop loss is cancelled without adjusting the position.</li></ul><div class="danger">Most funding systems treat stop-loss violations seriously.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><ul><li>Stop Loss ዘይምቕማጥ።</li><li>Stop Loss ኣብ 5 ደቓይቕ ውሽጢ ዘይምቕማጥ።</li><li>Risk ካብ 3% ናይ Initial Balance ምብላጽ።</li><li>Position ከይተስተኻኸለ Stop Loss ምስራዝ።</li></ul><div class="danger">ብዙሓት Funding Systems Stop-Loss Violations ብጣዕሚ ከቢድ ይርእይዎ።</div></div>
+        </div>
+      </section>
+
+      <section class="section" id="correct-stop-loss">
+        <span class="tag">Restriction 7</span>
+        <h2>Correct Way to Set a Stop Loss</h2>
+        <div class="lang-grid">
+          <div class="card"><h4>English</h4><p>You may open a trade first, but many systems require the stop loss to be placed within 5 minutes. To be valid, the stop loss should usually be set using the platform’s TP/SL function.</p><ul><li>Accepted: Stop Loss</li><li>Accepted: Trailing Stop Loss if supported</li><li>Not accepted: Conditional triggers</li><li>Not accepted: Limit close orders</li></ul><div class="warning">A market stop-loss is often safer than a conditional limit order because it is more likely to execute during fast market movement.</div></div>
+          <div class="card"><h4>ትግርኛ</h4><p>ትሬድ ቅድሚ Stop Loss ክትከፍት ትኽእል፣ ግን ብዙሓት Systems Stop Loss ኣብ 5 ደቓይቕ ውሽጢ ክቕመጥ ይጠልቡ። ሓቀኛ ክኸውን፣ ብዙሕ ግዜ Stop Loss ብ TP/SL Function ክቕመጥ ኣለዎ።</p><ul><li>ዝፍቀድ: Stop Loss</li><li>ዝፍቀድ: Trailing Stop Loss እንተ ተደጊፉ</li><li>ዘይፍቀድ: Conditional Triggers</li><li>ዘይፍቀድ: Limit Close Orders</li></ul><div class="warning">Market Stop-Loss ብዙሕ ግዜ ካብ Conditional Limit Order ዝሓሸ እዩ፣ ምኽንያቱ ኣብ ሓያል Market Movement ክፍጸም ዝያዳ ዕድል ኣለዎ።</div></div>
+        </div>
+      </section>
+
+      <footer>
+        <p>This page is for education only and is not connected to any specific funding company. Traders must always read the official rules of their own funding provider before trading.</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
