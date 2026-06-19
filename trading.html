@@ -232,14 +232,31 @@
       <option value="180">Fast</option>
     </select>
     
-<div class="chart-section">
-    <iframe 
-        src="https://de.tradingview.com/chart/OdddOnUl/"
-      "class=Tradingview" 
-        style="width: 100%; height: 100%; border: none; border-radius: 6px;" 
-        allowfullscreen>
-    </iframe>
+<div class="chart-section" style="width: 100%; height: 500px;">
+  <!-- TradingView Widget BEGIN -->
+  <div class="tradingview-widget-container" style="height:100%;width:100%;">
+    <div id="tradingview_gold_chart" style="height:100%;width:100%;"></div>
+    <script type="text/javascript" src="https://tradingview.com"></script>
+    <script type="text/javascript">
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": "OANDA:XAUUSD",
+      "interval": "240",
+      "timezone": "Europe/Berlin",
+      "theme": "dark",
+      "style": "1",
+      "locale": "de",
+      "enable_publishing": false,
+      "hide_side_toolbar": false,
+      "allow_symbol_change": true,
+      "container_id": "tradingview_gold_chart",
+      "customer": "obsession"
+    });
+    </script>
+  </div>
+  <!-- TradingView Widget END -->
 </div>
+
 
   </div>
 
