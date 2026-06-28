@@ -1,0 +1,693 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsession Trading Academy - SMC Teaching Tool</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --canvas:#ffffff; --panel:#eef1f7; --top:#ffffff;
+    --text:#1d2433; --muted:#536071; --border:#d6dbe6;
+    --gold:#b8860b; --gold2:#f5c542; --bull:#089981; --bear:#f23645;
+    --blue:#2962ff; --label-bg:rgba(255,255,255,.94); --draw:#2962ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif;overflow:hidden;touch-action:none}
+  #topbar{min-height:58px;background:var(--top);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 10px;box-shadow:0 2px 12px rgba(20,30,50,.08);white-space:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+  .brand{color:var(--gold);font-weight:900;letter-spacing:.2px;font-size:18px;flex:0 0 auto}
+  button,label{background:var(--top);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;cursor:pointer;box-shadow:0 1px 4px rgba(20,30,50,.07);flex:0 0 auto}
+  select,input[type=color],input[type=range]{vertical-align:middle}
+  button:hover,label:hover{filter:brightness(.96)}
+  select{background:var(--top);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:0 1px 4px rgba(20,30,50,.05);}
+  input[type=range]{accent-color:#2962ff}
+  html[data-theme=dark] button, html[data-theme=dark] label, html[data-theme=dark] select, html[data-theme=dark] .box{background:#131722;color:#f5f7fb;border-color:#303746;}
+  label.gold{background:linear-gradient(135deg,#f5c542,#d39b17);color:#111;font-weight:800;border-color:#d39b17}
+  input[type=file]{display:none}
+  .box{background:var(--top);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:15px;box-shadow:0 1px 4px rgba(20,30,50,.05);flex:0 0 auto}
+  b{color:var(--text)} canvas{display:block;cursor:crosshair;background:var(--canvas);touch-action:none}
+  @media (max-width:700px){
+    #topbar{min-height:102px;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;white-space:normal;overflow:hidden;padding:8px}
+    .brand{width:100%;font-size:18px}
+    button,label,.box{font-size:12px;padding:8px 9px;border-radius:9px}
+  }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="brand">Obsession Trading Academy - SMC Teaching Canvas ንመሃር ክንልወጥ አንተደሊና </div>
+  <label class="gold" for="imgUpload">📂 Load Image</label><input id="imgUpload" type="file" accept="image/*" />
+  <button id="undoBtn">↩ Undo</button><button id="resetBtn">Reset</button>
+  <button id="themeBtn">🌙 Black Mode</button>
+  <button id="cleanBtn">👁 Full Labels</button>
+  <select id="langSelect" class="box"><option value="en">EN English</option><option value="ti">ትግርኛ</option></select>
+  <div class="box">Text: <input id="textColor" type="color" value="#b8860b"></div>
+  <div class="box">Draw: <input id="drawColor" type="color" value="#2962ff"></div>
+  <div class="box">Image: <input id="imgOpacity" type="range" min="10" max="100" value="35"></div>
+  <div class="box">Mode: <b>Auto SMC + OB</b></div>
+  <div class="box">Trend: <b id="trend">Neutral</b></div>
+  <div class="box">Candles: <b id="count">0</b></div>
+</div>
+<canvas id="chartCanvas"></canvas>
+<script>
+(function(){
+'use strict';
+const canvas=document.getElementById('chartCanvas');
+const ctx=canvas.getContext('2d');
+const topbar=document.getElementById('topbar');
+let GOLD='#b8860b', DRAW='#2962ff'; const BULL='#089981', BEAR='#f23645', GREY='#6b7280';
+let darkMode=(localStorage.getItem('obsessionTheme')==='dark'), imageOpacity=.35, cleanMode=true, lang='en';
+let guidePage='home', guideHitboxes=[];
+function panelWidth(){return window.innerWidth<840?0:350;}
+let candles=[], fvgs=[], orderBlocks=[], swings=[], structures=[], sweeps=[], confluences=[], drawings=[], history=[];
+let temp=null, bg=null, imgScale=1, imgX=0, imgY=0, dragging=false, painting=false, last={x:0,y:0}, trend='Neutral';
+function topH(){return topbar.getBoundingClientRect().height;}
+function resize(){canvas.width=window.innerWidth;canvas.height=Math.max(300,window.innerHeight-topH());draw();}
+window.addEventListener('resize',resize);
+new ResizeObserver(resize).observe(topbar);
+function getPoint(e){const rect=canvas.getBoundingClientRect();return {x:e.clientX-rect.left,y:e.clientY-rect.top};}
+function usableRight(){return canvas.width-panelWidth();}
+function update(){document.getElementById('trend').textContent=trend;document.getElementById('count').textContent=candles.length;}
+function rangeBefore(index, lookback=8){let start=Math.max(0,index-lookback), arr=candles.slice(start,index); if(arr.length<4)return null; return {high:Math.min(...arr.map(c=>c.high)), low:Math.max(...arr.map(c=>c.low)), firstX:arr[0].x, lastX:arr[arr.length-1].x, source:'range'};}
+function lastLevelBefore(kind, index){
+  for(let j=swings.length-1;j>=0;j--){ if(swings[j].type===kind && swings[j].x < (candles[index-1]?.x ?? Infinity)) return swings[j]; }
+  return null;
+}
+function trendLevelBefore(index){
+  const lastH=lastLevelBefore('high',index), lastL=lastLevelBefore('low',index);
+  return {high:lastH?{y:lastH.y,x:lastH.x,source:'trend'}:null, low:lastL?{y:lastL.y,x:lastL.x,source:'trend'}:null};
+}
+function makeCandle(cx, open, close){
+  const isBull=close<open, body=Math.max(8,Math.abs(open-close));
+  const bodyTop=Math.min(open,close), bodyBot=Math.max(open,close);
+  let high=bodyTop-12, low=bodyBot+12;
+  const r=rangeBefore(candles.length,8);
+  const tl=trendLevelBefore(candles.length);
+  let highLevel=r?{y:r.high,x:r.firstX,source:'range'}:tl.high;
+  let lowLevel=r?{y:r.low,x:r.firstX,source:'range'}:tl.low;
+  if(tl.high && (!highLevel || Math.abs(bodyTop-tl.high.y)<Math.abs(bodyTop-highLevel.y))) highLevel=tl.high;
+  if(tl.low && (!lowLevel || Math.abs(bodyBot-tl.low.y)<Math.abs(bodyBot-lowLevel.y))) lowLevel=tl.low;
+  // Conservative automatic wick sweep:
+  // Do NOT force liquidity sweeps on the first candles. A sweep needs structure first
+  // (range high/low or trend swing). This avoids the second bearish candle jumping up.
+  const oldEnoughHigh = highLevel && candles.length >= 3 && highLevel.x < candles[candles.length-3].x;
+  const oldEnoughLow  = lowLevel  && candles.length >= 3 && lowLevel.x  < candles[candles.length-3].x;
+  const hasStructureForSweep = candles.length >= 7 && (r || tl.high || tl.low);
+  const sweepTolerance = 18; // conservative: only near real old liquidity
+  // Teaching rule: buy-side sweep is usually a bearish rejection candle.
+  // Sell-side sweep is usually a bullish rejection candle.
+  if(hasStructureForSweep && !isBull && oldEnoughHigh && bodyTop > highLevel.y && bodyTop < highLevel.y+sweepTolerance){
+    high = highLevel.y - Math.max(34, body*1.55); low = bodyBot+10;
+  }
+  if(hasStructureForSweep && isBull && oldEnoughLow && bodyBot < lowLevel.y && bodyBot > lowLevel.y-sweepTolerance){
+    low = lowLevel.y + Math.max(34, body*1.55); high = bodyTop-10;
+  }
+  return {x:cx,open,close,high,low,isBull};
+}
+function recalc(){fvgs=[];orderBlocks=[];swings=[];structures=[];sweeps=[];confluences=[];trend='Neutral'; const old=[...candles]; candles=[]; old.forEach(c=>{candles.push(c); analyze();}); update();}
+function analyze(){
+  let n=candles.length; if(n<3){detectSweeps();return;}
+  const a=candles[n-3], b=candles[n-2], c=candles[n-1];
+  if(a.high > c.low){ fvgs.push({type:'bull',x:a.x,top:a.high,bottom:c.low}); }
+  if(a.low < c.high){ fvgs.push({type:'bear',x:a.x,top:c.high,bottom:a.low}); }
+  if(b.high < a.high && b.high < c.high) swings.push({type:'high',x:b.x,y:b.high});
+  if(b.low > a.low && b.low > c.low) swings.push({type:'low',x:b.x,y:b.low});
+  const lastH=[...swings].reverse().find(s=>s.type==='high');
+  const lastL=[...swings].reverse().find(s=>s.type==='low');
+  const recent=candles.slice(Math.max(0,n-6),n-1);
+  const recentBull=recent.filter(k=>k.isBull).length;
+  const recentBear=recent.length-recentBull;
+  if(lastH && c.close < lastH.y){
+    // Closing above an old swing high.
+    // If the market was bearish before, this is Change of Character.
+    // If the market was already bullish, this is continuation BoS.
+    const stType=(trend==='Bearish' || (trend==='Neutral' && recentBear>recentBull))?'ChoCH':'BoS';
+    structures.push({type:stType,dir:'bull',x:lastH.x,y:lastH.y,breakX:c.x});
+    detectOrderBlock('bull', n-1);
+    trend='Bullish';
+  }
+  if(lastL && c.close > lastL.y){
+    // Closing below an old swing low.
+    // If the market was bullish before, this is Change of Character.
+    // If the market was already bearish, this is continuation BoS.
+    const stType=(trend==='Bullish' || (trend==='Neutral' && recentBull>recentBear))?'ChoCH':'BoS';
+    structures.push({type:stType,dir:'bear',x:lastL.x,y:lastL.y,breakX:c.x});
+    detectOrderBlock('bear', n-1);
+    trend='Bearish';
+  }
+  detectSweeps(); detectConfluence(); update();
+}
+
+function detectOrderBlock(dir, breakIndex){
+  // IMPORTANT TEACHING RULE:
+  // An Order Block is NOT a prediction drawn before the move.
+  // It is only confirmed AFTER displacement + BoS/ChoCH.
+  // Then we mark the last opposite candle as the historical OB zone.
+  const start=Math.max(0, breakIndex-10);
+  for(let i=breakIndex-1;i>=start;i--){
+    const ob=candles[i];
+    if(!ob) continue;
+    const isValid = dir==='bull' ? !ob.isBull : ob.isBull;
+    if(!isValid) continue;
+    const top=Math.min(ob.open, ob.close);
+    const bottom=Math.max(ob.open, ob.close);
+    const already=orderBlocks.some(z=>z.dir===dir && Math.abs(z.x-ob.x)<8 && Math.abs(z.top-top)<4 && Math.abs(z.bottom-bottom)<4);
+    if(!already){
+      orderBlocks.push({
+        dir, x:ob.x-8, top, bottom, candleIndex:i,
+        label:dir==='bull'?'Bullish OB':'Bearish OB',
+        breakerX:candles[breakIndex].x,
+        confirmedBy:structures[structures.length-1]?.type || 'BoS/ChoCH'
+      });
+    }
+    return;
+  }
+}
+
+function detectSweeps(){
+  const i=candles.length-1; if(i<6)return; const c=candles[i];
+  const bodyTop=Math.min(c.open,c.close), bodyBot=Math.max(c.open,c.close);
+  const upperWick=bodyTop-c.high, lowerWick=c.low-bodyBot, body=Math.max(1,bodyBot-bodyTop);
+  const r=rangeBefore(i,8), tl=trendLevelBefore(i);
+  let highLevels=[], lowLevels=[];
+  if(r){highLevels.push({y:r.high,x:r.firstX,label:'Range High'}); lowLevels.push({y:r.low,x:r.firstX,label:'Range Low'});}
+  if(tl.high) highLevels.push({y:tl.high.y,x:tl.high.x,label:'Trend High'});
+  if(tl.low) lowLevels.push({y:tl.low.y,x:tl.low.x,label:'Trend Low'});
+  for(const h of highLevels){
+    const oldLevel = candles[i-2] && h.x < candles[i-2].x;
+    const sweptHigh=!c.isBull && oldLevel && c.high < h.y && bodyTop > h.y && upperWick > body*1.05;
+    if(sweptHigh && !sweeps.some(s=>Math.abs(s.x-c.x)<8 && s.dir==='bear')) sweeps.push({type:'Bearish Liquidity Sweep',x:c.x,y:h.y,dir:'bear',level:h.label});
+  }
+  for(const l of lowLevels){
+    const oldLevel = candles[i-2] && l.x < candles[i-2].x;
+    const sweptLow=c.isBull && oldLevel && c.low > l.y && bodyBot < l.y && lowerWick > body*1.05;
+    if(sweptLow && !sweeps.some(s=>Math.abs(s.x-c.x)<8 && s.dir==='bull')) sweeps.push({type:'Bullish Liquidity Sweep',x:c.x,y:l.y,dir:'bull',level:l.label});
+  }
+}
+function detectConfluence(){
+  const c=candles[candles.length-1]; if(!c||sweeps.length===0)return;
+  const sw=sweeps[sweeps.length-1]; if(Math.abs(sw.x-c.x)>8)return;
+  const f=fvgs.slice(-6).find(z=>z.type===(sw.dir==='bull'?'bull':'bear'));
+  const ob=orderBlocks.slice(-6).find(z=>z.dir===sw.dir);
+  const hasFvg=!!f, hasOb=!!ob;
+  if((hasFvg||hasOb) && !confluences.some(cf=>Math.abs(cf.x-c.x)<20)){
+    const parts=[]; if(hasFvg)parts.push('FVG'); if(hasOb)parts.push('OB');
+    confluences.push({x:c.x,y:c.close,type:(sw.dir==='bull'?'Bullish':'Bearish')+' Confluence: Sweep + '+parts.join(' + ')});
+  }
+}
+canvas.addEventListener('pointerdown',e=>{
+  e.preventDefault(); canvas.setPointerCapture(e.pointerId);
+  const p=getPoint(e), mx=p.x, my=p.y; last={x:mx,y:my};
+  if((e.ctrlKey || e.pointerType==='touch' && e.isPrimary===false)&&bg){dragging=true;return;}
+  if(e.button===2){painting=true;drawings.push([{x:mx,y:my}]);history.push('paint');return;}
+  if(mx>usableRight()){
+    for(const h of guideHitboxes){
+      if(mx>=h.x && mx<=h.x+h.w && my>=h.y && my<=h.y+h.h){
+        guidePage=h.page; draw(); return;
+      }
+    }
+    return;
+  }
+  if(!temp){temp={x:mx,open:my}; draw(); return;}
+  candles.push(makeCandle(temp.x,temp.open,my)); temp=null; history.push('candle'); analyze(); draw();
+});
+canvas.addEventListener('pointermove',e=>{
+  const p=getPoint(e), mx=p.x, my=p.y;
+  if(dragging){imgX+=mx-last.x;imgY+=my-last.y;last={x:mx,y:my};draw();}
+  if(painting){drawings[drawings.length-1].push({x:mx,y:my});draw();}
+});
+window.addEventListener('pointerup',()=>{dragging=false;painting=false;});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.altKey)&&e.key.toLowerCase()==='z'){undo();e.preventDefault();}});
+document.getElementById('undoBtn').onclick=undo; document.getElementById('resetBtn').onclick=reset;
+document.getElementById('textColor').oninput=e=>{GOLD=e.target.value; draw();};
+document.getElementById('drawColor').oninput=e=>{DRAW=e.target.value; draw();};
+document.getElementById('imgOpacity').oninput=e=>{imageOpacity=Number(e.target.value)/100; draw();};
+document.getElementById('themeBtn').onclick=()=>{darkMode=!darkMode; localStorage.setItem('obsessionTheme', darkMode?'dark':'light'); applyTheme(); draw();};
+document.getElementById('cleanBtn').onclick=()=>{cleanMode=!cleanMode; document.getElementById('cleanBtn').textContent=cleanMode?'👁 Full Labels':'🧹 Clean Labels'; draw();};
+document.getElementById('langSelect').onchange=e=>{lang=e.target.value; draw();};
+function undo(){const h=history.pop(); if(h==='candle')candles.pop(); if(h==='paint')drawings.pop(); recalc(); draw();}
+function reset(){candles=[];fvgs=[];orderBlocks=[];swings=[];structures=[];sweeps=[];confluences=[];drawings=[];history=[];temp=null;bg=null;trend='Neutral';update();draw();}
+document.getElementById('imgUpload').addEventListener('change',e=>{const file=e.target.files[0]; if(!file)return; const rd=new FileReader(); rd.onload=ev=>{const im=new Image(); im.onload=()=>{bg=im;imgScale=(usableRight())/im.width;imgX=0;imgY=0;draw();}; im.src=ev.target.result;}; rd.readAsDataURL(file);});
+
+function applyTheme(){
+  const root=document.documentElement.style;
+  const btn=document.getElementById('themeBtn');
+  if(darkMode){
+    root.setProperty('--bg','#0c0d10'); root.setProperty('--canvas','#05060a'); root.setProperty('--panel','#131722'); root.setProperty('--top','#131722');
+    root.setProperty('--text','#f5f7fb'); root.setProperty('--muted','#c5cad3'); root.setProperty('--border','#303746'); root.setProperty('--label-bg','rgba(5,6,10,.88)');
+    document.body.style.background='#0c0d10'; document.body.style.color='#f5f7fb';
+    document.documentElement.setAttribute('data-theme','dark');
+    if(btn) btn.textContent='☀️ White Mode';
+  }else{
+    root.setProperty('--bg','#f4f6fb'); root.setProperty('--canvas','#ffffff'); root.setProperty('--panel','#eef1f7'); root.setProperty('--top','#ffffff');
+    root.setProperty('--text','#1d2433'); root.setProperty('--muted','#536071'); root.setProperty('--border','#d6dbe6'); root.setProperty('--label-bg','rgba(255,255,255,.94)');
+    document.body.style.background='#f4f6fb'; document.body.style.color='#1d2433';
+    document.documentElement.setAttribute('data-theme','light');
+    if(btn) btn.textContent='🌙 Black Mode';
+  }
+}
+
+function text(t,x,y,col=GOLD,small=false){ctx.font=(small?'bold 13px Arial':'bold 18px Arial');const pad=small?12:20;const h=small?24:32;const w=ctx.measureText(t).width+pad;ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--label-bg')||'rgba(255,255,255,.94)';ctx.fillRect(x-6,y-h+4,w,h);ctx.lineWidth=small?2:3;ctx.strokeStyle=col;ctx.strokeRect(x-6,y-h+4,w,h);ctx.fillStyle=col;ctx.fillText(t,x,y-(small?5:5));}
+function tag(t,x,y,col=GOLD){text(t,x,y,col,true);}
+
+function wrapText(str,x,y,maxWidth,lineHeight,col){
+  ctx.fillStyle=col; ctx.font='13px Arial';
+  const words=String(str).split(' '); let line='';
+  for(let n=0;n<words.length;n++){
+    const test=line+words[n]+' ';
+    if(ctx.measureText(test).width>maxWidth && n>0){ctx.fillText(line,x,y); line=words[n]+' '; y+=lineHeight;}
+    else line=test;
+  }
+  ctx.fillText(line,x,y); return y+lineHeight;
+}
+function latestInfo(){
+  const ob=orderBlocks[orderBlocks.length-1];
+  const sw=sweeps[sweeps.length-1];
+  const st=structures[structures.length-1];
+  const cf=confluences[confluences.length-1];
+  const parts=[];
+  if(st) parts.push(st.type==='ChoCH'?'ChoCH':'BoS');
+  if(ob) parts.push('OB');
+  if(sw) parts.push('Sweep');
+  if(cf) parts.push('Confluence');
+  let title=parts.length ? parts.join(' + ') : 'Draw candles';
+  let note='Each SMC tool works independently. ChoCH does not switch off OB or liquidity sweep. The panel shows the complete stack; the chart stays clean.';
+  if(st && st.type==='ChoCH') note='Change of Character is a structure break. After it, OB can be confirmed from the last opposite candle. Sweep and confluence still continue working separately.';
+  else if(st && st.type==='BoS') note='Break of Structure confirms continuation. OB can be marked after this break. Sweep and confluence are still checked separately.';
+  if(ob && !st) note='OB is marked only after BoS/ChoCH displacement. It is historical context, not prediction.';
+  if(sw && !st && !ob) note='Liquidity sweep is a wick taking older BSL/SSL and returning back. It needs old structure, not only a random candle.';
+  if(cf) note += ' Confluence is active when sweep combines with FVG or OB.';
+  return {title,note,ob,sw,st,cf};
+}
+function T(en,ti){return lang==='ti'?ti:en;}
+function dirWord(d){
+  if(d==='bull') return T('Bullish','ናብ ምውጣእ');
+  if(d==='bear') return T('Bearish','ናብ ምውዳቕ');
+  return T('Neutral','ነይትራል');
+}
+function yesNo(v){return v?T('YES','እወ'):T('No','ኣይፋል');}
+function drawDivider(x,y,w){ctx.strokeStyle='rgba(107,114,128,.35)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w,y);ctx.stroke();}
+function drawCardTitle(t,x,y,col=GOLD){ctx.fillStyle=col;ctx.font='bold 15px Arial';ctx.fillText(t,x,y);return y+22;}
+function drawMiniBadge(txt,x,y,col){
+  ctx.font='bold 12px Arial';
+  const ww=ctx.measureText(txt).width+14;
+  ctx.fillStyle=col; ctx.globalAlpha=.12; ctx.fillRect(x,y-16,ww,22); ctx.globalAlpha=1;
+  ctx.strokeStyle=col; ctx.strokeRect(x,y-16,ww,22);
+  ctx.fillStyle=col; ctx.fillText(txt,x+7,y);
+  return x+ww+7;
+}
+function currentEducationalStory(){
+  const info=latestInfo();
+  const lastF=fvgs[fvgs.length-1], lastOb=orderBlocks[orderBlocks.length-1], lastSt=structures[structures.length-1], lastSw=sweeps[sweeps.length-1], lastCf=confluences[confluences.length-1];
+  let score=0; if(lastSw)score++; if(lastF)score++; if(lastSt)score++; if(lastOb)score++; if(lastCf)score++;
+  const direction = lastCf ? (lastCf.type.includes('Bull')?'bull':'bear') : lastSt ? lastSt.dir : lastSw ? lastSw.dir : lastOb ? lastOb.dir : 'neutral';
+  let story=[];
+  if(lastSw){
+    story.push(T(
+      (lastSw.dir==='bear'?'Buy-side liquidity was swept.':'Sell-side liquidity was swept.')+' Price took old liquidity with the wick and rejected back.',
+      (lastSw.dir==='bear'?'ናይ ላዕሊ ሊኩዊዲቲ ተወሲዱ።':'ናይ ታሕቲ ሊኩዊዲቲ ተወሲዱ።')+' ዋጋ ብዊክ ናብ ናይ ቀደም ሊኩዊዲቲ ከይዱ ተመሊሱ።'
+    ));
+  }
+  if(lastF){
+    story.push(T(
+      (lastF.type==='bull'?'Bullish':'Bearish')+' FVG was created. This shows fast displacement and imbalance.',
+      (lastF.type==='bull'?'Bullish':'Bearish')+' FVG ተፈጢሩ። እዚ ሓያል ምንቅስቓስን ኢምባላንስን የርኢ።'
+    ));
+  }
+  if(lastSt){
+    story.push(T(
+      (lastSt.type==='ChoCH'?'Change of Character':'Break of Structure')+' is detected. Structure is the reason, not only one candle color.',
+      (lastSt.type==='ChoCH'?'Change of Character':'Break of Structure')+' ተረኺቡ። ምኽንያቱ መዋቕር እዩ፣ ቀለም ናይ ሓንቲ ሽምዓ ጥራይ ኣይኮነን።'
+    ));
+  }
+  if(lastOb){
+    story.push(T(
+      (lastOb.dir==='bull'?'Bullish':'Bearish')+' Order Block is confirmed only after structure break. It is historical context, not prediction before the move.',
+      (lastOb.dir==='bull'?'Bullish':'Bearish')+' Order Block ድሕሪ ምስባር መዋቕር ጥራይ ይረጋገጽ። ቅድሚ ምንቅስቓስ ትንበያ ኣይኮነን።'
+    ));
+  }
+  if(story.length===0){
+    story.push(T('Draw candles. The teacher will explain FVG, liquidity, structure, OB and confluence step by step.',
+                 'ሽምዓታት ስኣል። እቲ መምህር FVG፣ ሊኩዊዲቲ፣ መዋቕር፣ OB እና confluence ብደረጃ ክገልጽ እዩ።'));
+  }
+  return {info,lastF,lastOb,lastSt,lastSw,lastCf,score,direction,story};
+}
+
+function guideData(){
+  return {
+    bsl:{
+      title:T('BSL — Buy-side Liquidity','BSL — ናይ ላዕሊ ሊኩዊዲቲ'), color:GOLD,
+      what:T('Old highs where buy-stop orders and short stop-losses often sit. Price may move above these highs to collect liquidity.','ናይ ቀደም ልዕሊ ዝኾኑ ዞባታት እዮም። ኣብኡ ብዙሕ ጊዜ ናይ buy-stop ትእዛዛትን ናይ short ስቶፕ ሎስን ይኸውን። ዋጋ ናብ ላዕሊ ክኸይድ ይኽእል ሊኩዊዲቲ ንምእካብ።'),
+      example:T('Practice: Draw two equal highs, then a candle with a wick above them and close back below. That high area is BSL.','ልምምድ፦ ክልተ ማዕረ ልዕሊ ስኣል፣ ቀጺልካ ዊክ ልዕሊኦም ዝወጽእ እሞ ታሕቲኦም ዝዓጽው ሽምዓ ስኣል። እቲ ከባቢ BSL እዩ።'),
+      remember:T('Remember: BSL is liquidity, not automatically a sell signal. Wait for rejection and structure.','ኣዘኻኽር፦ BSL ሊኩዊዲቲ እዩ፣ ብቐጥታ ናይ sell ምልክት ኣይኮነን። ምንጻግን መዋቕርን ተጸበ።')
+    },
+    ssl:{
+      title:T('SSL — Sell-side Liquidity','SSL — ናይ ታሕቲ ሊኩዊዲቲ'), color:GOLD,
+      what:T('Old lows where sell-stop orders and long stop-losses often sit. Price may move below these lows to collect liquidity.','ናይ ቀደም ትሕቲ ዝኾኑ ዞባታት እዮም። ኣብኡ ብዙሕ ጊዜ ናይ sell-stop ትእዛዛትን ናይ long ስቶፕ ሎስን ይኸውን። ዋጋ ናብ ታሕቲ ክኸይድ ይኽእል ሊኩዊዲቲ ንምእካብ።'),
+      example:T('Practice: Draw two equal lows, then a candle with a wick below them and close back above. That low area is SSL.','ልምምድ፦ ክልተ ማዕረ ትሕቲ ስኣል፣ ቀጺልካ ዊክ ትሕቲኦም ዝወርድ እሞ ልዕሊኦም ዝዓጽው ሽምዓ ስኣል። እቲ ከባቢ SSL እዩ።'),
+      remember:T('Remember: SSL is liquidity, not automatically a buy signal. Wait for rejection and confirmation.','ኣዘኻኽር፦ SSL ሊኩዊዲቲ እዩ፣ ብቐጥታ ናይ buy ምልክት ኣይኮነን። ምንጻግን ምርግጋጽን ተጸበ።')
+    },
+    sweep:{
+      title:T('Liquidity Sweep','ሊኩዊዲቲ ስዊፕ'), color:BEAR,
+      what:T('A sweep happens when price takes BSL or SSL with the wick and then rejects back. It shows liquidity was collected.','ስዊፕ ዝኸውን ዋጋ BSL ወይ SSL ብዊክ ምስ ወሰደ እሞ ተመሊሱ ምስ ነጸገ እዩ። ሊኩዊዲቲ ከምዝተኣከበ የርኢ።'),
+      example:T('Practice: Draw old highs, then a bearish candle that wicks above them and closes back below. That is a buy-side sweep.','ልምምድ፦ ናይ ቀደም ልዕሊ ስኣል፣ ቀጺልካ bearish ሽምዓ ዊክ ልዕሊኦም ዝወጽእ እሞ ታሕቲኦም ዝዓጽው ስኣል። እዚ buy-side sweep እዩ።'),
+      remember:T('A sweep alone is not enough. Look for FVG, structure break, OB, and confluence.','ስዊፕ ብሓደ ኣይኣክልን። FVG፣ ምስባር መዋቕር፣ OB፣ confluence ድለ።')
+    },
+    fvg:{
+      title:T('FVG — Fair Value Gap','FVG — Fair Value Gap'), color:BULL,
+      what:T('FVG is an imbalance left by a fast move. It tells the student that price moved with speed and did not trade fairly through that area.','FVG ብቕልጣፈ ዝተፈጠረ ኢምባላንስ እዩ። ዋጋ ብሓይሊ ከምዝኸደ እሞ ኣብቲ ዞባ ሚዛናዊ ትራንዛክሽን ከምዘይነበረ ይሕብር።'),
+      example:T('Practice: Draw three candles. If candle 1 high and candle 3 low leave a gap, that zone is a bullish FVG. Reverse logic for bearish FVG.','ልምምድ፦ ሰለስተ ሽምዓታት ስኣል። ናይ መጀመርታ ሽምዓ ልዕሊን ናይ ሳልሳይ ሽምዓ ትሕቲን ክፍተት እንተገደፉ እቲ ዞባ bullish FVG እዩ። ን bearish FVG ብኣንጻር እዩ።'),
+      remember:T('FVG is evidence of momentum, but it should be combined with structure and liquidity.','FVG ናይ ሓይሊ ምርግጋጽ እዩ፣ ግን ምስ መዋቕርን ሊኩዊዲቲን ክጥመር ኣለዎ።')
+    },
+    ob:{
+      title:T('OB — Order Block','OB — ኦርደር ብሎክ'), color:darkMode?BEAR:'#2962ff',
+      what:T('Order Block is the last opposite candle before a strong move that breaks market structure. It is confirmed after a real BoS or ChoCH.','ኦርደር ብሎክ እታ ናይ መወዳእታ ኣንጻር ሽምዓ እያ፣ ቅድሚ ሓያል ምንቅስቓስ ናይ ዕዳጋ መዋቕር ዝሰብር። ኦርደር ብሎክ ድሕሪ ሓቀኛ BoS ወይ ChoCH ጥራይ ይረጋገጽ።'),
+      example:T('Practice: Draw a small bullish candle, then strong bearish displacement that breaks a swing low. The last bullish candle becomes bearish OB.','ልምምድ፦ ንእሽቶ bullish ሽምዓ ስኣል፣ ቀጺልካ ሓያል bearish ምንቅስቓስ ናይ swing low ዝሰብር ስኣል። እታ ናይ መወዳእታ bullish ሽምዓ bearish OB ትኸውን።'),
+      remember:T('Before structure breaks, it is only a candle. After confirmation, it becomes a teaching zone.','ቅድሚ መዋቕር ምስባር ሽምዓ ጥራይ እያ። ድሕሪ ምርግጋጽ ግን መምሃሪ ዞባ ትኸውን።')
+    },
+    bos:{
+      title:T('BoS — Break of Structure','BoS — ምስባር መዋቕር'), color:GREY,
+      what:T('BoS confirms continuation when price breaks a structure level in the same direction as the trend.','BoS ዋጋ ብኣንፈት ናይ ትሬንድ ደረጃ መዋቕር ምስ ሰበረ ቀጻሊ ምንቅስቓስ የረጋግጽ።'),
+      example:T('Practice: In an uptrend, draw HH and HL. If price breaks above the previous HH, that is bullish BoS.','ልምምድ፦ ኣብ uptrend HH እና HL ስኣል። ዋጋ ልዕሊ ናይ ቀደም HH እንተሰበረ bullish BoS እዩ።'),
+      remember:T('BoS is continuation. ChoCH is transition. Do not mix them.','BoS ቀጻሊ ምንቅስቓስ እዩ። ChoCH ድማ ለውጢ እዩ። ኣይትሕዋወሶም።')
+    },
+    choch:{
+      title:T('ChoCH — Change of Character','ChoCH — ለውጢ ባህሪ'), color:'#7c3aed',
+      what:T('ChoCH appears when protected structure is broken. A bearish ChoCH needs the protected Higher Low to break; a bullish ChoCH needs the protected Lower High to break.','ChoCH ዝፍጠር ዝተሓለወ መዋቕር ምስ ተሰብረ እዩ። Bearish ChoCH ን protected Higher Low ክሰብር ኣለዎ፤ Bullish ChoCH ን protected Lower High ክሰብር ኣለዎ።'),
+      example:T('Practice: Draw HH, HL, HH. If price only pulls back above the HL, no ChoCH. If it closes below the HL, bearish ChoCH.','ልምምድ፦ HH፣ HL፣ HH ስኣል። ዋጋ ልዕሊ HL እንተተመሊሱ ጥራይ ChoCH የለን። ትሕቲ HL እንተዓጸወ bearish ChoCH እዩ።'),
+      remember:T('One red candle is not ChoCH. Structure must break.','ሓንቲ ቀያሕ ሽምዓ ChoCH ኣይኮነትን። መዋቕር ክሰብር ኣለዎ።')
+    },
+    conf:{
+      title:T('Confluence','Confluence'), color:BULL,
+      what:T('Confluence means several independent ideas support the same story: liquidity, FVG, structure, OB, and momentum.','Confluence ማለት ብዙሓት ነጻ ሓሳባት ንሓደ ታሪኽ ክድግፉ እዮም፦ ሊኩዊዲቲ፣ FVG፣ መዋቕር፣ OB፣ ሓይሊ ምንቅስቓስ።'),
+      example:T('Practice: Mark a sweep, then FVG, then structure break, then OB. When 3 or more agree, confluence improves.','ልምምድ፦ ስዊፕ ምልክት ግበር፣ ቀጺልካ FVG፣ ምስባር መዋቕር፣ OB። 3 ወይ ካብኡ ንላዕሊ እንተተሰማምዑ confluence ይሓይል።'),
+      remember:T('Confluence increases probability, not certainty.','Confluence ፕሮባቢሊቲ የዕቢ፣ 100% ርግጽነት ግን ኣይህብን።')
+    },
+    momentum:{
+      title:T('Momentum / Displacement','ሓይሊ ምንቅስቓስ'), color:'#f59e0b',
+      what:T('Momentum means price moves fast with strong candles. In SMC, strong displacement often creates FVG and confirms institutional pressure.','ሓይሊ ምንቅስቓስ ማለት ዋጋ ብቕልጣፈን ብሓያል ሽምዓታትን ምኻዱ እዩ። ኣብ SMC ሓያል displacement ብዙሕ ጊዜ FVG ይፈጥር፣ ናይ ትካላት ጸቕጢ ድማ የርኢ።'),
+      example:T('Practice: Draw one large candle that moves far from the previous range. If it leaves FVG and breaks structure, momentum is important.','ልምምድ፦ ካብ ናይ ቀደም range ርሒቑ ዝኸይድ ሓደ ዓቢ ሽምዓ ስኣል። FVG እንተገዲፉ መዋቕር ድማ እንተሰቢሩ፣ ሓይሊ ምንቅስቓስ ኣገዳሲ እዩ።'),
+      remember:T('Momentum without structure can be noise. Structure gives meaning to speed.','ሓይሊ ምንቅስቓስ ብዘይ መዋቕር ናይ ዕዳጋ ድምጺ ጥራይ ክኸውን ይኽእል። መዋቕር ንቕልጣፈ ትርጉም ይህብ።')
+    }
+  };
+}
+function drawGuideButton(label,page,x,y,w,h,col){
+  const bg=darkMode?'rgba(255,255,255,.055)':'rgba(255,255,255,.78)';
+  ctx.fillStyle=bg; ctx.fillRect(x,y,w,h); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.strokeRect(x,y,w,h);
+  ctx.fillStyle=col; ctx.font='bold 12px Arial'; ctx.fillText(label,x+9,y+18);
+  guideHitboxes.push({x,y,w,h,page});
+}
+function drawGuideLinks(x,y,max,textCol,muted){
+  y=drawCardTitle(T('SMC Guide Links','SMC መምርሒ ሊንክታት'),x,y,GOLD);
+  y=wrapText(T('Click a concept to open a short lesson with practice example.','ንእሽቶ ትምህርቲ ምስ ልምምድ ንምኽፋት ኣብ ኣምር ጠውቕ።'),x,y,max,15,muted)+5;
+  const buttons=[['BSL','bsl',GOLD],['SSL','ssl',GOLD],['Sweep','sweep',BEAR],['FVG','fvg',BULL],['OB','ob',darkMode?BEAR:'#2962ff'],['BoS','bos',GREY],['ChoCH','choch','#7c3aed'],['CONF','conf',BULL],['Momentum','momentum','#f59e0b']];
+  let bx=x, by=y, bw=(max-10)/2, bh=26;
+  buttons.forEach((b,i)=>{ if(i>0 && i%2===0){bx=x; by+=bh+7;} drawGuideButton(b[0],b[1],bx,by,bw,bh,b[2]); bx+=bw+10; });
+  return by+bh+14;
+}
+function drawGuidePage(x0,w){
+  guideHitboxes=[];
+  const x=x0+18, max=w-36, textCol=getComputedStyle(document.documentElement).getPropertyValue('--text')||'#1d2433', muted=getComputedStyle(document.documentElement).getPropertyValue('--muted')||'#536071';
+  const data=guideData()[guidePage] || guideData().bsl;
+  let y=30;
+  drawGuideButton(T('← Back','← ተመለስ'),'home',x,y,82,28,GOLD); y+=48;
+  ctx.fillStyle=data.color; ctx.font='bold 19px Arial'; ctx.fillText(data.title,x,y); y+=28;
+  const cards=[
+    [T('What is it?','እንታይ እዩ?'), data.what],
+    [T('Small practice example','ንእሽቶ ልምምድ'), data.example],
+    [T('Remember','ኣዘኻኽር'), data.remember]
+  ];
+  cards.forEach((c,idx)=>{
+    ctx.fillStyle=darkMode?'rgba(255,255,255,.055)':'rgba(255,255,255,.72)'; ctx.fillRect(x,y,max,idx===1?118:104);
+    ctx.strokeStyle=idx===0?data.color:'rgba(107,114,128,.35)'; ctx.strokeRect(x,y,max,idx===1?118:104);
+    y+=23; ctx.fillStyle=data.color; ctx.font='bold 14px Arial'; ctx.fillText(c[0],x+12,y); y+=20;
+    y=wrapText(c[1],x+12,y,max-24,16,idx===2?GOLD:textCol)+14;
+  });
+  y+=2; ctx.fillStyle=muted; ctx.font='12px Arial';
+  wrapText(T('This guide is for education only. Use it to understand the chart, not as a buy/sell signal.','እዚ መምርሒ ንትምህርቲ ጥራይ እዩ። ቻርት ንምርዳእ ተጠቐመሉ፣ ከም buy/sell ሲግናል ኣይትውሰዶ።'),x,y,max,15,muted);
+}
+function drawSidePanel(){
+  if(panelWidth()<=0)return;
+  guideHitboxes=[];
+  const x0=usableRight(), w=panelWidth();
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--panel')||'#eef1f7';ctx.fillRect(x0,0,w,canvas.height);
+  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--border')||'#d6dbe6';ctx.beginPath();ctx.moveTo(x0,0);ctx.lineTo(x0,canvas.height);ctx.stroke();
+  if(guidePage!=='home'){drawGuidePage(x0,w); return;}
+  const textCol=getComputedStyle(document.documentElement).getPropertyValue('--text')||'#1d2433';
+  const muted=getComputedStyle(document.documentElement).getPropertyValue('--muted')||'#536071';
+  let x=x0+18, y=30, max=w-36;
+  const s=currentEducationalStory();
+  ctx.fillStyle=GOLD;ctx.font='bold 18px Arial';ctx.fillText(T('SMC Teaching Panel','SMC መምሃሪ ፓነል'),x,y); y+=24;
+  ctx.fillStyle=muted;ctx.font='12px Arial';
+  y=wrapText(T('Free community teaching tool — Learn • Practice • Understand • Teach Others.',
+               'ናጻ መምሃሪ መሳርሒ — ተማሃር • ተለማመድ • ተረዳእ • ንኻልኦት ምሃር።'),x,y,max,15,muted)+8;
+  drawDivider(x,y,max); y+=22;
+
+  // Market story
+  y=drawCardTitle(T('Market Story','ታሪኽ ዕዳጋ'),x,y,GOLD);
+  ctx.fillStyle=s.direction==='bear'?BEAR:(s.direction==='bull'?BULL:GOLD); ctx.font='bold 14px Arial';
+  ctx.fillText(T('Bias: ','ኣንፈት፦ ')+dirWord(s.direction),x,y); y+=20;
+  for(let i=0;i<Math.min(4,s.story.length);i++){
+    ctx.fillStyle=(i%2===0)?textCol:muted; ctx.font='13px Arial';
+    y=wrapText((i+1)+'. '+s.story[i],x,y,max,17,(i%2===0)?textCol:muted)+3;
+  }
+  y+=4; drawDivider(x,y,max); y+=22;
+
+  // Detected concepts — professional numeric matrix only
+  // Counts for beginners
+  y=drawCountsPanel(x,y,max,textCol,muted);
+  drawDivider(x,y,max); y+=22;
+
+  // Guide links
+  y=drawGuideLinks(x,y,max,textCol,muted);
+  drawDivider(x,y,max); y+=22;
+
+  // Explanation
+  y=drawCardTitle(T('Why is this important?','ስለምንታይ ኣገዳሲ እዩ?'),x,y,GOLD);
+  let why = T('A single label is not enough. Beginners should read the sequence: liquidity → rejection → imbalance → structure break → OB → confluence.',
+              'ሓንቲ ምልክት ጥራይ ኣይትኣክልን። ተጀመርቲ ነቲ ተኸታታሊ ክርድኡ ኣለዎም፦ ሊኩዊዲቲ → ምንጻግ → ኢምባላንስ → ምስባር መዋቕር → OB → confluence።');
+  if(s.lastSt && s.lastSt.type==='ChoCH') why=T('ChoCH is valid only when protected structure is broken. If the Higher Low / Lower High is not broken, it is only a pullback.',
+    'ChoCH ሓቀኛ ዝኸውን ዝተሓለወ መዋቕር ምስ ተሰብረ ጥራይ እዩ። Higher Low / Lower High እንተዘይተሰቢሩ እቲ ምንቅስቓስ ፑልባክ ጥራይ እዩ።');
+  else if(s.lastOb) why=T('Order Block becomes useful after displacement confirms structure. Before the break it is only a candle, not a confirmed OB.',
+    'Order Block መዋቕር ብሓያል ምንቅስቓስ ምስ ተረጋገጸ ይጠቅም። ቅድሚ ምስባር ግን ሽምዓ ጥራይ እዩ፣ ዝተረጋገጸ OB ኣይኮነን።');
+  y=wrapText(why,x,y,max,17,muted)+8;
+
+  // What to watch
+  y=drawCardTitle(T('What should we watch next?','ቀጺልና እንታይ ንከታተል?'),x,y,GOLD);
+  const watch = [
+    T('Does price respect or break the protected swing?','ዋጋ ነቲ ዝተሓለወ ስዊንግ ይኽበሮ ወይ ይሰብሮ?'),
+    T('Does price return to FVG or OB for mitigation?','ዋጋ ናብ FVG ወይ OB ን mitigation ይምለስ ድዩ?'),
+    T('Do we have confluence, or only one signal?','Confluence ኣሎ ድዩ ወይ ሓንቲ ምልክት ጥራይ?')
+  ];
+  watch.forEach(q=>{ctx.fillStyle=textCol;ctx.font='13px Arial';y=wrapText('• '+q,x,y,max,17,textCol)+2;});
+  y+=4; drawDivider(x,y,max); y+=22;
+
+  // Confidence
+  y=drawCardTitle(T('Educational Confidence','ናይ ትምህርቲ ሓይሊ'),x,y,GOLD);
+  const stars='★★★★★'.slice(0,s.score)+'☆☆☆☆☆'.slice(0,5-s.score);
+  ctx.fillStyle=GOLD;ctx.font='bold 18px Arial';ctx.fillText(stars+'  '+s.score+'/5',x,y); y+=23;
+  y=wrapText(T('This is not a signal. It only measures how many educational confirmations are visible.',
+               'እዚ ሲግናል ኣይኮነን። ክንደይ መምሃሪ ምርግጋጻት ከምዘለዉ ጥራይ ይሕብር።'),x,y,max,17,muted)+8;
+  drawDivider(x,y,max); y+=22;
+
+  // Legend short
+  y=drawCardTitle(T('Legend','መግለጺ'),x,y,GOLD);
+  let bx=x, by=y;
+  bx=drawMiniBadge('BSL',bx,by,GOLD); bx=drawMiniBadge('SSL',bx,by,GOLD); bx=drawMiniBadge('FVG',bx,by,BULL); 
+  y+=28; bx=x; bx=drawMiniBadge('OB',bx,y,BEAR); bx=drawMiniBadge('BoS',bx,y,GREY); bx=drawMiniBadge('ChoCH',bx,y,'#7c3aed'); bx=drawMiniBadge('CONF',bx,y,BULL);
+  y+=34;
+  ctx.fillStyle=muted;ctx.font='12px Arial';
+  y=wrapText(T('© Obsession Trading Academy — Free educational tool. Not for resale. Keep attribution.',
+               '© Obsession Trading Academy — ናጻ መምሃሪ መሳርሒ። ንመሸጣ ኣይኮነን። ስም ባዓል ስራሕ ኣይተልግሱ።'),x,y,max,15,muted);
+}
+
+
+function candleIndexByX(x){
+  let best=0, dist=Infinity;
+  candles.forEach((c,i)=>{const d=Math.abs(c.x-x); if(d<dist){dist=d;best=i;}});
+  return best+1;
+}
+function obStrokeColor(dir){
+  // White mode: blue/orange stands out better for beginners.
+  // Black mode: keep existing green/red contrast.
+  if(darkMode) return dir==='bull'?BULL:BEAR;
+  return dir==='bull' ? '#2962ff' : '#f97316';
+}
+function obFillColor(dir){
+  if(darkMode) return dir==='bull'?'rgba(8,153,129,.18)':'rgba(242,54,69,.18)';
+  return dir==='bull'?'rgba(41,98,255,.13)':'rgba(249,115,22,.14)';
+}
+function objectCounts(){
+  const c={
+    fvgBull:fvgs.filter(z=>z.type==='bull').length,
+    fvgBear:fvgs.filter(z=>z.type==='bear').length,
+    obBull:orderBlocks.filter(z=>z.dir==='bull').length,
+    obBear:orderBlocks.filter(z=>z.dir==='bear').length,
+    swBull:sweeps.filter(z=>z.dir==='bull').length,
+    swBear:sweeps.filter(z=>z.dir==='bear').length,
+    bosBull:structures.filter(z=>z.type==='BoS'&&z.dir==='bull').length,
+    bosBear:structures.filter(z=>z.type==='BoS'&&z.dir==='bear').length,
+    chochBull:structures.filter(z=>z.type==='ChoCH'&&z.dir==='bull').length,
+    chochBear:structures.filter(z=>z.type==='ChoCH'&&z.dir==='bear').length,
+    confBull:confluences.filter(z=>z.type.includes('Bull')).length,
+    confBear:confluences.filter(z=>z.type.includes('Bear')).length
+  };
+  c.fvgTotal=c.fvgBull+c.fvgBear; c.obTotal=c.obBull+c.obBear; c.swTotal=c.swBull+c.swBear;
+  c.bosTotal=c.bosBull+c.bosBear; c.chochTotal=c.chochBull+c.chochBear; c.confTotal=c.confBull+c.confBear;
+  return c;
+}
+function drawArrowCallout(label, fromX, fromY, boxX, boxY, col){
+  const bg=darkMode?'rgba(8,10,16,.92)':'rgba(255,255,255,.96)';
+  ctx.save();
+  ctx.strokeStyle=col; ctx.fillStyle=bg; ctx.lineWidth=2; ctx.setLineDash([]);
+  // arrow line
+  const endX=boxX-8, endY=boxY+12;
+  ctx.beginPath(); ctx.moveTo(fromX,fromY); ctx.lineTo(endX,endY); ctx.stroke();
+  // arrow head
+  const ang=Math.atan2(endY-fromY,endX-fromX);
+  ctx.beginPath(); ctx.moveTo(fromX,fromY); ctx.lineTo(fromX+12*Math.cos(ang+0.45),fromY+12*Math.sin(ang+0.45)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fromX,fromY); ctx.lineTo(fromX+12*Math.cos(ang-0.45),fromY+12*Math.sin(ang-0.45)); ctx.stroke();
+  // box
+  ctx.font='bold 12px Arial';
+  const lines=label.split('\n');
+  const bw=Math.max(...lines.map(t=>ctx.measureText(t).width))+16;
+  const bh=lines.length*16+10;
+  ctx.fillRect(boxX,boxY,bw,bh); ctx.strokeRect(boxX,boxY,bw,bh);
+  lines.forEach((t,i)=>{ctx.fillStyle=i===0?col:(darkMode?'#f5f7fb':'#1d2433'); ctx.fillText(t,boxX+8,boxY+17+i*16);});
+  ctx.restore();
+}
+function drawLearningCallouts(){
+  // Keep FVG/BoS/ChoCH as they are. Only OB and Liquidity Sweeps get outside callouts.
+  if(!cleanMode || panelWidth()<=0 || candles.length<4) return;
+  const chartRight=usableRight();
+  const boxX=Math.max(20,chartRight-185);
+  let top=70, gap=58;
+  const items=[];
+  orderBlocks.slice(-5).forEach(ob=>{
+    const c=candles[ob.candleIndex]||candles[candleIndexByX(ob.x)-1]; if(!c)return;
+    items.push({kind:'OB', num:(ob.candleIndex??candleIndexByX(ob.x)-1)+1, dir:ob.dir, x:c.x, y:(ob.top+ob.bottom)/2, col:obStrokeColor(ob.dir), txt:(lang==='ti'?'ሽምዓ ':'Candle ')+((ob.candleIndex??candleIndexByX(ob.x)-1)+1)+'\n'+(ob.dir==='bull'?'Bullish OB':'Bearish OB')});
+  });
+  sweeps.slice(-5).forEach(sw=>{
+    const num=candleIndexByX(sw.x); const c=candles[num-1]; if(!c)return;
+    items.push({kind:'SWP', num, dir:sw.dir, x:c.x, y:sw.y, col:sw.dir==='bull'?BULL:BEAR, txt:(lang==='ti'?'ሽምዓ ':'Candle ')+num+'\n'+(sw.dir==='bull'?'SSL Sweep':'BSL Sweep')});
+  });
+  // Sort by candle number so students can follow sequence.
+  items.sort((a,b)=>a.num-b.num);
+  // If too many, show latest 8 to keep chart readable; counts in panel show totals.
+  const show=items.slice(-8);
+  show.forEach((it,i)=>{
+    const y=top+i*gap;
+    if(y+45<canvas.height-40) drawArrowCallout(it.txt,it.x,it.y,boxX,y,it.col);
+  });
+}
+function drawCountsPanel(x,y,max,textCol,muted){
+  const c=objectCounts();
+  y=drawCardTitle(T('Detected Concepts','ዝተረኽቡ ኣምራት'),x,y,GOLD);
+
+  // Compact professional matrix: only numbers, no YES/NO text.
+  const rowH=19, col1=x, col2=x+92, col3=x+148, col4=x+210;
+  ctx.font='bold 12px Arial';
+  ctx.fillStyle=muted;
+  ctx.fillText(T('Concept','ኣምር'),col1,y);
+  ctx.fillText(T('Bull','Bull'),col2,y);
+  ctx.fillText(T('Bear','Bear'),col3,y);
+  ctx.fillText(T('Total','ድምር'),col4,y);
+  y+=10;
+  ctx.strokeStyle='rgba(107,114,128,.35)'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+max,y); ctx.stroke(); y+=16;
+
+  const rows=[
+    ['FVG', c.fvgBull, c.fvgBear, c.fvgTotal, BULL],
+    ['OB', c.obBull, c.obBear, c.obTotal, obStrokeColor('bull')],
+    [T('Sweep','Sweep'), c.swBull, c.swBear, c.swTotal, GOLD],
+    ['BoS', c.bosBull, c.bosBear, c.bosTotal, GREY],
+    ['ChoCH', c.chochBull, c.chochBear, c.chochTotal, '#7c3aed'],
+    ['CONF', c.confBull, c.confBear, c.confTotal, GOLD]
+  ];
+  rows.forEach(r=>{
+    ctx.font='bold 13px Arial'; ctx.fillStyle=r[4]; ctx.fillText(r[0],col1,y);
+    ctx.font='bold 13px Arial'; ctx.fillStyle=BULL; ctx.fillText(String(r[1]),col2,y);
+    ctx.fillStyle=BEAR; ctx.fillText(String(r[2]),col3,y);
+    ctx.fillStyle=textCol; ctx.fillText(String(r[3]),col4,y);
+    y+=rowH;
+  });
+  y+=8;
+  ctx.strokeStyle='rgba(107,114,128,.35)'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+max,y); ctx.stroke(); y+=20;
+
+  // Short bilingual teaching notes for the two concepts beginners most often miss.
+  y=drawCardTitle(T('Liquidity Sweep','ሊኩዊዲቲ ስዊፕ'),x,y,GOLD);
+  y=wrapText(T(
+    'Price moves above old highs or below old lows to collect liquidity. A sweep alone is not a trade signal; wait for structure and confluence.',
+    'ዋጋ ናብ ላዕሊ ናይ ቀደም ልዕሊ ወይ ናብ ታሕቲ ናይ ቀደም ትሕቲ ብምኻድ ሊኩዊዲቲ ዝእከበሉ ምንቅስቓስ እዩ። ሊኩዊዲቲ ስዊፕ ብሓደ እኳ ናይ ምእታው ምልክት ኣይኮነን፤ መዋቕርን confluenceን ተጸበ።'
+  ),x,y,max,16,muted)+8;
+
+  y=drawCardTitle(T('Order Block','ኦርደር ብሎክ'),x,y,GOLD);
+  y=wrapText(T(
+    'The last opposite candle before a strong move that breaks structure. It is confirmed only after a real BoS or ChoCH.',
+    'ኦርደር ብሎክ እታ ናይ መወዳእታ ኣንጻር ሽምዓ እያ፣ ቅድሚ ሓያል ምንቅስቓስ ናይ ዕዳጋ መዋቕር ዝሰብር። ኦርደር ብሎክ ድሕሪ ሓቀኛ BoS ወይ ChoCH ጥራይ ይረጋገጽ።'
+  ),x,y,max,16,muted)+6;
+
+  ctx.fillStyle=muted;ctx.font='12px Arial';
+  y=wrapText(T('OB and Sweep callouts show candle numbers on the chart. The matrix shows total zones so beginners do not miss hidden examples.',
+               'OB እና Sweep ቁጽሪ ሽምዓ ብቀስቲ የርእዩ። እቲ ማትሪክስ ድምር ዞናታት የርኢ፣ ተጀመርቲ ዝተሓብኡ ኣብነታት ከይስሕቱ።'),x,y,max,15,muted)+6;
+  return y;
+}
+
+function draw(){
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--canvas')||'#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(bg){ctx.save();ctx.globalAlpha=imageOpacity;ctx.translate(imgX,imgY);ctx.scale(imgScale,imgScale);ctx.drawImage(bg,0,0);ctx.restore();}
+  if(candles.length===0&&!bg){ctx.fillStyle=darkMode?'rgba(245,247,251,.95)':'rgba(29,36,51,.9)';ctx.font='bold 30px Arial';ctx.fillText('Obsession Trading Academy ብዘይ ፍልጠት ዕብየት የለን - SMC Teaching Canvas',40,75);}
+  const r=rangeBefore(candles.length,8); if(r){ctx.setLineDash([6,6]);ctx.strokeStyle='rgba(245,197,66,.75)';ctx.beginPath();ctx.moveTo(r.firstX,r.high);ctx.lineTo(usableRight(),r.high);ctx.moveTo(r.firstX,r.low);ctx.lineTo(usableRight(),r.low);ctx.stroke();ctx.setLineDash([]); if(cleanMode){tag('BSL',usableRight()-58,r.high-8,GOLD);tag('SSL',usableRight()-58,r.low+24,GOLD);}else{text('Range High / Buy-side Liquidity',r.firstX+8,r.high-8,GOLD);text('Range Low / Sell-side Liquidity',r.firstX+8,r.low+24,GOLD);}}
+  const tlDraw=trendLevelBefore(candles.length); if(tlDraw.high||tlDraw.low){ctx.setLineDash([3,7]);ctx.strokeStyle='rgba(107,114,128,.55)';ctx.beginPath(); if(tlDraw.high){ctx.moveTo(tlDraw.high.x,tlDraw.high.y);ctx.lineTo(usableRight(),tlDraw.high.y);} if(tlDraw.low){ctx.moveTo(tlDraw.low.x,tlDraw.low.y);ctx.lineTo(usableRight(),tlDraw.low.y);} ctx.stroke();ctx.setLineDash([]); if(!cleanMode){ if(tlDraw.high)text('Trend Buy-side Liquidity',tlDraw.high.x+8,tlDraw.high.y-12,GOLD); if(tlDraw.low)text('Trend Sell-side Liquidity',tlDraw.low.x+8,tlDraw.low.y+30,GOLD); }}
+  fvgs.forEach((f,idx)=>{
+    ctx.fillStyle=f.type==='bull'?'rgba(38,166,154,.12)':'rgba(239,83,80,.12)';
+    const fy=Math.min(f.top,f.bottom), fh=Math.abs(f.bottom-f.top);
+    ctx.fillRect(f.x,fy,usableRight()-f.x,fh);
+    if(cleanMode && idx===fvgs.length-1) tag('FVG',Math.min(f.x+10,usableRight()-52),fy+18,f.type==='bull'?BULL:BEAR);
+  });
+  orderBlocks.forEach(ob=>{
+    const y=Math.min(ob.top,ob.bottom), h=Math.abs(ob.bottom-ob.top);
+    ctx.fillStyle=obFillColor(ob.dir);
+    ctx.fillRect(ob.x,y,usableRight()-ob.x,h);
+    ctx.strokeStyle=obStrokeColor(ob.dir); ctx.lineWidth=2; ctx.setLineDash([4,4]);
+    ctx.strokeRect(ob.x,y,usableRight()-ob.x,h); ctx.setLineDash([]);
+    if(!cleanMode || ob===orderBlocks[orderBlocks.length-1]) tag('OB',Math.min(ob.x+10, usableRight()-42),y-6,obStrokeColor(ob.dir));
+  });
+  structures.forEach((s,idx)=>{
+    ctx.strokeStyle=s.type==='ChoCH'?'#7c3aed':GREY;ctx.lineWidth=s.type==='ChoCH'?2.5:1.5;
+    ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(usableRight(),s.y);ctx.stroke();
+    const label=s.type==='ChoCH'?'ChoCH':(s.dir==='bull'?'BoS ↑':'BoS ↓');
+    if(cleanMode){
+      if(idx>=structures.length-5) tag(label,Math.max(s.x+8, Math.min((s.breakX||usableRight())+10, usableRight()-78)),s.y-8,s.type==='ChoCH'?'#7c3aed':GREY);
+    }else{
+      tag(s.type==='ChoCH'?'Change of Character':label,s.x+10,s.y-6,s.type==='ChoCH'?'#7c3aed':GREY);
+    }
+  });
+  sweeps.forEach((s,idx)=>{
+    ctx.strokeStyle=s.dir==='bull'?BULL:BEAR;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x-22,s.y);ctx.lineTo(s.x+22,s.y);ctx.stroke();
+    if(cleanMode){
+      if(idx===sweeps.length-1) tag('SWP',Math.min(s.x+10,usableRight()-48),s.y+(s.dir==='bull'?26:-10),s.dir==='bull'?BULL:BEAR);
+    }else{
+      tag(s.dir==='bull'?'SSL Sweep':'BSL Sweep',s.x+8,s.y+(s.dir==='bull'?26:-10),s.dir==='bull'?BULL:BEAR);
+    }
+  });
+  drawings.forEach(p=>{if(!p.length)return;ctx.strokeStyle=DRAW;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);p.forEach(q=>ctx.lineTo(q.x,q.y));ctx.stroke();});
+  candles.forEach(c=>{ctx.strokeStyle=c.isBull?BULL:BEAR;ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(c.x,c.high);ctx.lineTo(c.x,c.low);ctx.stroke();ctx.fillRect(c.x-8,Math.min(c.open,c.close),16,Math.max(2,Math.abs(c.open-c.close)));});
+  if(temp){ctx.fillStyle=GOLD;ctx.beginPath();ctx.arc(temp.x,temp.open,5,0,Math.PI*2);ctx.fill();text('Open saved: click close',temp.x+12,temp.open-8,GOLD);}
+  confluences.forEach((c,idx)=>{
+    const col=c.type.includes('Bull')?BULL:BEAR;
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(c.x,c.y,5,0,Math.PI*2);ctx.fill();
+    if(cleanMode){
+      if(idx===confluences.length-1) tag('CONF',Math.min(c.x+12,usableRight()-58),c.y,col);
+    }else{
+      tag(c.type,c.x+12,c.y,col);
+    }
+  });
+  drawLearningCallouts();
+  drawSidePanel();
+}
+applyTheme(); resize(); update();
+})();
+</script>
+</body>
+</html>
