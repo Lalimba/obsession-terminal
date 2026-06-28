@@ -198,6 +198,17 @@
 
 <body>
   <h1 id="mainTitle">Interactive Trading Chart Tutorial</h1>
+<div style="border:1px solid gold;padding:20px;border-radius:15px;background:#111;text-align:center;max-width:95%;margin:auto;">
+  <h2 style="color:gold;">Obsession Trading Academy 2026</h2>
+
+  <p style="line-height:1.8;font-size:16px;">
+    እዚ ትምህርቲ ብናጻ ንማሕበረሰብ ዝተወፈየ እዩ።<br>
+    ዕላማኡ ገንዘብ ምርካብ ዘይኮነስ፣ ፍልጠት ንምክፋል እዩ።<br>
+    ንመጻኢ ወለዶታት ክጠቅም ብናጻ ተዳልዩ ኣሎ።<br>
+    ዝኾነ ሰብ ክመሃር፣ ክውስኽ፣ ከማዕብል ይኽእል።<br>
+    <strong>Knowledge grows when it is shared.</strong>
+  </p>
+</div>
   <p class="subtitle" id="subtitle">
     Learn price action, market structure, smart money concepts, and risk management step by step.
   </p>
@@ -210,15 +221,28 @@
     <a href="tutorial3.html" class="tutorial-link">
         Tutorial 3
     </a>
-<a href="tutorial4.html" class="tutorial-link">
+     <a href="tutorial4.html" class="tutorial-link">
         Tutorial 4
     </a>
-  <a href="tutorial5.html" class="tutorial-link">
+ <a href="tutorial5.html" class="tutorial-link">
         Tutorial 5
     </a>
-  <a href="tutorial6.html" class="tutorial-link">
-        Tutorial 6
+ <a href="tutorial6.html" class="tutorial-link">
+  Tutorial 6
     </a>
+ <a href="funding.html" class="tutorial-link">
+  Tutorial 7 Funding 
+    </a>
+
+
+<a href="gold.html" class="tutorial-link">
+  Tutorial 8 Gold Trading 
+    </a>
+
+<a href="canvas.html" class="tutorial-link">
+  Tutorial 9 learn CANVAS
+    </a>
+
 </div>
   <div class="topbar">
     <select id="languageSelect" onchange="changeLanguage()">
@@ -231,9 +255,6 @@
       <option value="420" selected>Normal</option>
       <option value="180">Fast</option>
     </select>
-    
-
-
   </div>
 
   <div id="lessonContainer"></div>
@@ -331,8 +352,8 @@ const categories = {
 const lessons = {
   candles: {
     category: "basic",
-    button: { en: "Candles", ti: "ሽምዓታት" },
-    title: { en: "Candlestick Basics", ti: "መሰረታዊ ናይ ሽምዓ ትምህርቲ" },
+    button: { en: "Candles", ti: "ሻምዓታት" },
+    title: { en: "Candlestick Basics", ti: "መሰረታዊ ናይ ሻምዓ ትምህርቲ" },
     level: { en: "Beginner", ti: "ጀማሪ" },
     htmlText: {
       en: `
@@ -386,15 +407,15 @@ const lessons = {
   uptrend: {
     category: "basic",
     button: { en: "Uptrend", ti: "Uptrend" },
-    title: { en: "Uptrend", ti: "Uptrend / ናብ ላዕሊ ዝኸይድ ትሬንድ" },
+    title: { en: "Uptrend", ti: "Uptrend / ወደ ላዕሊ ዝኸይድ ትሬንድ" },
     level: { en: "Beginner", ti: "ጀማሪ" },
     text: {
       en: "An uptrend means price is creating higher highs and higher lows. Buyers are stronger than sellers.",
-      ti: "Uptrend ማለት ዋጋ Higher High ዎ Higher Low እናሰርሐ ክድይብ ከሎ እዩ።"
+      ti: "Uptrend ማለት ዋጋ Higher High እና Higher Low እናሰርሐ ክድይብ ከሎ እዩ።"
     },
     quiz: {
       q: { en: "What two things do you usually see in an uptrend?", ti: "ኣብ Uptrend እንታይ ክልተ ነገራት ንርኢ?" },
-      a: { en: "Higher highs and higher lows.", ti: "Higher High ዎ Higher Low።" }
+      a: { en: "Higher highs and higher lows.", ti: "Higher High እና Higher Low።" }
     },
     points: [{x:80,y:300},{x:180,y:240},{x:280,y:270},{x:400,y:190},{x:520,y:220},{x:660,y:130}],
     labels: [
@@ -406,15 +427,15 @@ const lessons = {
   downtrend: {
     category: "basic",
     button: { en: "Downtrend", ti: "Downtrend" },
-    title: { en: "Downtrend", ti: "Downtrend / ናብ ታሕቲ ዝኸይድ ትሬንድ" },
+    title: { en: "Downtrend", ti: "Downtrend / ወደ ታሕቲ ዝኸይድ ትሬንድ" },
     level: { en: "Beginner", ti: "ጀማሪ" },
     text: {
       en: "A downtrend means price is creating lower highs and lower lows. Sellers are stronger than buyers.",
-      ti: "Downtrend ማለት ዋጋ Lower High ዎ Lower Low እናሰርሐ ክወርድ ከሎ እዩ።"
+      ti: "Downtrend ማለት ዋጋ Lower High እና Lower Low እናሰርሐ ክወርድ ከሎ እዩ።"
     },
     quiz: {
       q: { en: "What shows seller strength in a downtrend?", ti: "ኣብ Downtrend ናይ sellers ሓይሊ ዘርኢ እንታይ እዩ?" },
-      a: { en: "Lower highs and lower lows.", ti: "Lower High ዎ Lower Low።" }
+      a: { en: "Lower highs and lower lows.", ti: "Lower High እና Lower Low።" }
     },
     points: [{x:80,y:120},{x:180,y:190},{x:280,y:160},{x:400,y:240},{x:520,y:210},{x:660,y:310}],
     labels: [
@@ -430,7 +451,7 @@ const lessons = {
     level: { en: "Beginner", ti: "ጀማሪ" },
     text: {
       en: "A range means price moves sideways between a high area and a low area. There is no clear trend yet.",
-      ti: "Range ማለት ዋጋ ኣብ መንጎ Range High ዎ Range Low ክመላለስ ከሎ እዩ።"
+      ti: "Range ማለት ዋጋ ኣብ መንጎ Range High እና Range Low ክመላለስ ከሎ እዩ።"
     },
     quiz: {
       q: { en: "Is a range trending strongly or moving sideways?", ti: "Range ብሓይሊ ይትሬንድ ድዩ ወይስ ጎናዊ ይንቀሳቐስ?" },
