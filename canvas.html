@@ -1,9 +1,11 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Obsession Trading Academy - SMC Teaching Tool</title>
 <style>
   :root{
@@ -13,8 +15,9 @@
     --blue:#2962ff; --label-bg:rgba(255,255,255,.94); --draw:#2962ff;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif;overflow:hidden;touch-action:none}
-  #topbar{min-height:58px;background:var(--top);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 10px;box-shadow:0 2px 12px rgba(20,30,50,.08);white-space:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+  html,body{margin:0;width:100%;height:100%;min-height:100dvh;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif;overflow:hidden;touch-action:none}
+  body{position:fixed;inset:0}
+  #topbar{height:58px;min-height:58px;max-height:58px;background:var(--top);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 10px;box-shadow:0 2px 12px rgba(20,30,50,.08);white-space:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin}
   .brand{color:var(--gold);font-weight:900;letter-spacing:.2px;font-size:18px;flex:0 0 auto}
   button,label{background:var(--top);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;cursor:pointer;box-shadow:0 1px 4px rgba(20,30,50,.07);flex:0 0 auto}
   select,input[type=color],input[type=range]{vertical-align:middle}
@@ -25,11 +28,17 @@
   label.gold{background:linear-gradient(135deg,#f5c542,#d39b17);color:#111;font-weight:800;border-color:#d39b17}
   input[type=file]{display:none}
   .box{background:var(--top);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:15px;box-shadow:0 1px 4px rgba(20,30,50,.05);flex:0 0 auto}
-  b{color:var(--text)} canvas{display:block;cursor:crosshair;background:var(--canvas);touch-action:none}
+  b{color:var(--text)} canvas{display:block;width:100vw;height:calc(100dvh - 58px);cursor:crosshair;background:var(--canvas);touch-action:none}
   @media (max-width:700px){
-    #topbar{min-height:102px;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;white-space:normal;overflow:hidden;padding:8px}
-    .brand{width:100%;font-size:18px}
-    button,label,.box{font-size:12px;padding:8px 9px;border-radius:9px}
+    #topbar{height:54px;min-height:54px;max-height:54px;align-items:center;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;overflow-y:hidden;padding:6px 8px;gap:6px}
+    .brand{width:auto;max-width:210px;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+    button,label,.box{font-size:12px;padding:7px 8px;border-radius:9px}
+    select{font-size:12px;padding:7px 8px}
+    canvas{height:calc(100dvh - 54px)}
+  }
+  @media (min-width:701px) and (max-width:1100px){
+    .brand{max-width:320px;overflow:hidden;text-overflow:ellipsis}
+    button,label,.box{font-size:13px;padding:8px 10px}
   }
 </style>
 </head>
@@ -58,16 +67,26 @@ const topbar=document.getElementById('topbar');
 let GOLD='#b8860b', DRAW='#2962ff'; const BULL='#089981', BEAR='#f23645', GREY='#6b7280';
 let darkMode=(localStorage.getItem('obsessionTheme')==='dark'), imageOpacity=.35, cleanMode=true, lang='en';
 let guidePage='home', guideHitboxes=[];
-function panelWidth(){return window.innerWidth<840?0:350;}
+function isMobileView(){return window.innerWidth<900;}
+function panelWidth(){return isMobileView()?0:Math.min(420,Math.max(350,Math.round(window.innerWidth*.24)));}
 let candles=[], fvgs=[], orderBlocks=[], swings=[], structures=[], sweeps=[], confluences=[], drawings=[], history=[];
 let temp=null, bg=null, imgScale=1, imgX=0, imgY=0, dragging=false, painting=false, last={x:0,y:0}, trend='Neutral';
 function topH(){return topbar.getBoundingClientRect().height;}
-function resize(){canvas.width=window.innerWidth;canvas.height=Math.max(300,window.innerHeight-topH());draw();}
+function appHeight(){return window.visualViewport?window.visualViewport.height:window.innerHeight;}
+function resize(){
+  const h=appHeight();
+  canvas.width=window.innerWidth;
+  canvas.height=Math.max(260,h-topH());
+  canvas.style.height=canvas.height+'px';
+  draw();
+}
 window.addEventListener('resize',resize);
+if(window.visualViewport) window.visualViewport.addEventListener('resize',resize);
 new ResizeObserver(resize).observe(topbar);
 function getPoint(e){const rect=canvas.getBoundingClientRect();return {x:e.clientX-rect.left,y:e.clientY-rect.top};}
 function usableRight(){return canvas.width-panelWidth();}
 function update(){document.getElementById('trend').textContent=trend;document.getElementById('count').textContent=candles.length;}
+function pushUnique(arr,item,checkFn){ if(!arr.some(checkFn)){ arr.push(item); return true; } return false; }
 function rangeBefore(index, lookback=8){let start=Math.max(0,index-lookback), arr=candles.slice(start,index); if(arr.length<4)return null; return {high:Math.min(...arr.map(c=>c.high)), low:Math.max(...arr.map(c=>c.low)), firstX:arr[0].x, lastX:arr[arr.length-1].x, source:'range'};}
 function lastLevelBefore(kind, index){
   for(let j=swings.length-1;j>=0;j--){ if(swings[j].type===kind && swings[j].x < (candles[index-1]?.x ?? Infinity)) return swings[j]; }
@@ -108,10 +127,22 @@ function recalc(){fvgs=[];orderBlocks=[];swings=[];structures=[];sweeps=[];confl
 function analyze(){
   let n=candles.length; if(n<3){detectSweeps();return;}
   const a=candles[n-3], b=candles[n-2], c=candles[n-1];
-  if(a.high > c.low){ fvgs.push({type:'bull',x:a.x,top:a.high,bottom:c.low}); }
-  if(a.low < c.high){ fvgs.push({type:'bear',x:a.x,top:c.high,bottom:a.low}); }
-  if(b.high < a.high && b.high < c.high) swings.push({type:'high',x:b.x,y:b.high});
-  if(b.low > a.low && b.low > c.low) swings.push({type:'low',x:b.x,y:b.low});
+  if(a.high > c.low){
+    const item={type:'bull',x:a.x,top:a.high,bottom:c.low};
+    pushUnique(fvgs,item,z=>z.type===item.type && Math.abs(z.x-item.x)<8 && Math.abs(z.top-item.top)<4 && Math.abs(z.bottom-item.bottom)<4);
+  }
+  if(a.low < c.high){
+    const item={type:'bear',x:a.x,top:c.high,bottom:a.low};
+    pushUnique(fvgs,item,z=>z.type===item.type && Math.abs(z.x-item.x)<8 && Math.abs(z.top-item.top)<4 && Math.abs(z.bottom-item.bottom)<4);
+  }
+  if(b.high < a.high && b.high < c.high){
+    const item={type:'high',x:b.x,y:b.high};
+    pushUnique(swings,item,z=>z.type===item.type && Math.abs(z.x-item.x)<8 && Math.abs(z.y-item.y)<4);
+  }
+  if(b.low > a.low && b.low > c.low){
+    const item={type:'low',x:b.x,y:b.low};
+    pushUnique(swings,item,z=>z.type===item.type && Math.abs(z.x-item.x)<8 && Math.abs(z.y-item.y)<4);
+  }
   const lastH=[...swings].reverse().find(s=>s.type==='high');
   const lastL=[...swings].reverse().find(s=>s.type==='low');
   const recent=candles.slice(Math.max(0,n-6),n-1);
@@ -122,7 +153,8 @@ function analyze(){
     // If the market was bearish before, this is Change of Character.
     // If the market was already bullish, this is continuation BoS.
     const stType=(trend==='Bearish' || (trend==='Neutral' && recentBear>recentBull))?'ChoCH':'BoS';
-    structures.push({type:stType,dir:'bull',x:lastH.x,y:lastH.y,breakX:c.x});
+    const item={type:stType,dir:'bull',x:lastH.x,y:lastH.y,breakX:c.x};
+    pushUnique(structures,item,z=>z.type===item.type && z.dir===item.dir && Math.abs(z.x-item.x)<8 && Math.abs(z.y-item.y)<4 && Math.abs(z.breakX-item.breakX)<8);
     detectOrderBlock('bull', n-1);
     trend='Bullish';
   }
@@ -131,7 +163,8 @@ function analyze(){
     // If the market was bullish before, this is Change of Character.
     // If the market was already bearish, this is continuation BoS.
     const stType=(trend==='Bullish' || (trend==='Neutral' && recentBull>recentBear))?'ChoCH':'BoS';
-    structures.push({type:stType,dir:'bear',x:lastL.x,y:lastL.y,breakX:c.x});
+    const item={type:stType,dir:'bear',x:lastL.x,y:lastL.y,breakX:c.x};
+    pushUnique(structures,item,z=>z.type===item.type && z.dir===item.dir && Math.abs(z.x-item.x)<8 && Math.abs(z.y-item.y)<4 && Math.abs(z.breakX-item.breakX)<8);
     detectOrderBlock('bear', n-1);
     trend='Bearish';
   }
@@ -151,15 +184,13 @@ function detectOrderBlock(dir, breakIndex){
     if(!isValid) continue;
     const top=Math.min(ob.open, ob.close);
     const bottom=Math.max(ob.open, ob.close);
-    const already=orderBlocks.some(z=>z.dir===dir && Math.abs(z.x-ob.x)<8 && Math.abs(z.top-top)<4 && Math.abs(z.bottom-bottom)<4);
-    if(!already){
-      orderBlocks.push({
-        dir, x:ob.x-8, top, bottom, candleIndex:i,
-        label:dir==='bull'?'Bullish OB':'Bearish OB',
-        breakerX:candles[breakIndex].x,
-        confirmedBy:structures[structures.length-1]?.type || 'BoS/ChoCH'
-      });
-    }
+    const item={
+      dir, x:ob.x-8, top, bottom, candleIndex:i,
+      label:dir==='bull'?'Bullish OB':'Bearish OB',
+      breakerX:candles[breakIndex].x,
+      confirmedBy:structures[structures.length-1]?.type || 'BoS/ChoCH'
+    };
+    pushUnique(orderBlocks,item,z=>z.candleIndex===item.candleIndex && z.dir===item.dir);
     return;
   }
 }
@@ -176,12 +207,18 @@ function detectSweeps(){
   for(const h of highLevels){
     const oldLevel = candles[i-2] && h.x < candles[i-2].x;
     const sweptHigh=!c.isBull && oldLevel && c.high < h.y && bodyTop > h.y && upperWick > body*1.05;
-    if(sweptHigh && !sweeps.some(s=>Math.abs(s.x-c.x)<8 && s.dir==='bear')) sweeps.push({type:'Bearish Liquidity Sweep',x:c.x,y:h.y,dir:'bear',level:h.label});
+    if(sweptHigh){
+      const item={type:'Bearish Liquidity Sweep',x:c.x,y:h.y,dir:'bear',level:h.label};
+      pushUnique(sweeps,item,s=>Math.abs(s.x-item.x)<8 && s.dir===item.dir && s.level===item.level);
+    }
   }
   for(const l of lowLevels){
     const oldLevel = candles[i-2] && l.x < candles[i-2].x;
     const sweptLow=c.isBull && oldLevel && c.low > l.y && bodyBot < l.y && lowerWick > body*1.05;
-    if(sweptLow && !sweeps.some(s=>Math.abs(s.x-c.x)<8 && s.dir==='bull')) sweeps.push({type:'Bullish Liquidity Sweep',x:c.x,y:l.y,dir:'bull',level:l.label});
+    if(sweptLow){
+      const item={type:'Bullish Liquidity Sweep',x:c.x,y:l.y,dir:'bull',level:l.label};
+      pushUnique(sweeps,item,s=>Math.abs(s.x-item.x)<8 && s.dir===item.dir && s.level===item.level);
+    }
   }
 }
 function detectConfluence(){
@@ -190,9 +227,10 @@ function detectConfluence(){
   const f=fvgs.slice(-6).find(z=>z.type===(sw.dir==='bull'?'bull':'bear'));
   const ob=orderBlocks.slice(-6).find(z=>z.dir===sw.dir);
   const hasFvg=!!f, hasOb=!!ob;
-  if((hasFvg||hasOb) && !confluences.some(cf=>Math.abs(cf.x-c.x)<20)){
+  if(hasFvg||hasOb){
     const parts=[]; if(hasFvg)parts.push('FVG'); if(hasOb)parts.push('OB');
-    confluences.push({x:c.x,y:c.close,type:(sw.dir==='bull'?'Bullish':'Bearish')+' Confluence: Sweep + '+parts.join(' + ')});
+    const item={x:c.x,y:c.close,type:(sw.dir==='bull'?'Bullish':'Bearish')+' Confluence: Sweep + '+parts.join(' + ')};
+    pushUnique(confluences,item,cf=>Math.abs(cf.x-item.x)<20 && cf.type===item.type);
   }
 }
 canvas.addEventListener('pointerdown',e=>{
@@ -248,7 +286,7 @@ function applyTheme(){
   }
 }
 
-function text(t,x,y,col=GOLD,small=false){ctx.font=(small?'bold 13px Arial':'bold 18px Arial');const pad=small?12:20;const h=small?24:32;const w=ctx.measureText(t).width+pad;ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--label-bg')||'rgba(255,255,255,.94)';ctx.fillRect(x-6,y-h+4,w,h);ctx.lineWidth=small?2:3;ctx.strokeStyle=col;ctx.strokeRect(x-6,y-h+4,w,h);ctx.fillStyle=col;ctx.fillText(t,x,y-(small?5:5));}
+function text(t,x,y,col=GOLD,small=false){const mob=isMobileView();ctx.font=(small?(mob?'bold 11px Arial':'bold 13px Arial'):(mob?'bold 14px Arial':'bold 18px Arial'));const pad=small?(mob?9:12):(mob?14:20);const h=small?(mob?20:24):(mob?26:32);const w=ctx.measureText(t).width+pad;ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--label-bg')||'rgba(255,255,255,.94)';ctx.fillRect(x-6,y-h+4,w,h);ctx.lineWidth=small?2:3;ctx.strokeStyle=col;ctx.strokeRect(x-6,y-h+4,w,h);ctx.fillStyle=col;ctx.fillText(t,x,y-(small?5:5));}
 function tag(t,x,y,col=GOLD){text(t,x,y,col,true);}
 
 function wrapText(str,x,y,maxWidth,lineHeight,col){
@@ -636,7 +674,7 @@ function drawCountsPanel(x,y,max,textCol,muted){
 function draw(){
   ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--canvas')||'#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
   if(bg){ctx.save();ctx.globalAlpha=imageOpacity;ctx.translate(imgX,imgY);ctx.scale(imgScale,imgScale);ctx.drawImage(bg,0,0);ctx.restore();}
-  if(candles.length===0&&!bg){ctx.fillStyle=darkMode?'rgba(245,247,251,.95)':'rgba(29,36,51,.9)';ctx.font='bold 30px Arial';ctx.fillText('Obsession Trading Academy ብዘይ ፍልጠት ዕብየት የለን - SMC Teaching Canvas',40,75);}
+  if(candles.length===0&&!bg){ctx.fillStyle=darkMode?'rgba(245,247,251,.95)':'rgba(29,36,51,.9)';ctx.font=isMobileView()?'bold 18px Arial':'bold 30px Arial';ctx.fillText(isMobileView()?'Obsession Trading Academy - SMC Canvas':'Obsession Trading Academy ብዘይ ፍልጠት ዕብየት የለን - SMC Teaching Canvas',isMobileView()?18:40,isMobileView()?55:75);}
   const r=rangeBefore(candles.length,8); if(r){ctx.setLineDash([6,6]);ctx.strokeStyle='rgba(245,197,66,.75)';ctx.beginPath();ctx.moveTo(r.firstX,r.high);ctx.lineTo(usableRight(),r.high);ctx.moveTo(r.firstX,r.low);ctx.lineTo(usableRight(),r.low);ctx.stroke();ctx.setLineDash([]); if(cleanMode){tag('BSL',usableRight()-58,r.high-8,GOLD);tag('SSL',usableRight()-58,r.low+24,GOLD);}else{text('Range High / Buy-side Liquidity',r.firstX+8,r.high-8,GOLD);text('Range Low / Sell-side Liquidity',r.firstX+8,r.low+24,GOLD);}}
   const tlDraw=trendLevelBefore(candles.length); if(tlDraw.high||tlDraw.low){ctx.setLineDash([3,7]);ctx.strokeStyle='rgba(107,114,128,.55)';ctx.beginPath(); if(tlDraw.high){ctx.moveTo(tlDraw.high.x,tlDraw.high.y);ctx.lineTo(usableRight(),tlDraw.high.y);} if(tlDraw.low){ctx.moveTo(tlDraw.low.x,tlDraw.low.y);ctx.lineTo(usableRight(),tlDraw.low.y);} ctx.stroke();ctx.setLineDash([]); if(!cleanMode){ if(tlDraw.high)text('Trend Buy-side Liquidity',tlDraw.high.x+8,tlDraw.high.y-12,GOLD); if(tlDraw.low)text('Trend Sell-side Liquidity',tlDraw.low.x+8,tlDraw.low.y+30,GOLD); }}
   fvgs.forEach((f,idx)=>{
