@@ -10,45 +10,77 @@
       box-sizing: border-box;
     }
 
+    html {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       background: #0f0f0f;
       color: white;
       margin: 0;
-      padding: 20px;
+      padding: clamp(10px, 2.5vw, 20px);
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
     }
 
     h1 {
-      font-size: 30px;
-      margin-bottom: 6px;
+      font-size: clamp(22px, 5vw, 30px);
+      margin: 8px auto 6px;
+      line-height: 1.15;
+      max-width: 1100px;
+    }
+
+    h2 {
+      font-size: clamp(18px, 4vw, 24px);
+      line-height: 1.25;
+    }
+
+    h3 {
+      font-size: clamp(16px, 3.5vw, 20px);
+      line-height: 1.3;
+    }
+
+    p {
+      overflow-wrap: anywhere;
     }
 
     .subtitle {
       color: #cccccc;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
       max-width: 900px;
       line-height: 1.5;
+      font-size: clamp(14px, 3vw, 16px);
+      padding: 0 4px;
     }
 
     .topbar,
     .controls,
-    .lesson-controls {
+    .lesson-controls,
+    .extra-tutorials {
       max-width: 1050px;
+      width: 100%;
       margin: 12px auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
       gap: 8px;
     }
 
     button,
-    select {
+    select,
+    .tutorial-link {
+      min-height: 42px;
       padding: 10px 16px;
       font-size: 15px;
       cursor: pointer;
-      border: none;
       border-radius: 8px;
+      touch-action: manipulation;
     }
 
     button {
@@ -67,32 +99,36 @@
       background: #1f1f1f;
       color: white;
       border: 1px solid #444;
+      max-width: 100%;
     }
 
     .active {
       background: #00aa66 !important;
-      border-color: #00ff99;
+      border-color: #00ff99 !important;
     }
 
     .category-title {
       max-width: 1050px;
+      width: 100%;
       margin: 18px auto 8px;
       color: #ffcc00;
       text-align: left;
-      font-size: 18px;
+      font-size: clamp(16px, 3.5vw, 18px);
       border-bottom: 1px solid #333;
       padding-bottom: 6px;
     }
 
     .panel {
       max-width: 900px;
+      width: 100%;
       margin: 14px auto;
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 12px;
-      padding: 16px;
+      padding: clamp(12px, 3vw, 16px);
       text-align: left;
       line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
     .panel h2 {
@@ -121,7 +157,6 @@
       font-weight: bold;
     }
 
-
     .step {
       border-left: 4px solid #ffcc00;
       padding: 10px;
@@ -130,75 +165,154 @@
       border-radius: 6px;
     }
 
-    .lesson-image {
+    .lesson-image,
+    #lessonText img {
       display: block;
       width: 100%;
       max-width: 850px;
+      height: auto;
       margin: 18px auto 0;
       border-radius: 12px;
       border: 1px solid #444;
     }
 
     canvas {
+      display: block;
       background: #222;
-      margin-top: 14px;
+      margin: 14px auto 0;
       border: 1px solid #444;
       border-radius: 10px;
       cursor: crosshair;
+      width: min(100%, 900px);
+      height: auto;
       max-width: 100%;
+      aspect-ratio: 2 / 1;
+      touch-action: none;
     }
 
     .small-note {
       color: #aaa;
       font-size: 13px;
-      margin-top: 10px;
+      margin: 10px auto 0;
+      max-width: 900px;
+      line-height: 1.4;
     }
 
-    @media (max-width: 600px) {
+    .academy-box {
+      border: 1px solid gold;
+      padding: clamp(12px, 4vw, 20px);
+      border-radius: 15px;
+      background: #111;
+      text-align: center;
+      width: 100%;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .academy-box p {
+      line-height: 1.8;
+      font-size: clamp(14px, 3.2vw, 16px);
+      margin: 0;
+    }
+
+    .tutorial-link {
+      background: #2b2f3a;
+      color: white;
+      border: 1px solid #555;
+      text-decoration: none;
+      font-size: 16px;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tutorial-link:hover {
+      background: #40485a;
+    }
+
+    @media (max-width: 700px) {
       body {
-        padding: 12px;
+        padding: 10px;
       }
 
-      h1 {
-        font-size: 23px;
+      .topbar,
+      .lesson-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .topbar select,
+      .lesson-controls button {
+        width: 100%;
+      }
+
+      .extra-tutorials {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .tutorial-link {
+        width: 100%;
+        font-size: 13px;
+        padding: 9px 8px;
+        min-height: 40px;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .controls button {
+        width: 100%;
+        font-size: 13px;
+        padding: 9px 8px;
+        min-height: 40px;
+      }
+
+      .category-title {
+        text-align: center;
+      }
+
+      .panel {
+        font-size: 14px;
+      }
+
+      canvas {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 8px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .topbar,
+      .lesson-controls,
+      .extra-tutorials,
+      .controls {
+        grid-template-columns: 1fr;
       }
 
       button,
-      select {
+      select,
+      .tutorial-link {
         width: 100%;
       }
+
+      .panel {
+        padding: 12px;
+      }
     }
-    <style>
-
-.extra-tutorials{
-    margin-top:20px;
-    display:flex;
-    justify-content:center;
-    gap:15px;
-}
-
-.tutorial-link{
-    background:#2b2f3a;
-    color:white;
-    padding:10px 18px;
-    border:1px solid #555;
-    border-radius:8px;
-    text-decoration:none;
-    font-size:16px;
-    transition:0.2s;
-}
-
-.tutorial-link:hover{
-    background:#40485a;
-}
-
-</style>
   </style>
 </head>
 
 <body>
   <h1 id="mainTitle">Interactive Trading Chart Tutorial</h1>
-<div style="border:1px solid gold;padding:20px;border-radius:15px;background:#111;text-align:center;max-width:95%;margin:auto;">
+<div class="academy-box">
   <h2 style="color:gold;">Obsession Trading Academy 2026</h2>
 
   <p style="line-height:1.8;font-size:16px;">
@@ -235,7 +349,7 @@
     </a>
 
 
-<a href="gold2.html" class="tutorial-link">
+<a href="gold.html" class="tutorial-link">
   Tutorial 8 Gold Trading 
     </a>
 
@@ -952,7 +1066,7 @@ function updateLessonPanel(key) {
   if (lesson.image) {
   lessonText.innerHTML += `
     <img src="${lesson.image}"
-    style="width:100%;max-width:700px;margin-top:20px;border-radius:10px;">
+    class="lesson-image">
   `;
 }
 
