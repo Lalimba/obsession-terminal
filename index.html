@@ -107,11 +107,13 @@
       border-radius:12px;
       padding:8px;
       position:relative;
-      z-index:50;
+      z-index:9999;
+      overflow:visible;
     }
 
     .menu{
       position:relative;
+      z-index:10000;
     }
 
     .menu-btn{
@@ -135,18 +137,35 @@
     .dropdown{
       display:none;
       position:absolute;
-      top:45px;
-      left:0;
-      min-width:245px;
+      top:calc(100% + 8px);
+      left:50%;
+      transform:translateX(-50%);
+      min-width:270px;
+      max-height:70vh;
+      overflow-y:auto;
       background:#0c0f14;
       border:1px solid var(--border);
       border-radius:12px;
       padding:8px;
-      box-shadow:0 20px 40px rgba(0,0,0,.45);
-      z-index:1000;
+      box-shadow:0 25px 60px rgba(0,0,0,.75);
+      z-index:99999;
     }
 
-    .menu:hover .dropdown{display:block}
+    .menu.open .dropdown{
+      display:block;
+      animation:dropFade .12s ease-out;
+    }
+
+    @keyframes dropFade{
+      from{opacity:0; transform:translateX(-50%) translateY(-6px)}
+      to{opacity:1; transform:translateX(-50%) translateY(0)}
+    }
+
+    .menu.open .menu-btn{
+      border-color:var(--gold);
+      color:var(--gold);
+      background:#20242b;
+    }
 
     .dropdown a{
       display:flex;
@@ -416,6 +435,25 @@
       border-color:var(--gold)!important;
     }
 
+
+    .chart-panel,
+    .quick-switch,
+    .chart-area,
+    .sidebar{
+      position:relative;
+      z-index:1;
+    }
+
+    .desktop-nav::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:100%;
+      height:12px;
+      pointer-events:none;
+    }
+
     .bottom-desks{
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
@@ -575,7 +613,7 @@
   <nav class="desktop-nav">
 
     <div class="menu">
-      <button class="menu-btn">🟡 Gold ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">🟡 Gold ▼</button>
       <div class="dropdown">
         <a href="https://www.tradingview.com/symbols/XAUUSD/" target="_blank" rel="noopener noreferrer">TradingView Gold <small>XAUUSD</small></a>
         <a href="https://www.goldpreis.de/" target="_blank" rel="noopener noreferrer">Goldpreis.de <small>DE</small></a>
@@ -590,7 +628,7 @@
     </div>
 
     <div class="menu">
-      <button class="menu-btn">🟠 Crypto ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">🟠 Crypto ▼</button>
       <div class="dropdown">
         <a href="https://coinank.com/chart/derivatives/liq-map" target="_blank" rel="noopener noreferrer">CoinAnk <small>Flow</small></a>
         <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer">BTC LQ Map <small>CoinAnk</small></a>
@@ -607,7 +645,7 @@
     </div>
 
     <div class="menu">
-      <button class="menu-btn">🔵 Macro ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">🔵 Macro ▼</button>
       <div class="dropdown">
         <a href="https://www.financialjuice.com/" target="_blank" rel="noopener noreferrer">⚡ FinancialJuice <small>Fast News</small></a>
         <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener noreferrer">🗓️ Forex Factory <small>Calendar</small></a>
@@ -623,7 +661,7 @@
     </div>
 
     <div class="menu">
-      <button class="menu-btn">🟢 Academy ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">🟢 Academy ▼</button>
       <div class="dropdown">
         <a href="trading.html" target="_blank" rel="noopener noreferrer">💰 Trading Course <small>Main</small></a>
         <a href="bias-dashboard.html" target="_blank" rel="noopener noreferrer">🚀 BTC Dashboard <small>Flow</small></a>
@@ -636,7 +674,7 @@
     </div>
 
     <div class="menu">
-      <button class="menu-btn">⚙️ Tools ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">⚙️ Tools ▼</button>
       <div class="dropdown">
         <a href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer">TradingView Chart <small>Chart</small></a>
         <a href="https://www.binance.com/" target="_blank" rel="noopener noreferrer">Binance <small>Exchange</small></a>
@@ -649,7 +687,7 @@
     </div>
 
     <div class="menu">
-      <button class="menu-btn">🤖 AI ▼</button>
+      <button type="button" class="menu-btn" aria-expanded="false">🤖 AI ▼</button>
       <div class="dropdown">
         <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <small>AI</small></a>
         <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer">Claude <small>AI</small></a>
@@ -853,6 +891,59 @@
 </div>
 
 <script>
+
+function initDesktopDropdowns(){
+  const menus = document.querySelectorAll(".desktop-nav .menu");
+
+  menus.forEach(menu => {
+    const btn = menu.querySelector(".menu-btn");
+    const dropdown = menu.querySelector(".dropdown");
+    if(!btn || !dropdown) return;
+
+    btn.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isOpen = menu.classList.contains("open");
+
+      menus.forEach(m => {
+        m.classList.remove("open");
+        const b = m.querySelector(".menu-btn");
+        if(b) b.setAttribute("aria-expanded", "false");
+      });
+
+      if(!isOpen){
+        menu.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+
+    dropdown.addEventListener("click", function(e){
+      e.stopPropagation();
+    });
+  });
+
+  document.addEventListener("click", function(){
+    menus.forEach(menu => {
+      menu.classList.remove("open");
+      const btn = menu.querySelector(".menu-btn");
+      if(btn) btn.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      menus.forEach(menu => {
+        menu.classList.remove("open");
+        const btn = menu.querySelector(".menu-btn");
+        if(btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initDesktopDropdowns);
+
 let tvWidget = null;
 
 function createWidget(symbol = "OANDA:XAUUSD", interval = "240"){
