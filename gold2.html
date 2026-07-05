@@ -3,14 +3,18 @@
 <html lang="ti">
 <head>
 <meta charset="UTF-8">
-<title>Obsession Trading Academy 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold V34 System - Obsession Trading Academy 2026</title>
 
 <style>
+*{
+box-sizing:border-box;
+}
 
 body{
 background:#000;
 color:white;
-font-family:Arial;
+font-family:Arial, sans-serif;
 margin:0;
 }
 
@@ -21,6 +25,33 @@ text-align:center;
 font-size:38px;
 color:#FFD700;
 font-weight:bold;
+border-bottom:1px solid #333;
+}
+
+.top-menu{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+padding:12px;
+background:#080808;
+border-bottom:1px solid #333;
+}
+
+.top-menu a{
+color:white;
+text-decoration:none;
+font-weight:bold;
+font-size:15px;
+padding:10px 16px;
+border-radius:8px;
+border:1px solid #333;
+background:#151515;
+}
+
+.top-menu a:hover{
+background:#FFD700;
+color:black;
 }
 
 .container{
@@ -55,9 +86,18 @@ display:block;
 padding:12px;
 margin:8px 0;
 text-decoration:none;
-font-size:22px;
+font-size:20px;
 font-weight:bold;
 border-radius:8px;
+line-height:1.35;
+}
+
+.card a span{
+display:block;
+font-size:15px;
+font-weight:bold;
+opacity:.95;
+margin-top:4px;
 }
 
 .ema{background:#FFD700;color:black;}
@@ -68,11 +108,37 @@ border-radius:8px;
 .volume{background:#9966FF;color:white;}
 .session{background:#00FFFF;color:black;}
 .timeframe{background:#66CC00;color:black;}
+.canvas{background:#222;color:#FFD700;border:1px solid #FFD700;}
+.flow{background:#00ff99;color:#000;}
+.back{background:#111;color:#FFD700;border:1px solid #FFD700;}
 
 img{
 width:100%;
 border:3px solid #FFD700;
 border-radius:15px;
+}
+
+.center h2{
+color:#FFD700;
+font-size:26px;
+}
+
+.center p{
+font-size:18px;
+line-height:1.6;
+}
+
+.quick-row{
+display:flex;
+justify-content:space-between;
+gap:10px;
+border-bottom:1px solid #222;
+padding:9px 0;
+font-size:17px;
+}
+
+.quick-row strong{
+color:#FFD700;
 }
 
 .footer{
@@ -81,6 +147,36 @@ padding:30px;
 color:#FFD700;
 }
 
+@media(max-width:900px){
+.header{
+font-size:24px;
+padding:16px 8px;
+}
+
+.container{
+flex-direction:column;
+padding:10px;
+}
+
+.left,.center,.right{
+width:100%;
+}
+
+.card a{
+font-size:18px;
+padding:14px;
+}
+
+.top-menu a{
+font-size:13px;
+flex:1 1 calc(50% - 10px);
+text-align:center;
+}
+
+.center h2{
+font-size:22px;
+}
+}
 </style>
 </head>
 
@@ -90,44 +186,64 @@ color:#FFD700;
 Obsession Trading Academy 2026
 </div>
 
+<div class="top-menu">
+<a href="trading.html">🏠 Back to Main Menu<br><span>ናብ ዋና መእተዊ</span></a>
+<a href="index.html">🚀 Flow Terminal<br><span>ዋና Terminal</span></a>
+<a href="gold2.html">🟡 Gold V34<br><span>ናይ Gold ስርዓት</span></a>
+<a href="canvas.html">✍️ Canvas Learning<br><span>ናይ ምስኣል ትምህርቲ</span></a>
+</div>
+
 <div class="container">
 
 <div class="left">
 
 <div class="card">
 
-<h2 style="color:#FFD700;">Gold V34 System</h2>
+<h2 style="color:#FFD700;">Gold V34 System<br><span style="font-size:16px;color:white;">ናይ Gold V34 ስርዓት</span></h2>
 
 <a class="ema" href="ema-2026.html">
 EMA 21 / 50 / 100 / 200
+<span>ናይ Trend ኣንፈት መለለዪ</span>
 </a>
 
 <a class="fvg" href="fvg-2026.html">
 Fair Value Gap (FVG)
+<span>ዘይተመልአ ቦታ ናይ ዋጋ</span>
 </a>
 
 <a class="rsi" href="rsi-2026.html">
 RSI Momentum
+<span>ናህሪ ዕዳጋ መለለዪ</span>
 </a>
 
 <a class="atr" href="atr-2026.html">
 ATR Risk System
+<span>ናይ ሓደጋን SL / TP መለክዒ</span>
 </a>
 
 <a class="dxy" href="dxy-2026.html">
 DXY Analysis
+<span>Dollar Index ኣንፈት</span>
 </a>
 
 <a class="volume" href="volume-2026.html">
 Volume Analysis
+<span>ሓይሊ ዕዳጋ መለለዪ</span>
 </a>
 
 <a class="session" href="session-2026.html">
 London & NY Sessions
+<span>London እና New York ግዜ ዕዳጋ</span>
 </a>
 
 <a class="timeframe" href="timeframe-2026.html">
 Multi Timeframes
+<span>1H / 4H / Daily ምርግጋጽ</span>
+</a>
+
+<a class="canvas" href="canvas.html">
+Canvas Learning
+<span>ብኢድካ ምስኣልን ምርዳእን</span>
 </a>
 
 </div>
@@ -136,16 +252,29 @@ Multi Timeframes
 
 <div class="center">
 
-<img src="tradingview.jpg">
+<img src="tradingview.jpg" alt="Gold TradingView Analysis">
 
-<h2 style="color:#FFD700;">
-Live Gold TradingView Analysis
+<h2>
+Live Gold TradingView Analysis<br>
+<span style="font-size:18px;color:white;">ቀጥታ ናይ Gold ትንተና</span>
 </h2>
 
 <p>
-WATCH LONG እና WATCH SHORT
+<strong style="color:#FFD700;">WATCH LONG</strong> እና
+<strong style="color:#FFD700;">WATCH SHORT</strong>
 ናይ ስርዓት መጠንቀቕታ እዮም።
+<br>
+They are not blind buy/sell signals. They are warning zones where we check evidence first.
 </p>
+
+<div class="card">
+<h2 style="color:#00FF99;">Evidence First<br><span style="font-size:16px;color:white;">ቅድሚ ርእይቶ መርትዖ</span></h2>
+<p>
+No evidence = no trade.<br>
+Weak evidence = low confidence.<br>
+Strong evidence = better probability, but never certainty.
+</p>
+</div>
 
 </div>
 
@@ -153,17 +282,47 @@ WATCH LONG እና WATCH SHORT
 
 <div class="card">
 
-<h2 style="color:#00FF99;">Quick Monitor</h2>
+<h2 style="color:#00FF99;">Quick Monitor<br><span style="font-size:16px;color:white;">ቀልጣፋ መከታተሊ</span></h2>
 
-<p>DXY</p>
-<p>RSI</p>
-<p>Volume</p>
-<p>1H Trend</p>
-<p>4H Trend</p>
-<p>FVG Status</p>
-<p>Session</p>
-<p>Watch Long</p>
-<p>Watch Short</p>
+<div class="quick-row"><span>DXY</span><strong>Dollar</strong></div>
+<div class="quick-row"><span>RSI</span><strong>Momentum</strong></div>
+<div class="quick-row"><span>Volume</span><strong>Power</strong></div>
+<div class="quick-row"><span>1H Trend</span><strong>Direction</strong></div>
+<div class="quick-row"><span>4H Trend</span><strong>Main Bias</strong></div>
+<div class="quick-row"><span>FVG Status</span><strong>Gap</strong></div>
+<div class="quick-row"><span>Session</span><strong>London / NY</strong></div>
+<div class="quick-row"><span>Watch Long</span><strong>Long Zone</strong></div>
+<div class="quick-row"><span>Watch Short</span><strong>Short Zone</strong></div>
+
+</div>
+
+<div class="card">
+<h2 style="color:#FFD700;">Important Links<br><span style="font-size:16px;color:white;">ኣገደስቲ መራኸቢታት</span></h2>
+
+<a class="back" href="trading.html">
+🏠 Main Menu
+<span>ናብ ዋና መእተዊ</span>
+</a>
+
+<a class="flow" href="index.html">
+🚀 Obsession Flow Terminal
+<span>Gold / Crypto / Macro Dashboard</span>
+</a>
+
+<a class="back" href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer">
+📈 TradingView Chart
+<span>Live Chart</span>
+</a>
+
+<a class="back" href="https://www.financialjuice.com/" target="_blank" rel="noopener noreferrer">
+⚡ FinancialJuice
+<span>Fast Macro News</span>
+</a>
+
+<a class="back" href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener noreferrer">
+🗓️ Forex Factory Calendar
+<span>PMI / CPI / NFP</span>
+</a>
 
 </div>
 
@@ -172,11 +331,8 @@ WATCH LONG እና WATCH SHORT
 </div>
 
 <div class="footer">
-
 Obsession Trading Academy © 2026
-
 </div>
 
 </body>
 </html>
-```
