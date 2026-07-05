@@ -1,927 +1,1132 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Obsession Flow Terminal - Institutional Data</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
-    <style>
-        html, body { height: 100%; margin: 0; padding: 0; background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding: 10px;
-            box-sizing: border-box;
-            gap: 8px;
-        }
-
-        .academy-header {
-            text-align: center;
-            font-size: 30px;
-            font-weight: 900;
-            background: linear-gradient(90deg, #ff0000, #ffae00, #00ff00, #00fbff, #bd00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            margin: 0;
-        }
-
-        .nav-hub {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 15px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
-            gap: 15px;
-        }
-
-        .tigrigna-text {
-            font-size: 17px;
-            font-weight: 800;
-            line-height: 1.6;
-            letter-spacing: 0.6px;
-            background: linear-gradient(to right, #00fbff, #00ff00, #ffee00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            min-width: 380px;
-        }
-
-        .nav-links-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: flex-end;
-            flex: 1;
-        }
-
-        .nav-link {
-            color: #fff;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 5px 8px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background: #1a1a1a;
-            transition: 0.2s;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .nav-link:hover {
-            border-color: #ffae00;
-            color: #ffae00;
-            background: #222;
-        }
-
-        .nav-link.core { border-color: #2b2b2b; }
-        .nav-link.core:hover { border-color: #00ff00; color: #00ff00; }
-
-        .nav-link.research { border-color: #2b2b2b; }
-        .nav-link.research:hover { border-color: #00fbff; color: #00fbff; }
-
-        .nav-link.invite { border-color: #3a2a00; }
-        .nav-link.invite:hover { border-color: #ffae00; color: #ffae00; }
-
-        .nav-sep {
-            display: inline-block;
-            width: 8px;
-            height: 22px;
-            border-left: 1px solid #2a2a2a;
-            margin: 0 2px;
-            opacity: 0.8;
-        }
-
-        .main-row { display: flex; flex: 1; gap: 10px; min-height: 0; }
-        .chart-area { flex: 4; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #131722; }
-        .sidebar { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
-        .widget-box { flex: 1; border: 1px solid #333; background: #131722; border-radius: 8px; overflow: hidden; }
-
-        .button-group { display: flex; gap: 5px; }
-        button { background: #222; color: #fff; border: 1px solid #444; padding: 10px; cursor: pointer; border-radius: 4px; flex: 1; font-weight: bold; }
-        button:hover { background: #00ff00; color: #000; }
-
-        .ticker-row { height: 40px; }
-
-        .mini-video-box {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            width: 220px;
-            z-index: 999;
-            text-align: center;
-        }
-
-        .mini-video-box video {
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #000;
-        }
-
-        .video-caption {
-            font-size: 14px;
-            margin-top: 6px;
-            font-weight: bold;
-            color: #00ff00;
-        }
-
-        .binance-deriv {
-            padding: 12px 14px;
-            box-sizing: border-box;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .binance-deriv-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .binance-deriv-title {
-            font-weight: 900;
-            letter-spacing: 0.6px;
-            color: #00ff00;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .binance-deriv-status {
-            font-size: 11px;
-            color: #bdbdbd;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #666;
-            display: inline-block;
-        }
-        .dot.ok { background: #00ff00; }
-        .dot.warn { background: #ffae00; }
-        .dot.bad { background: #ff3b3b; }
-
-        .binance-deriv-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .metric {
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            min-height: 68px;
-        }
-
-        .metric-label {
-            font-size: 11px;
-            color: #bdbdbd;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 6px;
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: 900;
-            line-height: 1.1;
-        }
-
-        .metric-sub {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #bdbdbd;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            border: 1px solid #2a2a2a;
-            background: rgba(255,255,255,0.04);
-        }
-
-        .up { color: #00ff00; }
-        .down { color: #ff3b3b; }
-        .neutral { color: #bdbdbd; }
-
-        .spark-wrap {
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-        }
-
-        .spark-title {
-            font-size: 11px;
-            color: #bdbdbd;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        canvas#oiSpark {
-            width: 100%;
-            height: 60px;
-            display: block;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.25);
-        }
-
-        .hint {
-            font-size: 11px;
-            color: #bdbdbd;
-            line-height: 1.35;
-            opacity: 0.95;
-        }
-
-        .flash {
-            box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.4) inset, 0 0 18px rgba(255, 174, 0, 0.15);
-            border-color: #ffae00 !important;
-        }
-       /* ===== MOBILE TRADING APP LAYOUT ===== */
-.mobile-bottom-nav {
-  display: none;
-}
-
-@media (max-width: 900px) {
-
-  html, body {
-    height: auto;
-    min-height: 100%;
-    overflow: auto;
-  }
-
-    
-  body {
-    padding-bottom: 70px;
-  }
-
-  .container {
-    height: auto;
-    min-height: 100vh;
-    padding: 8px;
-    gap: 10px;
-  }
-
- /* ===== MOBILE TICKER CLEAN VERSION ===== */
-/* ===== MOBILE TICKER SHOW ===== */
-.ticker-row {
-  display: block !important;
-  height: 32px !important;
-  overflow: hidden !important;
-}
-
-.ticker-row .tradingview-widget-container {
-  display: block !important;
-  height: 32px !important;
-  width: 100% !important;
-}
-
-.ticker-row .tradingview-widget-container__widget {
-  display: block !important;
-  height: 32px !important;
-  width: 100% !important;
-}
-
-.ticker-row iframe {
-  display: block !important;
-  height: 32px !important;
-  width: 100% !important;
-  border: none !important;
-}
-  .academy-header {
-    font-size: 18px;
-    line-height: 1.2;
-    padding: 6px 4px;
-  }
-
-  .nav-hub {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px;
-    gap: 10px;
-    overflow: hidden;
-  }
-
-  .tigrigna-text {
-    min-width: 0;
-    font-size: 13px;
-    text-align: center;
-  }
-
-  /* Hide big desktop link list on mobile */
-  .nav-links-group {
-    display: none !important;
-  }
-
-  .nav-sep {
-    display: none !important;
-  }
-
-  .main-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .chart-area {
-    height: 60vh;
-    min-height: 400px;
-    border-radius: 12px;
-    flex: none;
-  }
-
-  .sidebar {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .button-group {
-    flex-direction: column;
-  }
-
-  button {
-    padding: 12px;
-    font-size: 13px;
-  }
-
-  .widget-box {
-    min-height: 300px;
-    border-radius: 12px;
-    flex: none;
-  }
-
-  .binance-deriv {
-    padding: 12px;
-  }
-
-  .binance-deriv-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .binance-deriv-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .metric-value {
-    font-size: 20px;
-  }
-
-  canvas#oiSpark {
-    height: 80px;
-  }
-
-  .mini-video-box {
-    position: static;
-    width: 100%;
-    margin-top: 10px;
-  }
-/* ===== MOBILE LINKS GRID ===== */
-.ticker-row {
-  display: none !important;
-}
-
-.nav-links-group .nav-link {
-  display: none !important;
-}
-
-.nav-links-group .mobile-main {
-  display: flex !important;
-  flex: 1 1 calc(50% - 6px);
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-links-group {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px;
-  justify-content: center !important;
-}
-  /* ===== BINANCE STYLE BOTTOM NAV ===== */
-  .mobile-bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 64px;
-    background: #0b0b0b;
-    border-top: 1px solid #222;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  .mobile-bottom-nav {
-  position: fixed !important;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 64px;
-  background: #0b0b0b;
-  border-top: 1px solid #222;
-  display: flex !important;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 999999;
-}
-
-  .mobile-bottom-nav a span {
-    font-size: 10px;
-  }
-
-  .mobile-bottom-nav a:hover,
-  .mobile-bottom-nav a:active {
-    color: #f0b90b;
-  }
-
-}
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obsession Flow Terminal V2</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+
+  <style>
+    :root{
+      --bg:#000;
+      --panel:#101318;
+      --panel2:#131722;
+      --border:#2c2f36;
+      --text:#ffffff;
+      --muted:#b8bec8;
+      --gold:#f0b90b;
+      --green:#00ff88;
+      --red:#ff4d4d;
+      --blue:#00d4ff;
+      --orange:#ff9f1a;
+      --purple:#c77dff;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Segoe UI',Arial,sans-serif;
+      min-height:100%;
+    }
+
+    body{
+      overflow-x:hidden;
+    }
+
+    .container{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:10px;
+    }
+
+    .ticker-row{
+      height:42px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+      background:var(--panel2);
+    }
+
+    .academy-header{
+      text-align:center;
+      font-size:30px;
+      font-weight:950;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      background:linear-gradient(90deg,#ff3b3b,#f0b90b,#00ff88,#00d4ff,#c77dff);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      padding:4px 0;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+      margin-top:-6px;
+    }
+
+    .top-status{
+      display:grid;
+      grid-template-columns:repeat(8,1fr);
+      gap:6px;
+    }
+
+    .status-pill{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:7px 9px;
+      text-align:center;
+      font-size:11px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .status-pill.green{color:var(--green);border-color:rgba(0,255,136,.35)}
+    .status-pill.red{color:var(--red);border-color:rgba(255,77,77,.35)}
+    .status-pill.gold{color:var(--gold);border-color:rgba(240,185,11,.35)}
+    .status-pill.blue{color:var(--blue);border-color:rgba(0,212,255,.35)}
+
+    .desktop-nav{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px;
+      position:relative;
+      z-index:50;
+    }
+
+    .menu{
+      position:relative;
+    }
+
+    .menu-btn{
+      border:1px solid var(--border);
+      background:#161a21;
+      color:white;
+      border-radius:8px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      min-width:120px;
+    }
+
+    .menu-btn:hover{
+      border-color:var(--gold);
+      color:var(--gold);
+      background:#20242b;
+    }
+
+    .dropdown{
+      display:none;
+      position:absolute;
+      top:45px;
+      left:0;
+      min-width:245px;
+      background:#0c0f14;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px;
+      box-shadow:0 20px 40px rgba(0,0,0,.45);
+      z-index:1000;
+    }
+
+    .menu:hover .dropdown{display:block}
+
+    .dropdown a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:9px 10px;
+      color:white;
+      text-decoration:none;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:750;
+      border:1px solid transparent;
+    }
+
+    .dropdown a:hover{
+      border-color:var(--gold);
+      color:var(--gold);
+      background:#171b22;
+    }
+
+    .dropdown small{
+      color:var(--muted);
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:minmax(0,2.2fr) minmax(360px,.9fr);
+      gap:10px;
+      flex:1;
+      min-height:0;
+    }
+
+    .chart-panel{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+
+    .chart-area{
+      flex:1;
+      min-height:560px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      background:var(--panel2);
+    }
+
+    .quick-switch{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+    }
+
+    .quick-switch button{
+      background:#12161d;
+      color:white;
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:9px 7px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+    }
+
+    .quick-switch button:hover{
+      color:#000;
+      background:var(--gold);
+      border-color:var(--gold);
+    }
+
+    .sidebar{
+      display:grid;
+      grid-template-rows:240px 240px 310px minmax(260px,1fr);
+      gap:10px;
+      min-height:0;
+    }
+
+    .desk{
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      background:var(--panel);
+      min-height:0;
+    }
+
+    .desk-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background:#0d1016;
+      font-size:13px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .desk-header.gold{color:var(--gold)}
+    .desk-header.crypto{color:var(--orange)}
+    .desk-header.macro{color:var(--blue)}
+    .desk-header.flow{color:var(--green)}
+
+    .desk-body{
+      height:calc(100% - 42px);
+      overflow:hidden;
+    }
+
+    .mini-links{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:7px;
+      padding:10px;
+    }
+
+    .mini-links a{
+      text-decoration:none;
+      color:white;
+      background:#151922;
+      border:1px solid var(--border);
+      border-radius:9px;
+      padding:9px 8px;
+      font-size:12px;
+      font-weight:850;
+      text-align:center;
+    }
+
+    .mini-links a:hover{
+      color:#000;
+      background:var(--gold);
+      border-color:var(--gold);
+    }
+
+    .binance-deriv{
+      padding:12px;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .binance-deriv-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .binance-deriv-title{
+      font-weight:950;
+      color:var(--green);
+      font-size:13px;
+      text-transform:uppercase;
+    }
+
+    .binance-deriv-status{
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:7px;
+      white-space:nowrap;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#666;
+      display:inline-block;
+    }
+
+    .dot.ok{background:var(--green)}
+    .dot.warn{background:var(--gold)}
+    .dot.bad{background:var(--red)}
+
+    .binance-deriv-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .metric{
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:9px;
+      background:rgba(0,0,0,.2);
+      min-height:66px;
+    }
+
+    .metric-label{
+      font-size:10px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      margin-bottom:5px;
+    }
+
+    .metric-value{
+      font-size:16px;
+      font-weight:950;
+      line-height:1.1;
+    }
+
+    .metric-sub{
+      margin-top:5px;
+      font-size:10px;
+      color:var(--muted);
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+    }
+
+    .up{color:var(--green)}
+    .down{color:var(--red)}
+    .neutral{color:var(--muted)}
+
+    .spark-wrap{
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:9px;
+      background:rgba(0,0,0,.2);
+    }
+
+    .spark-title{
+      font-size:10px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      margin-bottom:7px;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    canvas#oiSpark{
+      width:100%;
+      height:52px;
+      display:block;
+      border-radius:8px;
+      background:rgba(0,0,0,.25);
+    }
+
+    .hint{
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.35;
+      opacity:.95;
+    }
+
+    .flash{
+      box-shadow:0 0 0 2px rgba(240,185,11,.4) inset,0 0 18px rgba(240,185,11,.15);
+      border-color:var(--gold)!important;
+    }
+
+    .bottom-desks{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+
+    .summary-box{
+      padding:12px;
+      font-size:12px;
+      line-height:1.45;
+      color:var(--muted);
+    }
+
+    .summary-title{
+      color:white;
+      font-size:14px;
+      font-weight:950;
+      margin-bottom:8px;
+    }
+
+    .summary-line{
+      display:flex;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      padding:6px 0;
+      gap:8px;
+    }
+
+    .mobile-bottom-nav{
+      display:none;
+    }
+
+    @media(max-width:1100px){
+      .top-status{grid-template-columns:repeat(4,1fr)}
+      .main-grid{grid-template-columns:1fr}
+      .sidebar{grid-template-rows:auto; display:flex; flex-direction:column}
+      .desk{min-height:260px}
+      .bottom-desks{grid-template-columns:1fr}
+    }
+
+    @media(max-width:900px){
+      body{padding-bottom:76px}
+      .container{padding:8px;gap:9px}
+      .academy-header{font-size:19px;line-height:1.2}
+      .subtitle{font-size:11px}
+      .desktop-nav{display:none}
+      .top-status{
+        grid-template-columns:repeat(2,1fr);
+        gap:5px;
+      }
+      .status-pill{
+        font-size:10px;
+        padding:6px 7px;
+      }
+      .ticker-row{height:34px}
+      .chart-area{
+        min-height:470px;
+        height:68vh;
+      }
+      .quick-switch{
+        grid-template-columns:repeat(2,1fr);
+      }
+      .quick-switch button{
+        padding:12px 8px;
+        font-size:12px;
+      }
+      .binance-deriv-grid{
+        grid-template-columns:1fr;
+      }
+      .desk{
+        min-height:300px;
+        scroll-margin-top:10px;
+      }
+      .desk-body{
+        min-height:250px;
+      }
+      .mini-links{
+        grid-template-columns:1fr;
+      }
+      .mobile-bottom-nav{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        height:68px;
+        background:#08090c;
+        border-top:1px solid #222;
+        display:flex;
+        justify-content:space-around;
+        align-items:center;
+        z-index:99999;
+      }
+      .mobile-bottom-nav a{
+        color:white;
+        text-decoration:none;
+        font-size:20px;
+        font-weight:900;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:4px;
+        min-width:54px;
+      }
+      .mobile-bottom-nav a span{
+        font-size:10px;
+        color:var(--muted);
+      }
+      .mobile-bottom-nav a:hover span,
+      .mobile-bottom-nav a:hover{
+        color:var(--gold);
+      }
+    }
+  </style>
 </head>
+
 <body>
-
 <div class="container">
-    <div class="ticker-row">
-        <div class="tradingview-widget-container">
-            <div class="tradingview-widget-container__widget"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-            { "symbols": [
-                {"proName": "BINANCE:BTCUSDT", "title": "BTC/USDT"},
-                {"proName": "BINANCE:ETHUSDT", "title": "ETH/USDT"},
-                {"proName": "BINANCE:SOLUSDT", "title": "SOL/USDT"},
-                {"proName": "CRYPTOCAP:TOTAL", "title": "Total Cap"},
-                {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dom"}
-            ], "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "de" }
-            </script>
-        </div>
+
+  <div class="ticker-row">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          {"proName":"OANDA:XAUUSD","title":"Gold"},
+          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
+          {"proName":"BINANCE:ETHUSDT","title":"ETH"},
+          {"proName":"BINANCE:SOLUSDT","title":"SOL"},
+          {"proName":"TVC:DXY","title":"DXY"},
+          {"proName":"TVC:US10Y","title":"US10Y"},
+          {"proName":"TVC:VIX","title":"VIX"},
+          {"proName":"CRYPTOCAP:BTC.D","title":"BTC.D"}
+        ],
+        "colorTheme":"dark",
+        "isTransparent":true,
+        "displayMode":"adaptive",
+        "locale":"de"
+      }
+      </script>
+    </div>
+  </div>
+
+  <div class="academy-header">Obsession Flow Terminal V2</div>
+  <div class="subtitle">Gold • Crypto • Macro • Institutional Flow • Academy</div>
+
+  <div class="top-status">
+    <div class="status-pill gold">🟡 GOLD DESK</div>
+    <div class="status-pill blue">💵 DXY / US10Y</div>
+    <div class="status-pill green">₿ BTC FLOW</div>
+    <div class="status-pill red">⚡ NEWS RISK</div>
+    <div class="status-pill blue">🗓️ PMI / CPI / NFP</div>
+    <div class="status-pill green">📊 OI + FUNDING</div>
+    <div class="status-pill gold">🏦 FEDWATCH</div>
+    <div class="status-pill red">🔥 LIQUIDATIONS</div>
+  </div>
+
+  <nav class="desktop-nav">
+
+    <div class="menu">
+      <button class="menu-btn">🟡 Gold ▼</button>
+      <div class="dropdown">
+        <a href="https://www.tradingview.com/symbols/XAUUSD/" target="_blank" rel="noopener noreferrer">TradingView Gold <small>XAUUSD</small></a>
+        <a href="https://www.goldpreis.de/" target="_blank" rel="noopener noreferrer">Goldpreis.de <small>DE</small></a>
+        <a href="https://www.goldpreis.de/alle-jahre/" target="_blank" rel="noopener noreferrer">Gold All Years <small>History</small></a>
+        <a href="https://www.kitco.com/" target="_blank" rel="noopener noreferrer">Kitco <small>Gold News</small></a>
+        <a href="https://www.bullionvault.com/gold-price-chart.do" target="_blank" rel="noopener noreferrer">BullionVault <small>Gold Chart</small></a>
+        <a href="https://www.gold.org/" target="_blank" rel="noopener noreferrer">World Gold Council <small>GoldHub</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer">DXY <small>Dollar</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer">US10Y <small>Yield</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer">VIX <small>Risk</small></a>
+      </div>
     </div>
 
-    <div class="academy-header">Obsession Flow Terminal - Institutional Data</div>
-
-    <div class="nav-hub">
-        <div class="tigrigna-text">
-            ኩሉ አብ ኢድና ኢዩ ክመሃር ዝደሊ ንሕግዝ<br>
-            ናተይ ናይ Trading command ሓያል መሳርሒ
-        </div>
-
-        <div class="nav-links-group">
-            <a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer" class="nav-link core">📈 Markets</a>
-            <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer" class="nav-link core">🗓️ Calendar</a>
-            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🏦 FedWatch</a>
-            <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer" class="nav-link core">💵 DXY</a>
-            <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer" class="nav-link core">📉 US10Y</a>
-            <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer" class="nav-link core">⚡ VIX</a>
-            <a href="https://www.tradingview.com/markets/stocks-usa/earnings/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Earnings</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <a href="https://coinank.com/chart/derivatives/liq-map" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 Liquidation</a>
-            <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer" class="nav-link core">🧨 LQ Map BTC</a>
-            <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" rel="noopener noreferrer" class="nav-link core">🔥 Heatmap</a>
-            <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer" class="nav-link core">📊 Coinglass</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <a href="https://whale-alert.io/" target="_blank" rel="noopener noreferrer" class="nav-link research">🐳 WhaleAlert</a>
-            <a href="https://www.glassnode.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">🔗 OnChain</a>
-            <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer" class="nav-link research">💧 DeFiLlama</a>
-            <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer" class="nav-link research">😱 Fear&Greed</a>
-            <a href="https://www.usdebtclock.org/" target="_blank" rel="noopener noreferrer" class="nav-link research">🌎 DebtClock</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-            <a href="trading.html" target="_blank" rel="noopener noreferrer" class="nav-link mobile-main">💰 Trading Course</a>
-            <a href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer" class="nav-link">💰 MarketCap</a>
-           <a href="bias-dashboard.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🚀 BTC-Dashboard</a>
-           <a href="macro.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🌍 Macro</a>
-            <a href="strategy.html" target="_blank" rel="noopener noreferrer" class="nav-link core">🧠 Strategy</a>
-           <a href="bias.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">📡 Market Bias</a>
-           <a href="allinone.html" target="_blank" rel="noopener noreferrer" class="nav-link core mobile-main">🚀 AllInOne</a>
-            <a href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer" class="nav-link mobile-main">📈 Charts</a>
-            <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🦎 Gecko</a>
-            <a href="https://x.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🐦 X.com</a>
-            <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🛠️ CryptoCraft</a>
-            <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer" class="nav-link">📊 SoSoValue</a>
-            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="nav-link">🤖 AI</a>
-
-            <span class="nav-sep" aria-hidden="true"></span>
-
-            <a href="https://coinank.com/en/invite/register?referral=1311828" target="_blank" rel="noopener noreferrer" class="nav-link invite">🎁 CoinAnk Invite</a>
-        </div>
+    <div class="menu">
+      <button class="menu-btn">🟠 Crypto ▼</button>
+      <div class="dropdown">
+        <a href="https://coinank.com/chart/derivatives/liq-map" target="_blank" rel="noopener noreferrer">CoinAnk <small>Flow</small></a>
+        <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer">BTC LQ Map <small>CoinAnk</small></a>
+        <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" rel="noopener noreferrer">Coinglass Heatmap <small>Liquidation</small></a>
+        <a href="https://www.coinglass.com/" target="_blank" rel="noopener noreferrer">Coinglass <small>Derivatives</small></a>
+        <a href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer">CoinMarketCap <small>Prices</small></a>
+        <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer">CoinGecko <small>Prices</small></a>
+        <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer">SoSoValue <small>ETF</small></a>
+        <a href="https://whale-alert.io/" target="_blank" rel="noopener noreferrer">Whale Alert <small>Transfers</small></a>
+        <a href="https://www.glassnode.com/" target="_blank" rel="noopener noreferrer">Glassnode <small>OnChain</small></a>
+        <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer">DeFiLlama <small>TVL</small></a>
+        <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer">Fear & Greed <small>Sentiment</small></a>
+      </div>
     </div>
 
-    <div class="main-row">
-        <div class="chart-area">
-            <div class="tradingview-widget-container" style="height:100%;width:100%">
-                <div id="tradingview_advanced" style="height:100%;width:100%"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({
-                  "autosize": true,
-                  "symbol": "OANDA:XAUUSD",
-                  "interval": "D",
-                  "timezone": "Etc/UTC",
-                  "theme": "dark",
-                  "style": "1",
-                  "locale": "de",
-                  "toolbar_bg": "#f1f3f6",
-                  "enable_publishing": false,
-                  "allow_symbol_change": true,
-                  "container_id": "tradingview_advanced"
-                });
-                </script>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="button-group">
-                <button onclick="window.open('https://www.goldpreis.de', '_blank', 'noopener,noreferrer')">Open Goldpreis.de</button>
-                <button onclick="window.open('https://www.goldpreis.de/alle-jahre/', '_blank', 'noopener,noreferrer')">Search All Years</button>
-            </div>
-
-            <div class="widget-box">
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                { "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "de", "importanceFilter": "-1,0,1", "currencyFilter": "USD,EUR" }
-                </script>
-            </div>
-
-            <div class="widget-box">
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                { "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "de" }
-                </script>
-            </div>
-
-            <div class="widget-box" id="binanceBox">
-                <div class="binance-deriv">
-                    <div class="binance-deriv-header">
-                        <div class="binance-deriv-title">📊 Binance BTCUSDT Derivatives</div>
-                        <div class="binance-deriv-status">
-                            <span class="dot" id="apiDot"></span>
-                            <span id="lastUpdate">Loading…</span>
-                        </div>
-                    </div>
-
-                    <div class="binance-deriv-grid">
-                        <div class="metric" id="oiCard">
-                            <div class="metric-label">Open Interest (Contracts)</div>
-                            <div class="metric-value" id="oiVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Δ</span>
-                                    <span id="oiDeltaAbs">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Δ%</span>
-                                    <span id="oiDeltaPct">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric" id="fundingCard">
-                            <div class="metric-label">Funding Rate (Last)</div>
-                            <div class="metric-value" id="fundingVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Bias</span>
-                                    <span id="fundingBias">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Next</span>
-                                    <span id="nextFundingTime">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric">
-                            <div class="metric-label">Mark Price</div>
-                            <div class="metric-value" id="markVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Index</span>
-                                    <span id="indexVal">—</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="metric">
-                            <div class="metric-label">24h Stats</div>
-                            <div class="metric-value" id="highLowVal">—</div>
-                            <div class="metric-sub">
-                                <span class="pill">
-                                    <span class="neutral">Volume</span>
-                                    <span id="volVal">—</span>
-                                </span>
-                                <span class="pill">
-                                    <span class="neutral">Change</span>
-                                    <span id="chgVal">—</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="spark-wrap">
-                        <div class="spark-title">
-                            <span>OI Sparkline (last ~30)</span>
-                            <span class="neutral" id="signalText">Signal: —</span>
-                        </div>
-                        <canvas id="oiSpark" width="600" height="120"></canvas>
-                    </div>
-
-                    <div class="hint" id="hintText">
-                        • Funding <span class="up">negativ</span> = Markt eher short (Shorts zahlen).<br>
-                        • OI steigt stark + Funding positiv = Long crowded → Dump-Risiko.<br>
-                        • OI stabil/↓ + Funding neutral/negativ = gesünderer Move.
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="menu">
+      <button class="menu-btn">🔵 Macro ▼</button>
+      <div class="dropdown">
+        <a href="https://www.financialjuice.com/" target="_blank" rel="noopener noreferrer">⚡ FinancialJuice <small>Fast News</small></a>
+        <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener noreferrer">🗓️ Forex Factory <small>Calendar</small></a>
+        <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer">📊 Investing Calendar <small>Events</small></a>
+        <a href="https://tradingeconomics.com/calendar" target="_blank" rel="noopener noreferrer">🌍 Trading Economics <small>Macro Data</small></a>
+        <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer">🏦 CME FedWatch <small>Rates</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer">💵 DXY <small>Dollar</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer">📉 US10Y <small>Yields</small></a>
+        <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer">⚡ VIX <small>Fear</small></a>
+        <a href="https://www.usdebtclock.org/" target="_blank" rel="noopener noreferrer">🌎 US Debt Clock <small>Debt</small></a>
+        <a href="https://www.tradingview.com/markets/stocks-usa/earnings/" target="_blank" rel="noopener noreferrer">📈 Earnings <small>Stocks</small></a>
+      </div>
     </div>
+
+    <div class="menu">
+      <button class="menu-btn">🟢 Academy ▼</button>
+      <div class="dropdown">
+        <a href="trading.html" target="_blank" rel="noopener noreferrer">💰 Trading Course <small>Main</small></a>
+        <a href="bias-dashboard.html" target="_blank" rel="noopener noreferrer">🚀 BTC Dashboard <small>Flow</small></a>
+        <a href="bias.html" target="_blank" rel="noopener noreferrer">📡 Market Bias <small>Signal</small></a>
+        <a href="macro.html" target="_blank" rel="noopener noreferrer">🌍 Macro Page <small>Academy</small></a>
+        <a href="strategy.html" target="_blank" rel="noopener noreferrer">🧠 Strategy <small>Rules</small></a>
+        <a href="allinone.html" target="_blank" rel="noopener noreferrer">⚡ All In One <small>Hub</small></a>
+        <a href="canvas.html" target="_blank" rel="noopener noreferrer">✍️ Canvas Learning <small>SMC</small></a>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="menu-btn">⚙️ Tools ▼</button>
+      <div class="dropdown">
+        <a href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer">TradingView Chart <small>Chart</small></a>
+        <a href="https://www.binance.com/" target="_blank" rel="noopener noreferrer">Binance <small>Exchange</small></a>
+        <a href="https://www.bybit.com/" target="_blank" rel="noopener noreferrer">Bybit <small>Exchange</small></a>
+        <a href="https://app.hyperliquid.xyz/" target="_blank" rel="noopener noreferrer">Hyperliquid <small>DEX</small></a>
+        <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub <small>Website</small></a>
+        <a href="https://www.cryptocraft.com/" target="_blank" rel="noopener noreferrer">CryptoCraft <small>Forum</small></a>
+        <a href="https://x.com/" target="_blank" rel="noopener noreferrer">X.com <small>Social</small></a>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="menu-btn">🤖 AI ▼</button>
+      <div class="dropdown">
+        <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT <small>AI</small></a>
+        <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer">Claude <small>AI</small></a>
+        <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Gemini <small>AI</small></a>
+        <a href="https://grok.com/" target="_blank" rel="noopener noreferrer">Grok <small>AI</small></a>
+      </div>
+    </div>
+
+  </nav>
+
+  <main class="main-grid">
+
+    <section class="chart-panel" id="chart">
+      <div class="quick-switch">
+        <button onclick="changeSymbol('OANDA:XAUUSD','60')">🟡 Gold 1H</button>
+        <button onclick="changeSymbol('OANDA:XAUUSD','240')">🟡 Gold 4H</button>
+        <button onclick="changeSymbol('BINANCE:BTCUSDT','60')">₿ BTC 1H</button>
+        <button onclick="changeSymbol('BINANCE:ETHUSDT','60')">Ξ ETH</button>
+        <button onclick="changeSymbol('TVC:DXY','D')">💵 DXY</button>
+        <button onclick="changeSymbol('TVC:US10Y','D')">📉 US10Y</button>
+        <button onclick="changeSymbol('TVC:VIX','D')">⚡ VIX</button>
+      </div>
+
+      <div class="chart-area">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tradingview_advanced" style="height:100%;width:100%"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+        </div>
+      </div>
+
+      <div class="bottom-desks">
+        <div class="desk" id="goldDesk">
+          <div class="desk-header gold">🟡 Gold Desk <span>Macro Drivers</span></div>
+          <div class="mini-links">
+            <a href="https://www.financialjuice.com/" target="_blank" rel="noopener noreferrer">⚡ FinancialJuice</a>
+            <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener noreferrer">🗓️ Forex Factory</a>
+            <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer">📊 Investing Calendar</a>
+            <a href="https://www.kitco.com/" target="_blank" rel="noopener noreferrer">🟡 Kitco News</a>
+            <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer">💵 DXY</a>
+            <a href="https://www.tradingview.com/symbols/TVC-US10Y/" target="_blank" rel="noopener noreferrer">📉 US10Y</a>
+          </div>
+        </div>
+
+        <div class="desk" id="cryptoDesk">
+          <div class="desk-header crypto">🟠 Crypto Desk <span>BTC Flow</span></div>
+          <div class="mini-links">
+            <a href="https://coinank.com/chart/derivatives/liq-map/binance/btcusdt/1w" target="_blank" rel="noopener noreferrer">🧨 BTC LQ Map</a>
+            <a href="https://www.coinglass.com/pro/liquidation/HeatMap" target="_blank" rel="noopener noreferrer">🔥 Heatmap</a>
+            <a href="https://sosovalue.com/" target="_blank" rel="noopener noreferrer">📊 ETF Flow</a>
+            <a href="https://whale-alert.io/" target="_blank" rel="noopener noreferrer">🐳 Whale Alert</a>
+            <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer">🦎 CoinGecko</a>
+            <a href="https://defillama.com/" target="_blank" rel="noopener noreferrer">💧 DeFiLlama</a>
+          </div>
+        </div>
+
+        <div class="desk" id="macroDesk">
+          <div class="desk-header macro">🔵 Macro Desk <span>Events</span></div>
+          <div class="mini-links">
+            <a href="https://www.financialjuice.com/" target="_blank" rel="noopener noreferrer">⚡ Fast News</a>
+            <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener noreferrer">🗓️ Calendar</a>
+            <a href="https://tradingeconomics.com/calendar" target="_blank" rel="noopener noreferrer">🌍 Economics</a>
+            <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer">🏦 FedWatch</a>
+            <a href="https://www.tradingview.com/symbols/TVC-DXY/" target="_blank" rel="noopener noreferrer">💵 DXY</a>
+            <a href="https://www.tradingview.com/symbols/TVC-VIX/" target="_blank" rel="noopener noreferrer">⚡ VIX</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+
+      <div class="desk">
+        <div class="desk-header gold">🟡 Gold News <span>XAUUSD</span></div>
+        <div class="desk-body">
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+          {
+            "feedMode":"symbol",
+            "symbol":"OANDA:XAUUSD",
+            "colorTheme":"dark",
+            "isTransparent":true,
+            "displayMode":"regular",
+            "width":"100%",
+            "height":"100%",
+            "locale":"de"
+          }
+          </script>
+        </div>
+      </div>
+
+      <div class="desk">
+        <div class="desk-header crypto">🟠 Crypto News <span>BTC</span></div>
+        <div class="desk-body">
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+          {
+            "feedMode":"symbol",
+            "symbol":"BINANCE:BTCUSDT",
+            "colorTheme":"dark",
+            "isTransparent":true,
+            "displayMode":"regular",
+            "width":"100%",
+            "height":"100%",
+            "locale":"de"
+          }
+          </script>
+        </div>
+      </div>
+
+      <div class="desk" id="flowDesk">
+        <div class="desk-header macro">🔵 Economic Calendar <span>USD / EUR</span></div>
+        <div class="desk-body">
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+          {
+            "colorTheme":"dark",
+            "isTransparent":true,
+            "width":"100%",
+            "height":"100%",
+            "locale":"de",
+            "importanceFilter":"0,1",
+            "currencyFilter":"USD,EUR"
+          }
+          </script>
+        </div>
+      </div>
+
+      <div class="desk" id="binanceBox">
+        <div class="desk-header flow">🟢 Institutional Flow <span>BTCUSDT</span></div>
+        <div class="binance-deriv">
+          <div class="binance-deriv-header">
+            <div class="binance-deriv-title">📊 Binance BTCUSDT Derivatives</div>
+            <div class="binance-deriv-status">
+              <span class="dot" id="apiDot"></span>
+              <span id="lastUpdate">Loading…</span>
+            </div>
+          </div>
+
+          <div class="binance-deriv-grid">
+            <div class="metric" id="oiCard">
+              <div class="metric-label">Open Interest</div>
+              <div class="metric-value" id="oiVal">—</div>
+              <div class="metric-sub">
+                <span class="pill"><span class="neutral">Δ</span><span id="oiDeltaAbs">—</span></span>
+                <span class="pill"><span class="neutral">Δ%</span><span id="oiDeltaPct">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric" id="fundingCard">
+              <div class="metric-label">Funding Rate</div>
+              <div class="metric-value" id="fundingVal">—</div>
+              <div class="metric-sub">
+                <span class="pill"><span class="neutral">Bias</span><span id="fundingBias">—</span></span>
+                <span class="pill"><span class="neutral">Next</span><span id="nextFundingTime">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">Mark Price</div>
+              <div class="metric-value" id="markVal">—</div>
+              <div class="metric-sub">
+                <span class="pill"><span class="neutral">Index</span><span id="indexVal">—</span></span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-label">24h Stats</div>
+              <div class="metric-value" id="highLowVal">—</div>
+              <div class="metric-sub">
+                <span class="pill"><span class="neutral">Volume</span><span id="volVal">—</span></span>
+                <span class="pill"><span class="neutral">Change</span><span id="chgVal">—</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spark-wrap">
+            <div class="spark-title">
+              <span>OI Sparkline</span>
+              <span class="neutral" id="signalText">Signal: —</span>
+            </div>
+            <canvas id="oiSpark" width="600" height="120"></canvas>
+          </div>
+
+          <div class="summary-box">
+            <div class="summary-title">🤖 AI Market Summary</div>
+            <div class="summary-line"><span>Gold Watch</span><strong class="gold">PMI / DXY / US10Y</strong></div>
+            <div class="summary-line"><span>BTC Watch</span><strong class="up">OI + Funding</strong></div>
+            <div class="summary-line"><span>News Priority</span><strong class="down">FinancialJuice</strong></div>
+            <div class="summary-line"><span>Calendar Backup</span><strong>ForexFactory</strong></div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
 </div>
 
-
+<div class="mobile-bottom-nav">
+  <a href="#chart">📈<span>Chart</span></a>
+  <a href="#goldDesk">🟡<span>Gold</span></a>
+  <a href="#cryptoDesk">🟠<span>Crypto</span></a>
+  <a href="#flowDesk">🟢<span>Flow</span></a>
+  <a href="trading.html">🎓<span>Course</span></a>
 </div>
 
 <script>
+let tvWidget = null;
+
+function createWidget(symbol = "OANDA:XAUUSD", interval = "240"){
+  document.getElementById("tradingview_advanced").innerHTML = "";
+  tvWidget = new TradingView.widget({
+    autosize:true,
+    symbol:symbol,
+    interval:interval,
+    timezone:"Etc/UTC",
+    theme:"dark",
+    style:"1",
+    locale:"de",
+    toolbar_bg:"#0d1016",
+    enable_publishing:false,
+    allow_symbol_change:true,
+    hide_side_toolbar:false,
+    container_id:"tradingview_advanced"
+  });
+}
+
+function changeSymbol(symbol, interval){
+  createWidget(symbol, interval);
+}
+
+window.addEventListener("load", function(){
+  createWidget("OANDA:XAUUSD", "240");
+});
+
 const REFRESH_MS = 10000;
 const SYMBOL = "BTCUSDT";
-
 let lastOI = null;
 let oiHistory = [];
 const OI_HISTORY_MAX = 30;
 
-function fmtNumber(x, decimals = 2) {
-    if (x === null || x === undefined || Number.isNaN(x)) return "—";
-    return Number(x).toLocaleString("de-DE", { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+function fmtNumber(x, decimals = 2){
+  if(x === null || x === undefined || Number.isNaN(x)) return "—";
+  return Number(x).toLocaleString("de-DE",{maximumFractionDigits:decimals, minimumFractionDigits:decimals});
 }
 
-function fmtCompact(x) {
-    if (x === null || x === undefined || Number.isNaN(x)) return "—";
-    const n = Number(x);
-    const abs = Math.abs(n);
-    const sign = n < 0 ? "-" : "";
-    const format = (v) => v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
-    if (abs >= 1e12) return sign + format(abs / 1e12) + "T";
-    if (abs >= 1e9)  return sign + format(abs / 1e9) + "B";
-    if (abs >= 1e6)  return sign + format(abs / 1e6) + "M";
-    if (abs >= 1e3)  return sign + format(abs / 1e3) + "K";
-    return sign + format(abs);
+function fmtCompact(x){
+  if(x === null || x === undefined || Number.isNaN(x)) return "—";
+  const n = Number(x);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const format = (v) => v.toLocaleString("de-DE",{maximumFractionDigits:2});
+  if(abs >= 1e12) return sign + format(abs/1e12) + "T";
+  if(abs >= 1e9) return sign + format(abs/1e9) + "B";
+  if(abs >= 1e6) return sign + format(abs/1e6) + "M";
+  if(abs >= 1e3) return sign + format(abs/1e3) + "K";
+  return sign + format(abs);
 }
 
-function setDot(state) {
-    const dot = document.getElementById("apiDot");
-    dot.classList.remove("ok", "warn", "bad");
-    if (state === "ok") dot.classList.add("ok");
-    else if (state === "warn") dot.classList.add("warn");
-    else dot.classList.add("bad");
+function setDot(state){
+  const dot = document.getElementById("apiDot");
+  if(!dot) return;
+  dot.classList.remove("ok","warn","bad");
+  if(state === "ok") dot.classList.add("ok");
+  else if(state === "warn") dot.classList.add("warn");
+  else dot.classList.add("bad");
 }
 
-function setUpdateText(text) {
-    document.getElementById("lastUpdate").innerText = text;
+function setUpdateText(text){
+  const el = document.getElementById("lastUpdate");
+  if(el) el.innerText = text;
 }
 
-function msToHHMM(ms) {
-    const d = new Date(ms);
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    return `${hh}:${mm}`;
+function msToHHMM(ms){
+  const d = new Date(ms);
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  return `${hh}:${mm}`;
 }
 
-function flashCard(el) {
-    el.classList.add("flash");
-    setTimeout(() => el.classList.remove("flash"), 600);
+function flashCard(el){
+  if(!el) return;
+  el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"),600);
 }
 
-function drawSparkline(values) {
-    const canvas = document.getElementById("oiSpark");
-    const ctx = canvas.getContext("2d");
+function drawSparkline(values){
+  const canvas = document.getElementById("oiSpark");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0,0,w,h);
 
-    const w = canvas.width;
-    const h = canvas.height;
-
-    ctx.clearRect(0, 0, w, h);
-
-    if (!values || values.length < 2) {
-        ctx.globalAlpha = 0.35;
-        ctx.strokeStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.moveTo(0, h * 0.7);
-        ctx.lineTo(w, h * 0.7);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        return;
-    }
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const range = (max - min) || 1;
-
-    ctx.globalAlpha = 0.25;
-    ctx.strokeStyle = "#ffffff";
+  if(!values || values.length < 2){
+    ctx.globalAlpha=.35;
+    ctx.strokeStyle="#ffffff";
     ctx.beginPath();
-    ctx.moveTo(0, h * 0.5);
-    ctx.lineTo(w, h * 0.5);
+    ctx.moveTo(0,h*.7);
+    ctx.lineTo(w,h*.7);
     ctx.stroke();
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha=1;
+    return;
+  }
 
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = (max-min) || 1;
 
-    values.forEach((v, i) => {
-        const x = (i / (values.length - 1)) * w;
-        const y = h - ((v - min) / range) * (h - 10) - 5;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
+  ctx.globalAlpha=.25;
+  ctx.strokeStyle="#ffffff";
+  ctx.beginPath();
+  ctx.moveTo(0,h*.5);
+  ctx.lineTo(w,h*.5);
+  ctx.stroke();
+  ctx.globalAlpha=1;
 
-    ctx.stroke();
+  ctx.strokeStyle="#ffffff";
+  ctx.lineWidth=2;
+  ctx.beginPath();
 
-    const last = values[values.length - 1];
-    const x = w;
-    const y = h - ((last - min) / range) * (h - 10) - 5;
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
+  values.forEach((v,i)=>{
+    const x = (i/(values.length-1))*w;
+    const y = h - ((v-min)/range)*(h-10) - 5;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  const last = values[values.length-1];
+  const x = w;
+  const y = h - ((last-min)/range)*(h-10) - 5;
+  ctx.fillStyle="#ffffff";
+  ctx.beginPath();
+  ctx.arc(x,y,3,0,Math.PI*2);
+  ctx.fill();
 }
 
-function setFundingStyles(rate) {
-    const fundingCard = document.getElementById("fundingCard");
-    const fundingVal = document.getElementById("fundingVal");
-    const bias = document.getElementById("fundingBias");
+function setFundingStyles(rate){
+  const fundingCard = document.getElementById("fundingCard");
+  const fundingVal = document.getElementById("fundingVal");
+  const bias = document.getElementById("fundingBias");
+  if(!fundingCard || !fundingVal || !bias) return;
 
-    if (rate === null || rate === undefined || Number.isNaN(rate)) {
-        fundingVal.className = "metric-value";
-        bias.innerText = "—";
-        return;
-    }
+  if(rate === null || rate === undefined || Number.isNaN(rate)){
+    fundingVal.className = "metric-value";
+    bias.innerText = "—";
+    return;
+  }
 
-    if (rate < 0) {
-        fundingVal.className = "metric-value up";
-        bias.innerText = "Short-crowded";
-        bias.className = "up";
-        fundingCard.style.borderColor = "#1f3";
-    } else if (rate > 0) {
-        fundingVal.className = "metric-value down";
-        bias.innerText = "Long-crowded";
-        bias.className = "down";
-        fundingCard.style.borderColor = "#f33";
-    } else {
-        fundingVal.className = "metric-value neutral";
-        bias.innerText = "Neutral";
-        bias.className = "neutral";
-        fundingCard.style.borderColor = "#2a2a2a";
-    }
+  if(rate < 0){
+    fundingVal.className = "metric-value up";
+    bias.innerText = "Short-crowded";
+    bias.className = "up";
+    fundingCard.style.borderColor = "#00ff88";
+  }else if(rate > 0){
+    fundingVal.className = "metric-value down";
+    bias.innerText = "Long-crowded";
+    bias.className = "down";
+    fundingCard.style.borderColor = "#ff4d4d";
+  }else{
+    fundingVal.className = "metric-value neutral";
+    bias.innerText = "Neutral";
+    bias.className = "neutral";
+    fundingCard.style.borderColor = "#2c2f36";
+  }
 }
 
-function setOISignal(oiDeltaPct, fundingRate) {
-    const signalEl = document.getElementById("signalText");
+function setOISignal(oiDeltaPct, fundingRate){
+  const signalEl = document.getElementById("signalText");
+  if(!signalEl) return;
 
-    if (oiDeltaPct === null || fundingRate === null || Number.isNaN(oiDeltaPct) || Number.isNaN(fundingRate)) {
-        signalEl.innerText = "Signal: —";
-        return;
-    }
+  if(oiDeltaPct === null || fundingRate === null || Number.isNaN(oiDeltaPct) || Number.isNaN(fundingRate)){
+    signalEl.innerText = "Signal: —";
+    return;
+  }
 
-    const oiUp = oiDeltaPct > 0.25;
-    const oiDown = oiDeltaPct < -0.25;
+  const oiUp = oiDeltaPct > .25;
+  const oiDown = oiDeltaPct < -.25;
+  let signal = "Neutral";
 
-    let signal = "Neutral";
+  if(oiUp && fundingRate > 0) signal = "Risk: Long crowded";
+  else if(oiUp && fundingRate < 0) signal = "Squeeze watch: Shorts lean";
+  else if(oiDown && fundingRate < 0) signal = "Flush / de-leveraging";
+  else if(oiDown && fundingRate > 0) signal = "Cooling longs";
 
-    if (oiUp && fundingRate > 0) signal = "Risk: Long crowded";
-    else if (oiUp && fundingRate < 0) signal = "Squeeze watch: Shorts lean";
-    else if (oiDown && fundingRate < 0) signal = "Flush / de-leveraging";
-    else if (oiDown && fundingRate > 0) signal = "Cooling longs";
-
-    signalEl.innerText = "Signal: " + signal;
+  signalEl.innerText = "Signal: " + signal;
 }
 
-async function fetchBinance() {
-    const box = document.getElementById("binanceBox");
-    const oiCard = document.getElementById("oiCard");
+async function fetchBinance(){
+  const box = document.getElementById("binanceBox");
+  const oiCard = document.getElementById("oiCard");
 
-    try {
-        setDot("warn");
-        setUpdateText("Updating…");
+  try{
+    setDot("warn");
+    setUpdateText("Updating…");
 
-        const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
-        const oiJson = await oiRes.json();
-        const oi = Number(oiJson.openInterest);
+    const oiRes = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${SYMBOL}`);
+    const oiJson = await oiRes.json();
+    const oi = Number(oiJson.openInterest);
 
-        const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
-        const premJson = await premRes.json();
+    const premRes = await fetch(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${SYMBOL}`);
+    const premJson = await premRes.json();
 
-        const fundingRate = Number(premJson.lastFundingRate);
-        const markPrice = Number(premJson.markPrice);
-        const indexPrice = Number(premJson.indexPrice);
-        const nextFundingTime = Number(premJson.nextFundingTime);
+    const fundingRate = Number(premJson.lastFundingRate);
+    const markPrice = Number(premJson.markPrice);
+    const indexPrice = Number(premJson.indexPrice);
+    const nextFundingTime = Number(premJson.nextFundingTime);
 
-        const statsRes = await fetch(`https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=${SYMBOL}`);
-        const statsJson = await statsRes.json();
+    const statsRes = await fetch(`https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=${SYMBOL}`);
+    const statsJson = await statsRes.json();
 
-        const high = Number(statsJson.highPrice);
-        const low = Number(statsJson.lowPrice);
-        const vol = Number(statsJson.volume);
-        const priceChangePct = Number(statsJson.priceChangePercent);
+    const high = Number(statsJson.highPrice);
+    const low = Number(statsJson.lowPrice);
+    const vol = Number(statsJson.volume);
+    const priceChangePct = Number(statsJson.priceChangePercent);
 
-        document.getElementById("oiVal").innerText = fmtCompact(oi);
-        document.getElementById("fundingVal").innerText = (fundingRate * 100).toFixed(4) + " %";
-        document.getElementById("markVal").innerText = fmtNumber(markPrice, 2) + " USDT";
-        document.getElementById("indexVal").innerText = fmtNumber(indexPrice, 2);
+    document.getElementById("oiVal").innerText = fmtCompact(oi);
+    document.getElementById("fundingVal").innerText = (fundingRate*100).toFixed(4) + " %";
+    document.getElementById("markVal").innerText = fmtNumber(markPrice,2) + " USDT";
+    document.getElementById("indexVal").innerText = fmtNumber(indexPrice,2);
 
-        document.getElementById("highLowVal").innerText = `${fmtNumber(low, 2)} / ${fmtNumber(high, 2)}`;
-        document.getElementById("volVal").innerText = fmtCompact(vol);
-        const chgEl = document.getElementById("chgVal");
-        chgEl.innerText = priceChangePct.toFixed(2) + " %";
-        chgEl.className = priceChangePct >= 0 ? "up" : "down";
+    document.getElementById("highLowVal").innerText = `${fmtNumber(low,2)} / ${fmtNumber(high,2)}`;
+    document.getElementById("volVal").innerText = fmtCompact(vol);
 
-        document.getElementById("nextFundingTime").innerText =
-            Number.isFinite(nextFundingTime) ? msToHHMM(nextFundingTime) : "—";
+    const chgEl = document.getElementById("chgVal");
+    chgEl.innerText = priceChangePct.toFixed(2) + " %";
+    chgEl.className = priceChangePct >= 0 ? "up" : "down";
 
-        let deltaAbs = null;
-        let deltaPct = null;
+    document.getElementById("nextFundingTime").innerText =
+      Number.isFinite(nextFundingTime) ? msToHHMM(nextFundingTime) : "—";
 
-        if (lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)) {
-            deltaAbs = oi - lastOI;
-            deltaPct = (deltaAbs / lastOI) * 100;
+    let deltaAbs = null;
+    let deltaPct = null;
 
-            const deltaAbsEl = document.getElementById("oiDeltaAbs");
-            const deltaPctEl = document.getElementById("oiDeltaPct");
+    if(lastOI !== null && Number.isFinite(lastOI) && Number.isFinite(oi)){
+      deltaAbs = oi - lastOI;
+      deltaPct = (deltaAbs / lastOI) * 100;
 
-            deltaAbsEl.innerText = fmtCompact(deltaAbs);
-            deltaPctEl.innerText = deltaPct.toFixed(3) + " %";
+      const deltaAbsEl = document.getElementById("oiDeltaAbs");
+      const deltaPctEl = document.getElementById("oiDeltaPct");
 
-            const cls = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
-            deltaAbsEl.className = cls;
-            deltaPctEl.className = cls;
+      deltaAbsEl.innerText = fmtCompact(deltaAbs);
+      deltaPctEl.innerText = deltaPct.toFixed(3) + " %";
 
-            if (Math.abs(deltaPct) >= 0.6) {
-                flashCard(oiCard);
-            }
-        } else {
-            document.getElementById("oiDeltaAbs").innerText = "—";
-            document.getElementById("oiDeltaPct").innerText = "—";
-            document.getElementById("oiDeltaAbs").className = "neutral";
-            document.getElementById("oiDeltaPct").className = "neutral";
-        }
+      const cls = deltaAbs > 0 ? "up" : (deltaAbs < 0 ? "down" : "neutral");
+      deltaAbsEl.className = cls;
+      deltaPctEl.className = cls;
 
-        lastOI = oi;
-        if (Number.isFinite(oi)) {
-            oiHistory.push(oi);
-            if (oiHistory.length > OI_HISTORY_MAX) oiHistory.shift();
-            drawSparkline(oiHistory);
-        }
-
-        setFundingStyles(fundingRate);
-        setOISignal(deltaPct, fundingRate);
-
-        const now = new Date();
-        setDot("ok");
-        setUpdateText(`Updated ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`);
-
-        box.style.opacity = "1";
-    } catch (e) {
-        console.error("Binance fetch error:", e);
-        setDot("bad");
-        setUpdateText("API error");
-        box.style.opacity = "0.9";
+      if(Math.abs(deltaPct) >= .6) flashCard(oiCard);
+    }else{
+      document.getElementById("oiDeltaAbs").innerText = "—";
+      document.getElementById("oiDeltaPct").innerText = "—";
+      document.getElementById("oiDeltaAbs").className = "neutral";
+      document.getElementById("oiDeltaPct").className = "neutral";
     }
+
+    lastOI = oi;
+    if(Number.isFinite(oi)){
+      oiHistory.push(oi);
+      if(oiHistory.length > OI_HISTORY_MAX) oiHistory.shift();
+      drawSparkline(oiHistory);
+    }
+
+    setFundingStyles(fundingRate);
+    setOISignal(deltaPct, fundingRate);
+
+    const now = new Date();
+    setDot("ok");
+    setUpdateText(`Updated ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`);
+    if(box) box.style.opacity = "1";
+  }catch(e){
+    console.error("Binance fetch error:", e);
+    setDot("bad");
+    setUpdateText("API error");
+    if(box) box.style.opacity = ".9";
+  }
 }
 
 fetchBinance();
 setInterval(fetchBinance, REFRESH_MS);
 </script>
-<div class="mobile-bottom-nav">
-  <a href="bias-dashboard.html">🚀<span>Dashboard</span></a>
-  <a href="bias.html">📡<span>Bias</span></a>
-  <a href="trading.html">💰<span>Course</span></a>
-  <a href="macro.html">🌍<span>Macro</span></a>
-  <a href="allinone.html">⚡<span>AllInOne</span></a>
-</div>
+
 </body>
 </html>
