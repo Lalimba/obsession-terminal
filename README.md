@@ -42,6 +42,17 @@ This project demonstrates practical experience in:
 - Workflow automation and deployment
 - Financial technology application development
 
+
+
+
+## Technical Architecture
+
+- **Frontend:** HTML5, CSS3, JavaScript, interactive dashboards
+- **Data Integration:** Financial market APIs, third-party charting tools
+- **Automation:** GitHub Actions, automated data workflows
+- **Deployment:** GitHub Pages
+- **Market Analytics:** Technical indicators, macroeconomic data, liquidity and market structure
+  
 ## Project Status
 
 An ongoing independent development project, with features and integrations evolving over time.
