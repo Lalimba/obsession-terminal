@@ -1,5 +1,5 @@
 # Obsession Flow Terminal V2
-
+![OSCE Gold Intelligence Terminal](https://raw.githubusercontent.com/Lalimba/lalimba/main/osce-gold-terminal.png)
 ### Multi-Asset Trading Dashboard | Financial Market Technology
 
 A web-based trading and financial market analysis platform developed to combine market monitoring, technical analysis, macroeconomic indicators, and trading education in one interface.
